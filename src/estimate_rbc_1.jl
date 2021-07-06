@@ -1,4 +1,4 @@
-function simulate_and_estimate_rbc_1(;
+function simulate_and_estimate_rbc_1(d;
     num_samples,
     num_adapts,
     target_acceptance_rate,
@@ -62,12 +62,18 @@ function simulate_and_estimate_rbc_1(;
             param_rhat[i],
         )
     end
+
+    # Store parameters in log directory
+    println("Storing Parameters")    
+    open(joinpath(callback.logger.logdir, "parameters.json"), "w") do f
+        write(f, JSON.json(d))
+     end
+     return
 end
 
 # Entry for script
 function rbc_1_main()
 
-    # TODO: Try to use as_symbols  and autofix.  Then don't need to convert symbols.
     s = ArgParseSettings()
 
     @add_arg_table! s begin
@@ -99,7 +105,7 @@ function rbc_1_main()
 
     d =  parse_args(s;as_symbols=true)    
 
-    # TODO: Store dictionary in "runs" as JSON
-    
-    simulate_and_estimate_rbc_1(; d...)
+    # Simulate
+    simulate_and_estimate_rbc_1(d; d...) #passing in dictionary just to save in logdir
+
 end
