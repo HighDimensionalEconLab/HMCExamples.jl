@@ -1,6 +1,5 @@
 # DSSM HMC Examples
 
-
 ## Installation
 Do an
 Then
@@ -9,13 +8,13 @@ Then
 ## CLI Usage
 To use with default options
 ```bash
-julia --project --threads auto fit_rbc.jl
+julia --project --threads auto fit_rbc_1_kalman.jl
 ```
 (although the `--threads auto` may or may not be useful in this example.)
 
 Or with options
 ```bash
-julia --project --threads auto fit.jl --num_samples 1000
+julia --project --threads auto fit_rbc_1_kalman.jl --num_samples 1000
 ```
 To run tensorboard, ensure tensorboard is installed (e.g. with  `pip install -r requirements.txt` ) and
 ```bash
