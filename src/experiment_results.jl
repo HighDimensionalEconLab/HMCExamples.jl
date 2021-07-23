@@ -1,42 +1,23 @@
-using FVGQ20Estimation, DifferentiableStateSpaceModels, Serialization, StatsPlots
-using DelimitedFiles
-using LinearAlgebra
+function calculate_experiment_results(chain, logger, include_vars)
+    logdir = logger.logdir
 
-
-#TODO!!!!!!!!!!!!!!!!!!!!!!!! USE THE LOGGING DIRECTORIES INSTEAD.
-# GET RID OF THE NAME STUFF.
-
-function save_experiment_results(name, chain, directory_path=joinpath(pkgdir(FVGQ20Estimation), "figures/results"))
-    #  uses the `name` as a prefix for all output.  So lets say we
-    # for example, lest save we have a chainsummary thing, then it would write to
-    # "joinpath(directory_path, "$(name)_chainsummary.csv"  or whatever.
-    serialize(joinpath(pkgdir(FVGQ20Estimation), "figures/results/$name.jls"), chain)
-end
-
-function calculate_experiment_results(name, include_vars, directory_path=joinpath(pkgdir(FVGQ20Estimation), "figures/results"))
-    chain = deserialize(joinpath(directory_path, "$name.jls"))
-    # display("$prop% of chain with numerical error")
-    # display(summarize(chain[include_vars]))
-
-    # trace plots
-    # include_vars = ["α", "β", "ρ", "δ"]
     trace_plot = plot(chain[include_vars], seriestype=:traceplot)
-    savefig(trace_plot, joinpath(pkgdir(FVGQ20Estimation), "figures/results/traceplots_$name.png"))
+    savefig(trace_plot, joinpath(logdir, "traceplots.png"))
 
     # density
     density_plot = density(chain[include_vars])
-    savefig(density_plot, joinpath(pkgdir(FVGQ20Estimation), "figures/results/densityplots_$name.png"))
+    savefig(density_plot, joinpath(logdir, "densityplots.png"))
 
     # Likelihood
     likelihood_plot = plot(chain[:lp])
-    savefig(likelihood_plot, joinpath(pkgdir(FVGQ20Estimation), "figures/results/likelihoodplots_$name.png"))
+    savefig(likelihood_plot, joinpath(logdir, "likelihoodplots.png"))
 
     # Numerical errors
     if :numerical_error in keys(chain)
         num_error = get(chain, :numerical_error)
         prop = 100 * sum(num_error.numerical_error.data) / length(num_error.numerical_error.data)
         numerror_plot = plot(chain[:numerical_error])
-        savefig(numerror_plot, joinpath(pkgdir(FVGQ20Estimation), "figures/results/numerrorplots_$name.png"))
+        savefig(numerror_plot, joinpath(logdir, "numerrorplots.png"))
     else
         prop = missing
     end
@@ -50,7 +31,7 @@ function calculate_experiment_results(name, include_vars, directory_path=joinpat
     param_rhat = sum_stats[1][:,7]
 
     CSV.write(
-        joinpath(pkgdir(FVGQ20Estimation), "figures/results/sumstats_$name.csv"),
+        joinpath(logdir, "sumstats.csv"),
         DataFrame(
             Parameter=param_names,
             Mean=param_mean,
@@ -81,7 +62,7 @@ function calculate_experiment_results(name, include_vars, directory_path=joinpat
             end
 
             # Write it to disk
-            writedlm("figures/results/preconditioner_$name.csv", m, ',')
+            writedlm(joinpath(logdir,"preconditioner.csv"), m, ',')
         end
     end
 
@@ -90,7 +71,7 @@ function calculate_experiment_results(name, include_vars, directory_path=joinpat
         values = chain[var]
         cum_average = MCMCChains.cummean(values)
         writedlm(
-            joinpath(pkgdir(FVGQ20Estimation), "figures/results/cumaverage_$(name)_$(var).csv"),
+            joinpath(logdir, "cumaverage_$(var).csv"),
             cum_average,
             ','
         )
@@ -98,5 +79,20 @@ function calculate_experiment_results(name, include_vars, directory_path=joinpat
 
     # Cumulative mean plots
     cummean_plot = meanplot(chain[include_vars])
-    savefig(cummean_plot, joinpath(pkgdir(FVGQ20Estimation), "figures/results/cummean_$name.png"))
+    savefig(cummean_plot, joinpath(logdir, "cummean.png"))
+
+    # Log the ESS/sec and rhat.  Nice to show as summary results from tensorboard
+    for (i, name) = enumerate(param_names)
+        TensorBoardLogger.log_value(
+            logger,
+            "$(name)_ess_per_sec",
+            param_ess[i],
+        )
+        TensorBoardLogger.log_value(
+            logger,
+            "$(name)_rhat",
+            param_rhat[i],
+        )
+    end
+
 end
