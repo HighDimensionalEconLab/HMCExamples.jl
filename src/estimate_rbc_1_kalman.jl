@@ -24,7 +24,7 @@ function estimate_rbc_1_kalman(d)
     # Sampler
     name = "rbc-kalman-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
-    callback = TensorBoardCallback("tensorboard_logs/run"; name, include=include_vars)
+    callback = TensorBoardCallback(d.results_path; name, include=include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
     Random.seed!(d.seed)
@@ -42,7 +42,7 @@ function estimate_rbc_1_kalman(d)
     )
 
     # Calculate and save results into the logdir
-    calculate_experiment_results(chain, callback.logger, include_vars)
+    calculate_experiment_results(chain, callback.logger, include_vars, d.full_results)
     
     # Store parameters in log directory
     parameter_save_path = joinpath(callback.logger.logdir, "parameters.json")
@@ -91,6 +91,12 @@ function parse_commandline_rbc_1_kalman(args)
         "--seed"
         help = "Random number seed"
         arg_type = Int64
+        "--results_path"
+        arg_type = String
+        help = "Location to store results and logs"
+        "--full_results"
+        arg_type = Bool
+        help = "Save the complete set of figures and results for the chain"
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_kalman_defaults.txt", args)

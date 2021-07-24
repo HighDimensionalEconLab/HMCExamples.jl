@@ -18,7 +18,7 @@ julia --project --threads auto fit_rbc_1_kalman.jl --num_samples 1000
 ```
 To run tensorboard, ensure tensorboard is installed (e.g. with  `pip install -r requirements.txt` ) and
 ```bash
-tensorboard --logdir tensorboard_logs
+tensorboard --logdir .results
 ```
 
 ## Package Compilation

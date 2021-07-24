@@ -1,3 +1,3 @@
 using HMCExamples
-# Add in examples for simple unit testing, and for packagecompiler tracing
+# The main purpose is for tracing the compiler, not for exection speed or results.  Keep the number of samples small
 HMCExamples.main_rbc_1_kalman(["--num_samples", "100"])
