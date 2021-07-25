@@ -14,7 +14,7 @@ julia --project --threads auto fit_rbc_1_kalman.jl
 
 Or with options
 ```bash
-julia --project --threads auto fit_rbc_1_kalman.jl --num_samples 1000
+julia --project --threads auto bin/fit_rbc_1_kalman.jl --num_samples 1000
 ```
 To run tensorboard, ensure tensorboard is installed (e.g. with  `pip install -r requirements.txt` ) and
 ```bash
@@ -31,5 +31,14 @@ Then when you use vscode it will load the custom sysimage as long as you have th
 
 On the commandline you will need to manually provide it.  For example, 
 ```bash
-julia --project --sysimage JuliaSysimage.dll --threads auto fit_rbc_1_kalman.jl --num_samples 1000
+julia --project --sysimage JuliaSysimage.dll --threads auto bin/fit_rbc_1_kalman.jl --num_samples 1000
 ```
+
+## Grid
+On grid.ai commandline:
+```bash
+grid run --instance_type t2.xlarge --framework julia --cpus 3 --name rbc-test bin/fit_rbc_1_kalman.jl --num_samples 100
+```
+To see the logs during execution (which could be 10ish minutes to build the container) do `grid logs rbc-test`.
+
+To download the results when complete `grid artifacts rbc-test`
