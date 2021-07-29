@@ -16,5 +16,7 @@ include("experiment_results.jl")
 # Specific Models and CLI drivers
 include("turing_models.jl")
 include("estimate_rbc_1_kalman.jl")
+include("estimate_rbc_1_joint.jl")
+
 
 end #module
