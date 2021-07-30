@@ -99,6 +99,6 @@ function parse_commandline_rbc_1_joint(args)
         help = "Save the complete set of figures and results for the chain"
     end
 
-    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_kalman_defaults.txt", args)
+    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_joint_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)
 end
