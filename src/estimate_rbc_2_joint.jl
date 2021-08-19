@@ -1,10 +1,10 @@
 # Entry for script
-function main_rbc_1_joint(args=ARGS)
-    d = parse_commandline_rbc_1_joint(args)
-    return estimate_rbc_1_joint((; d...)) # to named tuple
+function main_rbc_2_joint(args=ARGS)
+    d = parse_commandline_rbc_2_joint(args)
+    return estimate_rbc_2_joint((; d...)) # to named tuple
 end
 
-function estimate_rbc_1_joint(d)
+function estimate_rbc_2_joint(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
     HMCExamples.set_BLAS_threads()
@@ -14,15 +14,15 @@ function estimate_rbc_1_joint(d)
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
     df = Matrix(DataFrame(CSV.File(data_path)))
     z = [df[i, :] for i in 1:size(df, 1)]
-    ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_rbc_1.csv");header=false)))
+    ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_rbc_2.csv");header=false)))
     # Create the perturbation and the turing models
-    m = FirstOrderPerturbationModel(rbc_1)
-    turing_model = rbc_joint(
+    m = SecondOrderPerturbationModel(rbc_2)
+    turing_model = rbc_second(
         z, m, d.p_f, d.alpha_prior, d.beta_prior, d.rho_prior, allocate_cache(m)
     )
 
     # Sampler
-    name = "rbc-joint-s$(d.num_samples)-seed$(d.seed)"
+    name = "rbc-second-joint-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
     callback = TensorBoardCallback(d.results_path; name, include=include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
@@ -41,6 +41,8 @@ function estimate_rbc_1_joint(d)
         callback,
     )
 
+    
+
     # Calculate and save results into the logdir
     calculate_experiment_results(chain, callback.logger, include_vars, d.full_results)
     
@@ -53,7 +55,7 @@ function estimate_rbc_1_joint(d)
     end
 end
 
-function parse_commandline_rbc_1_joint(args)
+function parse_commandline_rbc_2_joint(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
     # See the appropriate _defaults.txt file for the default vvalues.
@@ -99,6 +101,6 @@ function parse_commandline_rbc_1_joint(args)
         help = "Save the complete set of figures and results for the chain"
     end
 
-    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_joint_defaults.txt", args)
+    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_2_joint_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)
 end
