@@ -1,35 +1,30 @@
+# TODO: Try this to speed up different plotting solutions.
+#function calculate_experiment_results(@nospecialize(chain), @nospecialize(logger), include_vars, full_results)
 function calculate_experiment_results(chain, logger, include_vars, full_results)
     logdir = logger.logdir
     if full_results
+        @info "Creating Trace Plot"
         trace_plot = plot(chain[include_vars], seriestype=:traceplot)
         savefig(trace_plot, joinpath(logdir, "traceplots.png"))
-        with_logger(logger) do
-            @info "Trace Plot" trace_plot
-        end
 
         # density
+        @info "Creating Density Plot"
         density_plot = density(chain[include_vars])
         savefig(density_plot, joinpath(logdir, "densityplots.png"))
-        with_logger(logger) do
-            @info "Density Plot" density_plot
-        end        
 
         # Likelihood
+        @info "Creating Likelihood Plot"
         likelihood_plot = plot(chain[:lp])
         savefig(likelihood_plot, joinpath(logdir, "likelihoodplots.png"))
-        with_logger(logger) do
-            @info "Likelihood Plot" likelihood_plot
-        end                
 
         # Numerical errors
         if :numerical_error in keys(chain)
+            @info "Creating Numerical Error Plot"
+
             num_error = get(chain, :numerical_error)
             prop = 100 * sum(num_error.numerical_error.data) / length(num_error.numerical_error.data)
             numerror_plot = plot(chain[:numerical_error])
             savefig(numerror_plot, joinpath(logdir, "numerrorplots.png"))
-            with_logger(logger) do
-                @info "Numerical Error Plot" numerror_plot
-            end                  
         else
             prop = missing
         end
@@ -92,11 +87,10 @@ function calculate_experiment_results(chain, logger, include_vars, full_results)
         end
 
         # Cumulative mean plots
+        @info "Cumulative Mean Plot"
+
         cummean_plot = meanplot(chain[include_vars])
         savefig(cummean_plot, joinpath(logdir, "cummean.png"))
-        with_logger(logger) do
-            @info "Cumulate Means Plots" cummean_plot
-        end         
     end
 
     # Log the ESS/sec and rhat.  Nice to show as summary results from tensorboard
