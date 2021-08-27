@@ -5,6 +5,7 @@ using HMCExamples, StatsPlots
 HMCExamples.main_rbc_1_kalman(["--num_samples", "30", "--full_results", "false", "--max_depth", "2"]) # only do one of them with the figures. Otherwise too slow.
 HMCExamples.main_rbc_1_joint(["--num_samples", "30", "--full_results", "false", "--max_depth", "2"])
 HMCExamples.main_rbc_2_joint(["--num_samples", "30", "--full_results", "false", "--max_depth", "2"])
-HMCExamples.main_FVGQ_1_kalman(["--num_samples", "10", "--full_results", "false", "--max_depth", "2"])
+
+# HMCExamples.main_FVGQ_1_kalman(["--num_samples", "10", "--full_results", "false", "--max_depth", "2"])
 # HMCExamples.main_FVGQ_1_joint(["--num_samples", "10", "--full_results", "false", "--max_depth", "2"])
 # HMCExamples.main_FVGQ_2_joint(["--num_samples", "10", "--full_results", "false", "--max_depth", "2"])
