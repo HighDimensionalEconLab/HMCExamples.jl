@@ -10,23 +10,23 @@ function calculate_experiment_results(chain, logger, include_vars, full_results)
 
     if full_results
         @info "Creating Trace Plot"
-        trace_plot = plot(chain[include_vars], seriestype=:traceplot)
+        trace_plot = plot(chain[include_vars], seriestype=:traceplot, fmt = :png)
         savefig(trace_plot, joinpath(logdir, "traceplots.png"))
 
         # density
         @info "Creating Density Plot"
-        density_plot = StatsPlots.density(chain[include_vars])
+        density_plot = StatsPlots.density(chain[include_vars], fmt = :png)
         savefig(density_plot, joinpath(logdir, "densityplots.png"))
 
         # Likelihood
         @info "Creating Likelihood Plot"
-        likelihood_plot = plot(chain[:lp])
+        likelihood_plot = plot(chain[:lp], fmt = :png)
         savefig(likelihood_plot, joinpath(logdir, "likelihoodplots.png"))
 
         # Numerical errors
         if has_num_error
             @info "Creating Numerical Error Plot"
-            numerror_plot = plot(chain[:numerical_error])
+            numerror_plot = plot(chain[:numerical_error], fmt = :png)
             savefig(numerror_plot, joinpath(logdir, "numerrorplots.png"))
         end
     end
@@ -88,7 +88,7 @@ function calculate_experiment_results(chain, logger, include_vars, full_results)
 
         # Cumulative mean plots
         @info "Cumulative Mean Plot"
-        cummean_plot = meanplot(chain[include_vars])
+        cummean_plot = meanplot(chain[include_vars], fmt = :png)
         savefig(cummean_plot, joinpath(logdir, "cummean.png"))
     end
 
