@@ -99,7 +99,7 @@ end
     ΛA ~ Gamma(params.ΛA[1], params.ΛA[2])
     # Likelihood
     θ = [β, h, ϑ, κ, α, θp, χ, γR, γy, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA]
-    println(θ)
+    #println(θ)
     sol = generate_perturbation(m, θ; p_f, cache)
     if !(sol.retcode == :Success)
         Turing.@addlogprob! -Inf
