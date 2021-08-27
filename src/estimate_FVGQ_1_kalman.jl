@@ -1,6 +1,6 @@
 # Entry for script
 function main_FVGQ_1_kalman(args=ARGS)
-    d = parse_commandline_FVGQ_1(args)
+    d = parse_commandline_FVGQ_1_kalman(args)
     return estimate_FVGQ_1_kalman((; d...)) # to named tuple
 end
 
@@ -86,7 +86,7 @@ function estimate_FVGQ_1_kalman(d)
     end
 end
 
-function parse_commandline_FVGQ_1(args)
+function parse_commandline_FVGQ_1_kalman(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
     # See the appropriate _defaults.txt file for the default vvalues.

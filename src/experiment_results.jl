@@ -1,7 +1,13 @@
-# TODO: Try this to speed up different plotting solutions.
-#function calculate_experiment_results(@nospecialize(chain), @nospecialize(logger), include_vars, full_results)
-function calculate_experiment_results(chain, logger, include_vars, full_results)
+function calculate_num_error_prop(chain)
+    num_error = get(chain, :numerical_error)
+    return 100 * sum(num_error.numerical_error.data) / length(num_error.numerical_error.data)
+end
+
+#function calculate_experiment_results(chain, logger, include_vars, full_results)
+function calculate_experiment_results(@nospecialize(chain), @nospecialize(logger), include_vars, full_results)
     logdir = logger.logdir
+    has_num_error =  (:numerical_error in keys(chain))
+
     if full_results
         @info "Creating Trace Plot"
         trace_plot = plot(chain[include_vars], seriestype=:traceplot)
@@ -9,7 +15,7 @@ function calculate_experiment_results(chain, logger, include_vars, full_results)
 
         # density
         @info "Creating Density Plot"
-        density_plot = density(chain[include_vars])
+        density_plot = StatsPlots.density(chain[include_vars])
         savefig(density_plot, joinpath(logdir, "densityplots.png"))
 
         # Likelihood
@@ -18,15 +24,10 @@ function calculate_experiment_results(chain, logger, include_vars, full_results)
         savefig(likelihood_plot, joinpath(logdir, "likelihoodplots.png"))
 
         # Numerical errors
-        if :numerical_error in keys(chain)
+        if has_num_error
             @info "Creating Numerical Error Plot"
-
-            num_error = get(chain, :numerical_error)
-            prop = 100 * sum(num_error.numerical_error.data) / length(num_error.numerical_error.data)
             numerror_plot = plot(chain[:numerical_error])
             savefig(numerror_plot, joinpath(logdir, "numerrorplots.png"))
-        else
-            prop = missing
         end
     end
 
@@ -46,11 +47,10 @@ function calculate_experiment_results(chain, logger, include_vars, full_results)
             sd=param_sd,
             ess=param_ess,
             rhat=param_rhat,
-            Num_error= ismissing(prop) ? missing : prop * ones(length(include_vars))
+            Num_error= has_num_error ? calculate_num_error_prop(chain) * ones(length(include_vars)) : missing # TODO: verify the "ones" logic here?
         )
     )
     if full_results
-
         # Save the preconditioner if one is available
         if :samplerstate in keys(chain.info)
             state = chain.info.samplerstate
@@ -88,7 +88,6 @@ function calculate_experiment_results(chain, logger, include_vars, full_results)
 
         # Cumulative mean plots
         @info "Cumulative Mean Plot"
-
         cummean_plot = meanplot(chain[include_vars])
         savefig(cummean_plot, joinpath(logdir, "cummean.png"))
     end

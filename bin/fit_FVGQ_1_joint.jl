@@ -1,3 +1,3 @@
-using HMCExamples
+using HMCExamples, StatsPlots
 
 HMCExamples.main_FVGQ_1_joint()
