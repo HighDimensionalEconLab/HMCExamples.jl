@@ -3,8 +3,8 @@ function calculate_num_error_prop(chain)
     return 100 * sum(num_error.numerical_error.data) / length(num_error.numerical_error.data)
 end
 
-#function calculate_experiment_results(chain, logger, include_vars, full_results)
-function calculate_experiment_results(@nospecialize(chain), @nospecialize(logger), include_vars, full_results)
+#function calculate_experiment_results(@nospecialize(chain), @nospecialize(logger), include_vars, full_results)
+function calculate_experiment_results(chain, logger, include_vars, full_results)
     logdir = logger.logdir
     has_num_error =  (:numerical_error in keys(chain))
 
