@@ -79,7 +79,7 @@ function estimate_FVGQ_2_joint(d)
     )
 
     # Calculate and save results into the logdir
-    calculate_experiment_results(chain, callback.logger, include_vars, d.full_results)
+    calculate_experiment_results(chain, callback.logger, include_vars)
     
     # Store parameters in log directory
     parameter_save_path = joinpath(callback.logger.logdir, "parameters.json")
@@ -196,10 +196,6 @@ function parse_commandline_FVGQ_2_joint(args)
         "--results_path"
         arg_type = String
         help = "Location to store results and logs"
-
-        "--full_results"
-        arg_type = Bool
-        help = "Save the complete set of figures and results for the chain"
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/FVGQ_2_joint_defaults.txt", args)

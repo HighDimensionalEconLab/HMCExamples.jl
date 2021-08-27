@@ -1,6 +1,5 @@
 module HMCExamples
 using Base: String
-using StatsPlots
 using Turing, TuringCallbacks, TensorBoardLogger, ArgParse, CSV, DataFrames, JSON, LinearAlgebra, DifferentiableStateSpaceModels, Random, DelimitedFiles, Logging
 import ArgParse.parse_item
 
