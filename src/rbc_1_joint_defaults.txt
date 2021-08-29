@@ -12,4 +12,4 @@
 --results_path=.results/run
 --print_level=0
 --epsilon_BK=1e-6
---use_solution_cache=true
+--use_solution_cache=false
