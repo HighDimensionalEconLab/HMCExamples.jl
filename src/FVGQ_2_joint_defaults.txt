@@ -29,3 +29,5 @@
 --max_depth=5
 --seed=0
 --results_path=.results/run
+--print_level=true
+--epsilon_BK=1e-6

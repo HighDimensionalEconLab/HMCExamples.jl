@@ -17,12 +17,13 @@ function InvGamma_tr(mu, sd)
 end
 
     
-@model function rbc_kalman(z, m, p_f, α_prior, β_prior, ρ_prior, cache)
+@model function rbc_kalman(z, m, p_f, α_prior, β_prior, ρ_prior, cache, solver_settings)
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
     β = 1 / (β_draw / 100 + 1)
     p = [α, β, ρ]
+    (solver_settings.print_level > 0) && @show p
     sol = generate_perturbation(m, p; p_f, cache)
     if !(sol.retcode == :Success)
         Turing.@addlogprob! -Inf
@@ -32,12 +33,13 @@ end
 end
 
 
-@model function rbc_joint(z, m, p_f, α_prior, β_prior, ρ_prior, cache, x0 = zeros(m.n_x))
+@model function rbc_joint(z, m, p_f, α_prior, β_prior, ρ_prior, cache, solver_settings, x0 = zeros(m.n_x))
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
     β = 1 / (β_draw / 100 + 1)
     p = [α, β, ρ]
+    (solver_settings.print_level > 0) && @show p
     T = length(z)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = map(i -> ϵ_draw[((i - 1) * m.n_ϵ + 1):(i * m.n_ϵ)], 1:T)
@@ -51,12 +53,14 @@ end
 
 
 
-@model function rbc_second(z, m, p_f, α_prior, β_prior, ρ_prior, cache, x0 = zeros(m.n_x))
+@model function rbc_second(z, m, p_f, α_prior, β_prior, ρ_prior, cache, solver_settings, x0 = zeros(m.n_x))
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
     β = 1 / (β_draw / 100 + 1)
     p = [α, β, ρ]
+    (solver_settings.print_level > 0) && @show p
+
     T = length(z)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = map(i -> ϵ_draw[((i - 1) * m.n_ϵ + 1):(i * m.n_ϵ)], 1:T)
@@ -70,7 +74,7 @@ end
 end
 
 
-@model function FVGQ20_kalman(z, m, p_f, params, cache)
+@model function FVGQ20_kalman(z, m, p_f, params, cache, solver_settings)
     # Priors
     β_draw ~ Gamma(params.β[1], params.β[2])
     β = 1 / (β_draw / 100 + 1)
@@ -99,7 +103,7 @@ end
     ΛA ~ Gamma(params.ΛA[1], params.ΛA[2])
     # Likelihood
     θ = [β, h, ϑ, κ, α, θp, χ, γR, γy, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA]
-    #println(θ)
+    (solver_settings.print_level > 0) && @show θ
     sol = generate_perturbation(m, θ; p_f, cache)
     if !(sol.retcode == :Success)
         Turing.@addlogprob! -Inf
@@ -111,7 +115,7 @@ end
 end
 
 # Joint likelihood
-@model function FVGQ20_joint(z, m, p_f, params, cache, x0 = zeros(m.n_x))
+@model function FVGQ20_joint(z, m, p_f, params, cache, solver_settings, x0 = zeros(m.n_x))
     T = length(z)
     # Priors
     β_draw ~ Gamma(params.β[1], params.β[2])
@@ -167,7 +171,7 @@ end
         Λμ,
         ΛA,
     ]
-    # println(θ)
+    (solver_settings.print_level > 0) && @show θ
     sol = generate_perturbation(m, θ; p_f, cache)
     if !(sol.retcode == :Success)
         Turing.@addlogprob! -Inf

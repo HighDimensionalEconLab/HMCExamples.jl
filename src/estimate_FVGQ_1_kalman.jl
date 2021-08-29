@@ -8,7 +8,6 @@ function estimate_FVGQ_1_kalman(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
     HMCExamples.set_BLAS_threads()
-    use_tensorboard = true # could add toggle later
 
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
@@ -51,7 +50,7 @@ function estimate_FVGQ_1_kalman(d)
     Hy = Hy)
 
     turing_model = FVGQ20_kalman(
-        z, m, d.p_f, params, allocate_cache(m)
+        z, m, d.p_f, params, allocate_cache(m), PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, d.print_level, d.use_solution_cache)
     )
 
     # Sampler
@@ -192,6 +191,16 @@ function parse_commandline_FVGQ_1_kalman(args)
         "--results_path"
         arg_type = String
         help = "Location to store results and logs"
+        "--print_level"
+        arg_type = Int64
+        help = "Print level for output during sampling"
+        "--epsilon_BK"
+        arg_type = Float64
+        help = "Threshold for Checking Blanchard-Khan condition"        
+        "--use_solution_cache"
+        arg_type = Bool
+        help = "Use solution cache in perturbation solutions"
+
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/FVGQ_1_kalman_defaults.txt", args)

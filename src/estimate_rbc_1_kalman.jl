@@ -18,7 +18,7 @@ function estimate_rbc_1_kalman(d)
     # Create the perturbation and the turing models
     m = FirstOrderPerturbationModel(rbc_1)
     turing_model = rbc_kalman(
-        z, m, d.p_f, d.alpha_prior, d.beta_prior, d.rho_prior, allocate_cache(m)
+        z, m, d.p_f, d.alpha_prior, d.beta_prior, d.rho_prior, allocate_cache(m), PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, d.print_level, d.use_solution_cache)
     )
 
     # Sampler
@@ -94,6 +94,16 @@ function parse_commandline_rbc_1_kalman(args)
         "--results_path"
         arg_type = String
         help = "Location to store results and logs"
+        "--print_level"
+        arg_type = Int64
+        help = "Print level for output during sampling"
+        "--epsilon_BK"
+        arg_type = Float64
+        help = "Threshold for Checking Blanchard-Khan condition"        
+        "--use_solution_cache"
+        arg_type = Bool
+        help = "Use solution cache in perturbation solutions"
+
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_kalman_defaults.txt", args)
