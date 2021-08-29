@@ -25,10 +25,14 @@ end
     p = [α, β, ρ]
     (settings.print_level > 0) && @show p
     sol = generate_perturbation(m, p; p_f, cache, settings)
+    (settings.print_level > 1) && println("Perturbation generated")
+
     if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
         Turing.@addlogprob! -Inf
         return
     end
+    (settings.print_level > 1) && println("Calculating likelihood")
     Turing.@addlogprob! solve(sol, sol.x_ergodic, (0, length(z)); observables = z).logpdf
 end
 
@@ -106,11 +110,14 @@ end
     (settings.print_level > 0) && @show θ
     #sol = generate_perturbation(m, θ; p_f, cache, settings)
     sol = generate_perturbation(m, θ; p_f, settings)  # NOT REUSING CACHE AS A TEST
+    (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")        
         Turing.@addlogprob! -Inf
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = map(i -> z[i] - z_trend, eachindex(z))
+        (settings.print_level > 1) && println("Calculating likelihood")
         Turing.@addlogprob! solve(sol, sol.x_ergodic, (0, length(z_detrended)); observables = z_detrended).logpdf
     end
 end
