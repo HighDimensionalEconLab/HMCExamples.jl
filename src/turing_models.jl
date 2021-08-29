@@ -24,7 +24,7 @@ end
     β = 1 / (β_draw / 100 + 1)
     p = [α, β, ρ]
     (solver_settings.print_level > 0) && @show p
-    sol = generate_perturbation(m, p; p_f, cache)
+    sol = generate_perturbation(m, p; p_f, cache, solver_settings)
     if !(sol.retcode == :Success)
         Turing.@addlogprob! -Inf
         return
@@ -43,7 +43,7 @@ end
     T = length(z)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = map(i -> ϵ_draw[((i - 1) * m.n_ϵ + 1):(i * m.n_ϵ)], 1:T)
-    sol = generate_perturbation(m, p; p_f, cache)
+    sol = generate_perturbation(m, p; p_f, cache, solver_settings)
     if !(sol.retcode == :Success)
         Turing.@addlogprob! -Inf
         return
@@ -64,7 +64,7 @@ end
     T = length(z)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = map(i -> ϵ_draw[((i - 1) * m.n_ϵ + 1):(i * m.n_ϵ)], 1:T)
-    sol = generate_perturbation(m, p; p_f, cache)
+    sol = generate_perturbation(m, p; p_f, cache, solver_settings)
     if !(sol.retcode == :Success)
         Turing.@addlogprob! -Inf
         return
@@ -104,7 +104,7 @@ end
     # Likelihood
     θ = [β, h, ϑ, κ, α, θp, χ, γR, γy, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA]
     (solver_settings.print_level > 0) && @show θ
-    sol = generate_perturbation(m, θ; p_f, cache)
+    sol = generate_perturbation(m, θ; p_f, cache, solver_settings)
     if !(sol.retcode == :Success)
         Turing.@addlogprob! -Inf
     else
@@ -172,7 +172,7 @@ end
         ΛA,
     ]
     (solver_settings.print_level > 0) && @show θ
-    sol = generate_perturbation(m, θ; p_f, cache)
+    sol = generate_perturbation(m, θ; p_f, cache, solver_settings)
     if !(sol.retcode == :Success)
         Turing.@addlogprob! -Inf
         return
