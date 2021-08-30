@@ -1,6 +1,6 @@
 # Entry for script
 function main_FVGQ_2_joint(args=ARGS)
-    d = parse_commandline_FVGQ_1(args)
+    d = parse_commandline_FVGQ_2_joint(args)
     return estimate_FVGQ_2_joint((; d...)) # to named tuple
 end
 
@@ -55,7 +55,7 @@ function estimate_FVGQ_2_joint(d)
     )
 
     turing_model = FVGQ20_joint(
-        z, m, d.p_f, params, allocate_cache(m)
+        z, m, d.p_f, params, allocate_cache(m), PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, d.print_level, d.use_solution_cache)
     )
 
     # Sampler
@@ -79,7 +79,7 @@ function estimate_FVGQ_2_joint(d)
     )
 
     # Calculate and save results into the logdir
-    calculate_experiment_results(chain, callback.logger, include_vars, d.full_results)
+    calculate_experiment_results(chain, callback.logger, include_vars)
     
     # Store parameters in log directory
     parameter_save_path = joinpath(callback.logger.logdir, "parameters.json")
@@ -90,7 +90,7 @@ function estimate_FVGQ_2_joint(d)
     end
 end
 
-function parse_commandline_FVGQ_1(args)
+function parse_commandline_FVGQ_2_joint(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
     # See the appropriate _defaults.txt file for the default vvalues.
@@ -196,10 +196,16 @@ function parse_commandline_FVGQ_1(args)
         "--results_path"
         arg_type = String
         help = "Location to store results and logs"
-
-        "--full_results"
+        "--print_level"
+        arg_type = Int64
+        help = "Print level for output during sampling"
+        "--epsilon_BK"
+        arg_type = Float64
+        help = "Threshold for Checking Blanchard-Khan condition"        
+        "--use_solution_cache"
         arg_type = Bool
-        help = "Save the complete set of figures and results for the chain"
+        help = "Use solution cache in perturbation solutions"
+
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/FVGQ_2_joint_defaults.txt", args)

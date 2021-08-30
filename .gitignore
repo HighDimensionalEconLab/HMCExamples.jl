@@ -23,5 +23,6 @@ docs/site/
 # environment.
 #Manifest.toml
 .results/*
+test/.results/*
 JuliaSysimage.dll
 grid_artifacts

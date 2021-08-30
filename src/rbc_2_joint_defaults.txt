@@ -10,4 +10,6 @@
 --max_depth=5
 --seed=0
 --results_path=.results/run
---full_results=true
+--print_level=0
+--epsilon_BK=1e-6
+--use_solution_cache=false
