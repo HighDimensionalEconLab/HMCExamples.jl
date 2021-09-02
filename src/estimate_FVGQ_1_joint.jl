@@ -77,9 +77,6 @@ function estimate_FVGQ_1_joint(d)
         callback,
     )
 
-    # Calculate and save results into the logdir
-    calculate_experiment_results(chain, callback.logger, include_vars)
-    
     # Store parameters in log directory
     parameter_save_path = joinpath(callback.logger.logdir, "parameters.json")
 
@@ -87,6 +84,9 @@ function estimate_FVGQ_1_joint(d)
     open(parameter_save_path, "w") do f
         write(f, JSON.json(d))
     end
+
+    # Calculate and save results into the logdir
+    calculate_experiment_results(chain, callback.logger, include_vars)
 end
 
 function parse_commandline_FVGQ_1_joint(args)
@@ -200,7 +200,7 @@ function parse_commandline_FVGQ_1_joint(args)
         help = "Print level for output during sampling"
         "--epsilon_BK"
         arg_type = Float64
-        help = "Threshold for Checking Blanchard-Khan condition"    
+        help = "Threshold for Checking Blanchard-Khan condition"        
         "--use_solution_cache"
         arg_type = Bool
         help = "Use solution cache in perturbation solutions"
