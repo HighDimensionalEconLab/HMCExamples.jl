@@ -27,10 +27,7 @@ function estimate_FVGQ_1_kalman(d)
     params = (β = Gamma_tr(d.beta_prior[1],d.beta_prior[2]),
     h = Beta_tr(d.h_prior[1], d.h_prior[2]),
     κ = (d.kappa_prior[1], d.kappa_prior[2], d.kappa_prior[3], d.kappa_prior[4]),
-    α = (d.alpha_prior[1], d.alpha_prior[2], d.alpha_prior[3], d.alpha_prior[4]),
-    γy = (d.gamma_y_prior[1], d.gamma_y_prior[2], d.gamma_y_prior[3],d.gamma_y_prior[4]),
     γΠ = (d.gamma_Pi_prior[1], d.gamma_Pi_prior[2], d.gamma_Pi_prior[3], d.gamma_Pi_prior[4]),
-    θp = Beta_tr(d.theta_p_prior[1], d.theta_p_prior[2]),
     χ = Beta_tr(d.chi_prior[1], d.chi_prior[2]),
     γR = Beta_tr(d.gamma_R_prior[1], d.gamma_R_prior[2]),
     Πbar = Gamma_tr(d.Pi_bar_prior[1], d.Pi_bar_prior[2]),
@@ -55,7 +52,7 @@ function estimate_FVGQ_1_kalman(d)
 
     # Sampler
     name = "FQGV-kalman-s$(d.num_samples)-seed$(d.seed)"
-    include_vars = ["β_draw", "h", "κ", "α", "θp", "χ", "γR", "γy", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
+    include_vars = ["β_draw", "h", "κ", "χ", "γR", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
     callback = TensorBoardCallback(d.results_path; name, include=include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
@@ -100,13 +97,7 @@ function parse_commandline_FVGQ_1_kalman(args)
         help = "Value of fixed parameters"
         arg_type = Vector{Float64}
 
-        "--alpha_prior"
-        help = "Value of fixed parameters"
-        arg_type = Vector{Float64}
         "--kappa_prior"
-        help = "Value of fixed parameters"
-        arg_type = Vector{Float64}
-        "--gamma_y_prior"
         help = "Value of fixed parameters"
         arg_type = Vector{Float64}
         "--gamma_Pi_prior"
@@ -117,9 +108,6 @@ function parse_commandline_FVGQ_1_kalman(args)
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
         "--h_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--theta_p_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
         "--chi_prior"
