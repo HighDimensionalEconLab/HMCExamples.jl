@@ -8,6 +8,11 @@ function calculate_experiment_results(chain, logger, include_vars)
     logdir = logger.logdir
     has_num_error =  (:numerical_error in keys(chain))
 
+    # Store the chain in several formats.
+    JLSO.save(joinpath(logdir, "chain.jlso"), :chain => chain) # As JLSO, most robust
+    CSV.write(joinpath(logdir, "chain.csv"), DataFrame(chain)) # As CSV, in case everything else fails
+    serialize(joinpath(logdir, "chain.jls"), chain)            # Fast but flimsy, no version control
+
     # summary statistics
     sum_stats = describe(chain[include_vars])
     param_names = sum_stats[1][:,1]
@@ -76,4 +81,19 @@ function calculate_experiment_results(chain, logger, include_vars)
         )
     end
 
+    # Make a succinct results JSON
+    parameters = JSON.parsefile(joinpath(logdir, "parameters.json"))
+
+    for (i, pname) in enumerate(param_names)
+        parameters["$(pname)_mean"] = param_mean[i]
+        parameters["$(pname)_std"] = param_sd[i]
+        parameters["$(pname)_ess"] = param_ess[i]
+        parameters["$(pname)_rhat"] = param_rhat[i]
+    end
+    
+    result_path = joinpath(logdir, "result.json")
+    @info "Storing results at $result_path"
+    open(result_path, "w") do io
+        JSON.print(io, parameters)
+    end
 end

@@ -73,9 +73,6 @@ function estimate_FVGQ_1_kalman(d)
         callback,
     )
 
-    # Calculate and save results into the logdir
-    calculate_experiment_results(chain, callback.logger, include_vars)
-    
     # Store parameters in log directory
     parameter_save_path = joinpath(callback.logger.logdir, "parameters.json")
 
@@ -83,6 +80,9 @@ function estimate_FVGQ_1_kalman(d)
     open(parameter_save_path, "w") do f
         write(f, JSON.json(d))
     end
+
+    # Calculate and save results into the logdir
+    calculate_experiment_results(chain, callback.logger, include_vars)
 end
 
 function parse_commandline_FVGQ_1_kalman(args)

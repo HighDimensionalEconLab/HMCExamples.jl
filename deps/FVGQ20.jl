@@ -135,7 +135,7 @@ function FVGQ20()
     n_x = length(x_sym)
     n_y = length(y_sym)
     n_z = 6
-    Γ = zeros(Operation, n_ϵ, n_ϵ) # Make sure it is not a float64 matrix
+    Γ = zeros(typeof(σ_d), n_ϵ, n_ϵ) # Make sure it is not a float64 matrix
     Γ[1, 1] = σ_d
     Γ[2, 2] = σ_φ
     Γ[3, 3] = σ_μ
