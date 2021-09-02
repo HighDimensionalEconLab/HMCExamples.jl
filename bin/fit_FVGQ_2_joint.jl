@@ -1,3 +1,3 @@
 using HMCExamples
 
-HMCExamples.main_FVGQ_2_joint()
+HMCExamples.main_FVGQ_2_joint(ARGS)
