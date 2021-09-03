@@ -29,3 +29,4 @@
 --print_level=3
 --epsilon_BK=1e-6
 --use_solution_cache=false
+--num_chains=4
