@@ -13,3 +13,4 @@
 --print_level=0
 --epsilon_BK=1e-6
 --use_solution_cache=false
+--num_chains=4

@@ -65,14 +65,16 @@ function estimate_FVGQ_2_joint(d)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
     Random.seed!(d.seed)
-    @info "Generating $(d.num_samples) samples with $(num_adapts) adapts"
+    @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
     alg = NUTS(num_adapts, d.target_acceptance_rate)
 
     chain = sample(
         turing_model,
         NUTS(num_adapts, d.target_acceptance_rate; d.max_depth),
-        d.num_samples;
-        init_params=[d.p, ϵ0],
+        MCMCThreads(),
+        d.num_samples,
+        d.num_chains;
+        init_params=[d.p,ϵ0],
         progress=true,
         save_state=true,
         callback,
@@ -180,6 +182,9 @@ function parse_commandline_FVGQ_2_joint(args)
         arg_type = Vector{Float64}
         "--num_samples"
         help = "samples to draw in chain"
+        arg_type = Int64
+        "--num_chains"
+        help = "number of chains to sample"
         arg_type = Int64
         "--adapts_burnin_prop"
         help = "Proportion of Adaptations burned in"
