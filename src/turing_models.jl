@@ -128,11 +128,8 @@ end
     h ~ Beta(params.h[1], params.h[2])
     ϑ = 1.0
     κ ~ truncated(Normal(params.κ[1], params.κ[2]), params.κ[3], params.κ[4])
-    α ~ truncated(Normal(params.α[1], params.α[2]), params.α[3], params.α[4])
-    θp ~ Beta(params.θp[1], params.θp[2])
     χ ~ Beta(params.χ[1], params.χ[2])
     γR ~ Beta(params.γR[1], params.γR[2])
-    γy ~ truncated(Normal(params.γy[1], params.γy[2]), params.γy[3], params.γy[4])
     γΠ ~ truncated(Normal(params.γΠ[1], params.γΠ[2]), params.γΠ[3], params.γΠ[4])
     Πbar_draw ~ Gamma(params.Πbar[1], params.Πbar[2])
     Πbar = Πbar_draw / 100 + 1
@@ -151,31 +148,7 @@ end
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = map(i -> ϵ_draw[((i-1)*m.n_ϵ+1):(i*m.n_ϵ)], 1:T)
     # Likelihood
-    θ = [
-        β,
-        h,
-        ϑ,
-        κ,
-        α,
-        θp,
-        χ,
-        γR,
-        γy,
-        γΠ,
-        Πbar,
-        ρd,
-        ρφ,
-        ρg,
-        g_bar,
-        σ_A,
-        σ_d,
-        σ_φ,
-        σ_μ,
-        σ_m,
-        σ_g,
-        Λμ,
-        ΛA,
-    ]
+    θ = [β, h, ϑ, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA]
     (settings.print_level > 0) && @show θ
     sol = generate_perturbation(m, θ; p_f, cache, settings)
     if !(sol.retcode == :Success)
