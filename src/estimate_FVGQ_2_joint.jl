@@ -27,32 +27,27 @@ function estimate_FVGQ_2_joint(d)
     Hy[3, 18] = 1 # dw, trend is μz
     Hy[4, 18] = 1 # dy, trend is μz
     Hy[6, 24] = 1 # μ-1
-    params = (
-        β = Gamma_tr(d.beta_prior[1],d.beta_prior[2]),
-        h = Beta_tr(d.h_prior[1], d.h_prior[2]),
-        κ = (d.kappa_prior[1], d.kappa_prior[2], d.kappa_prior[3], d.kappa_prior[4]),
-        α = (d.alpha_prior[1], d.alpha_prior[2], d.alpha_prior[3], d.alpha_prior[4]),
-        γy = (d.gamma_y_prior[1], d.gamma_y_prior[2], d.gamma_y_prior[3],d.gamma_y_prior[4]),
-        γΠ = (d.gamma_Pi_prior[1], d.gamma_Pi_prior[2], d.gamma_Pi_prior[3], d.gamma_Pi_prior[4]),
-        θp = Beta_tr(d.theta_p_prior[1], d.theta_p_prior[2]),
-        χ = Beta_tr(d.chi_prior[1], d.chi_prior[2]),
-        γR = Beta_tr(d.gamma_R_prior[1], d.gamma_R_prior[2]),
-        Πbar = Gamma_tr(d.Pi_bar_prior[1], d.Pi_bar_prior[2]),
-        ρd = Beta_tr(d.rho_d_prior[1], d.rho_d_prior[2]),
-        ρφ = Beta_tr(d.rho_psi_prior[1], d.rho_psi_prior[2]),
-        ρg = Beta_tr(d.rho_g_prior[1], d.rho_g_prior[2]),
-        g_bar = Beta_tr(d.g_bar_prior[1], d.g_bar_prior[2]),
-        σ_A = InvGamma_tr(d.sigma_A_prior[1], d.sigma_A_prior[2]),
-        σ_d = InvGamma_tr(d.sigma_d_prior[1], d.sigma_d_prior[2]),
-        σ_φ = InvGamma_tr(d.sigma_psi_prior[1], d.sigma_psi_prior[2]),
-        σ_μ = InvGamma_tr(d.sigma_mu_prior[1], d.sigma_mu_prior[2]),
-        σ_m = InvGamma_tr(d.sigma_m_prior[1], d.sigma_m_prior[2]),
-        σ_g = InvGamma_tr(d.sigma_g_prior[1], d.sigma_g_prior[2]),
-        Λμ = Gamma_tr(d.Lambda_mu_prior[1], d.Lambda_mu_prior[2]),
-        ΛA = Gamma_tr(d.Lambda_A_prior[1], d.Lambda_A_prior[2]),
-        Hx = Hx,
-        Hy = Hy
-    )
+    params = (β = Gamma_tr(d.beta_prior[1],d.beta_prior[2]),
+    h = Beta_tr(d.h_prior[1], d.h_prior[2]),
+    κ = (d.kappa_prior[1], d.kappa_prior[2], d.kappa_prior[3], d.kappa_prior[4]),
+    γΠ = (d.gamma_Pi_prior[1], d.gamma_Pi_prior[2], d.gamma_Pi_prior[3], d.gamma_Pi_prior[4]),
+    χ = Beta_tr(d.chi_prior[1], d.chi_prior[2]),
+    γR = Beta_tr(d.gamma_R_prior[1], d.gamma_R_prior[2]),
+    Πbar = Gamma_tr(d.Pi_bar_prior[1], d.Pi_bar_prior[2]),
+    ρd = Beta_tr(d.rho_d_prior[1], d.rho_d_prior[2]),
+    ρφ = Beta_tr(d.rho_psi_prior[1], d.rho_psi_prior[2]),
+    ρg = Beta_tr(d.rho_g_prior[1], d.rho_g_prior[2]),
+    g_bar = Beta_tr(d.g_bar_prior[1], d.g_bar_prior[2]),
+    σ_A = InvGamma_tr(d.sigma_A_prior[1], d.sigma_A_prior[2]),
+    σ_d = InvGamma_tr(d.sigma_d_prior[1], d.sigma_d_prior[2]),
+    σ_φ = InvGamma_tr(d.sigma_psi_prior[1], d.sigma_psi_prior[2]),
+    σ_μ = InvGamma_tr(d.sigma_mu_prior[1], d.sigma_mu_prior[2]),
+    σ_m = InvGamma_tr(d.sigma_m_prior[1], d.sigma_m_prior[2]),
+    σ_g = InvGamma_tr(d.sigma_g_prior[1], d.sigma_g_prior[2]),
+    Λμ = Gamma_tr(d.Lambda_mu_prior[1], d.Lambda_mu_prior[2]),
+    ΛA = Gamma_tr(d.Lambda_A_prior[1], d.Lambda_A_prior[2]),
+    Hx = Hx,
+    Hy = Hy)
 
     turing_model = FVGQ20_joint(
         z, m, d.p_f, params, allocate_cache(m), PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, d.print_level, d.use_solution_cache)
@@ -60,7 +55,7 @@ function estimate_FVGQ_2_joint(d)
 
     # Sampler
     name = "FQGV-joint-2-s$(d.num_samples)-seed$(d.seed)"
-    include_vars = ["β_draw", "h", "κ", "α", "θp", "χ", "γR", "γy", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
+    include_vars = ["β_draw", "h", "κ",  "χ", "γR",  "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
     callback = TensorBoardCallback(d.results_path; name, include=include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
@@ -105,13 +100,7 @@ function parse_commandline_FVGQ_2_joint(args)
         help = "Value of fixed parameters"
         arg_type = Vector{Float64}
 
-        "--alpha_prior"
-        help = "Value of fixed parameters"
-        arg_type = Vector{Float64}
         "--kappa_prior"
-        help = "Value of fixed parameters"
-        arg_type = Vector{Float64}
-        "--gamma_y_prior"
         help = "Value of fixed parameters"
         arg_type = Vector{Float64}
         "--gamma_Pi_prior"
@@ -122,9 +111,6 @@ function parse_commandline_FVGQ_2_joint(args)
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
         "--h_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--theta_p_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
         "--chi_prior"
@@ -167,7 +153,7 @@ function parse_commandline_FVGQ_2_joint(args)
         "--sigma_g_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
-        
+
         "--Lambda_mu_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
@@ -207,7 +193,7 @@ function parse_commandline_FVGQ_2_joint(args)
         help = "Use solution cache in perturbation solutions"
 
     end
-
+    
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/FVGQ_2_joint_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)
 

@@ -71,8 +71,8 @@ function FVGQ20()
 
     x_sym = [c_m, x_m, Π_m, w_m, R_m, yd_m, vp_m, k, d, φ, μ_I, μ_A, mshock, g]
     y_sym = [c, x, Π, w, R, yd, vp, Πstar, u, q, λ, μ_z, r, l, mc, g1, g2, ob_μz, ob_Π, ob_R, ob_dw, ob_dy, ob_l, ob_μ]
-    p = [β, h, ϑ, κ, α, θp, χ, γR, γy, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA]
-    p_f = [δ, ε, ϕ, γ2, Ω_ii]
+    p = [β, h, ϑ, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA]
+    p_f = [δ, ε, ϕ, γ2, Ω_ii, α, θp, γy]
 
     H = [
          # Household Problem
