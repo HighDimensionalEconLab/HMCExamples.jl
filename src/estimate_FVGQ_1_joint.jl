@@ -54,7 +54,7 @@ function estimate_FVGQ_1_joint(d)
 
     # Sampler
     name = "FQGV-joint-1-s$(d.num_samples)-seed$(d.seed)"
-    include_vars = ["β_draw", "h", "κ", "α", "θp", "χ", "γR", "γy", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
+    include_vars = ["β_draw", "h", "κ", "χ", "γR",  "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
     callback = TensorBoardCallback(d.results_path; name, include=include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
