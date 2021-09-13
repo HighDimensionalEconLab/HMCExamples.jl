@@ -1,0 +1,4 @@
+[deps]
+HMCExamples = "04c4e5f0-d543-11eb-2b99-3f716ccaf3f5"
+JLSO = "9da8a3cd-07a3-59c0-a743-3fdc52c30d11"
+StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
