@@ -24,3 +24,4 @@ TuringCallbacks = "ea0860ee-d0ef-45ef-82e6-cc37d6be2f9c"
 
 [compat]
 julia = "1.5, 1.6"
+DifferentiableStateSpaceModels = "0.3"
