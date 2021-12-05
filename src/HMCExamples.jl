@@ -6,10 +6,8 @@ using Turing, TuringCallbacks, TensorBoardLogger, ArgParse, CSV, DataFrames,
 import ArgParse.parse_item
 
 # auto-generated code from /deps/generate_models.jl
-include("generated_models/rbc/first_order_ip.jl")
-include("generated_models/rbc/second_order_ip.jl")
-include("generated_models/FVGQ20/first_order_ip.jl")
-include("generated_models/FVGQ20/second_order_ip.jl")
+include("generated_models/rbc.jl")
+include("generated_models/FVGQ20.jl")
 
 # # Utilities
 # include("utilities.jl")
