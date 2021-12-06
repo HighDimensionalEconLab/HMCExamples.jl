@@ -64,15 +64,19 @@ end
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
     β = 1 / (β_draw / 100 + 1)
     p_d = (; α, β, ρ)
-    (settings.print_level > 0) && @show p
+    (settings.print_level > 0) && @show p_d
     T = length(z)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = map(i -> ϵ_draw[((i - 1) * m.n_ϵ + 1):(i * m.n_ϵ)], 1:T)
     sol = generate_perturbation(m, p_d, p_f, Val(2); cache)
+    (settings.print_level > 1) && println("Perturbation generated")
+
     if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
         Turing.@addlogprob! -Inf
         return
     end
+    (settings.print_level > 1) && println("Calculating likelihood")
     Turing.@addlogprob! solve(sol, x0, (0, T); noise = ϵ, observables = z).logpdf
 end
 

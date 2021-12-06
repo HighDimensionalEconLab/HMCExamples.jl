@@ -8,7 +8,7 @@ function estimate_rbc_1_joint(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
     HMCExamples.set_BLAS_threads()
-    # use_tensorboard = true # could add toggle later
+    use_tensorboard = true # could add toggle later
 
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d[:data_path])
@@ -21,6 +21,7 @@ function estimate_rbc_1_joint(d)
     p_f = (δ = d[:delta], σ = d[:sigma], Ω_1 = d[:Omega_1])
     c = SolverCache(m, Val(1), p_d)
     turing_model = rbc_joint(z, m, p_f, d[:alpha_prior], d[:beta_prior], d[:rho_prior], c, PerturbationSolverSettings(; print_level = d[:print_level]))
+    
     # Sampler
     name = "rbc-joint-s$(d[:num_samples])-seed$(d[:seed])"
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
