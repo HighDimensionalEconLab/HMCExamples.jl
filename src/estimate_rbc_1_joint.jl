@@ -127,8 +127,6 @@ function parse_commandline_rbc_1_joint(args)
 
     end
 
-    # args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_joint_defaults.txt", args)
-    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_joint_defaults.txt", )
-    parse_args(args_with_default, s; as_symbols=true)
+    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_joint_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)
 end
