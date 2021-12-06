@@ -8,7 +8,7 @@ function estimate_rbc_1_joint(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
     HMCExamples.set_BLAS_threads()
-    use_tensorboard = true # could add toggle later
+    # use_tensorboard = true # could add toggle later
 
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
@@ -16,20 +16,24 @@ function estimate_rbc_1_joint(d)
     z = [df[i, :] for i in 1:size(df, 1)]
     ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_rbc_1.csv");header=false)))
     # Create the perturbation and the turing models
-    m = FirstOrderPerturbationModel(rbc_1)
+    m = PerturbationModel(HMCExamples.rbc)
+    p_d = (α = d.alpha, β = d.beta, ρ = d.rho)
+    p_f = (δ = d.delta, σ = d.sigma, Ω_1 = d.Omega_1)
+    c = SolverCache(model_rbc, Val(1), p_d)
     turing_model = rbc_joint(
-        z, m, d.p_f, d.alpha_prior, d.beta_prior, d.rho_prior, allocate_cache(m), PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, d.print_level, d.use_solution_cache)
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, d.print_level, d.use_solution_cache)
     )
 
     # Sampler
     name = "rbc-joint-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
-    callback = TensorBoardCallback(d.results_path; name, include=include_vars)
+    # callback = TensorBoardCallback(d.results_path; name, include=include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
     Random.seed!(d.seed)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
-    alg = NUTS(num_adapts, d.target_acceptance_rate)
+
+    println("3")
 
     chain = sample(
         turing_model,
@@ -37,10 +41,10 @@ function estimate_rbc_1_joint(d)
         MCMCThreads(),
         d.num_samples,
         d.num_chains;
-        init_params=[d.p,ϵ0],
+        init_params=[p_d..., ϵ0],
         progress=true,
         save_state=true,
-        callback,
+        # callback,
     )
 
     # Store parameters in log directory
@@ -63,12 +67,24 @@ function parse_commandline_rbc_1_joint(args)
         "--data_path"
         help = "relative path to data from the root of the package"
         arg_type = String
-        "--p"
+        "--alpha"
         help = "Initialization of parameters"
-        arg_type = Vector{Float64}
-        "--p_f"
+        arg_type = Float64
+        "--beta"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--rho"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--delta"
         help = "Value of fixed parameters"
-        arg_type = Vector{Float64}
+        arg_type = Float64
+        "--sigma"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--Omega_1"
+        help = "Value of fixed parameters"
+        arg_type = Float64
         "--alpha_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
@@ -111,6 +127,8 @@ function parse_commandline_rbc_1_joint(args)
 
     end
 
-    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_joint_defaults.txt", args)
+    # args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_joint_defaults.txt", args)
+    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_joint_defaults.txt", )
+    parse_args(args_with_default, s; as_symbols=true)
     return parse_args(args_with_default, s; as_symbols=true)
 end
