@@ -23,7 +23,6 @@ function estimate_rbc_1_joint(d)
     turing_model = rbc_joint(
         z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, d.print_level, d.use_solution_cache)
     )
-
     # Sampler
     name = "rbc-joint-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
@@ -32,8 +31,6 @@ function estimate_rbc_1_joint(d)
 
     Random.seed!(d.seed)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
-
-    println("3")
 
     chain = sample(
         turing_model,

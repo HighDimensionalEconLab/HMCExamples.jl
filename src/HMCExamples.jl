@@ -1,6 +1,6 @@
 module HMCExamples
 using Base: String
-using ArgParse, CSV, DataFrames, DelimitedFiles, DifferentiableStateSpaceModels, JLSO, JSON, LinearAlgebra, Logging, Random, Serialization, Turing, TuringCallbacks, TensorBoardLogger    
+using ArgParse, CSV, DataFrames, DelimitedFiles, DifferentiableStateSpaceModels, JLSO, JSON, LinearAlgebra, Logging, Random, Serialization, Turing, TuringCallbacks, TensorBoardLogger, Zygote 
 import ArgParse.parse_item
 
 # auto-generated code from /deps/generate_models.jl
