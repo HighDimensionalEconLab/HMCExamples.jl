@@ -147,9 +147,9 @@ version = "1.15.0"
 
 [[ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra", "SparseArrays"]
-git-tree-sha1 = "f885e7e7c124f8c92650d61b9477b9ac2ee607dd"
+git-tree-sha1 = "4c26b4e9e91ca528ea212927326ece5918a04b47"
 uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-version = "1.11.1"
+version = "1.11.2"
 
 [[ChangesOfVariables]]
 deps = ["LinearAlgebra", "Test"]
@@ -301,9 +301,9 @@ version = "1.5.0"
 
 [[DifferentiableStateSpaceModels]]
 deps = ["ChainRulesCore", "Distributions", "DistributionsAD", "DocStringExtensions", "Infiltrator", "LaTeXStrings", "Latexify", "LinearAlgebra", "Logging", "MacroTools", "MatrixEquations", "NLsolve", "Parameters", "RecursiveFactorization", "SparseArrays", "StructArrays", "SymbolicUtils", "Symbolics", "TensorCast", "Tullio", "Zygote"]
-git-tree-sha1 = "93ddefd791390da18669ae969f90ec0d8e268f47"
+git-tree-sha1 = "20b225a7f14cde6ae1cb537706fd85c53bafb328"
 uuid = "beacd9db-9e5e-4956-9b09-459a4b2028df"
-version = "0.4.0"
+version = "0.4.1"
 
 [[Distances]]
 deps = ["LinearAlgebra", "SparseArrays", "Statistics", "StatsAPI"]

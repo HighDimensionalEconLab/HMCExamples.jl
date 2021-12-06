@@ -20,21 +20,22 @@ function estimate_rbc_1_joint(d)
     p_d = (α = d[:alpha], β = d[:beta], ρ = d[:rho])
     p_f = (δ = d[:delta], σ = d[:sigma], Ω_1 = d[:Omega_1])
     c = SolverCache(m, Val(1), p_d)
-    turing_model = rbc_joint(z, m, p_f, d[:alpha_prior], d[:beta_prior], d[:rho_prior], c, PerturbationSolverSettings()
+    turing_model = rbc_joint(z, m, p_f, d[:alpha_prior], d[:beta_prior], d[:rho_prior], c, PerturbationSolverSettings(; print_level = d[:print_level]))
     # Sampler
-    name = "rbc-joint-s$(d.num_samples)-seed$(d.seed)"
+    name = "rbc-joint-s$(d[:num_samples])-seed$(d[:seed])"
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
-    # callback = TensorBoardCallback(d.results_path; name, include=include_vars)
+    callback = TensorBoardCallback(d[:results_path]; name, include=include_vars)
     num_adapts = convert(Int64, floor(d[:num_samples] * d[:adapts_burnin_prop]))
 
-    Random.seed!(d.seed)
-    @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
+    Random.seed!(d[:seed])
+    @info "Generating $(d[:num_samples]) samples with $(num_adapts) adapts across $(d[:num_chains]) chains"
 
-    chain = sample(turing_model, NUTS(num_adapts, d[:target_acceptance_rate]; max_depth = d[:max_depth]), d[:num_samples];
-          init_params=[p_d..., ϵ0],
-          progress=true,
-    #     save_state=true,
-    #     # callback,
+    chain = sample(turing_model, NUTS(num_adapts, d[:target_acceptance_rate]; max_depth = d[:max_depth]),
+        d[:num_samples];
+        init_params=[p_d..., ϵ0],
+        progress=true,
+        save_state=true,
+        callback,
     )
 
     # Store parameters in log directory
