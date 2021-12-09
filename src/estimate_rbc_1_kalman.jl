@@ -35,7 +35,9 @@ function estimate_rbc_1_kalman(d)
     chain = sample(
         turing_model,
         NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
-        d.num_samples;
+        MCMCThreads(),
+        d.num_samples,
+        d.num_chains;
         init_params=[p_d...],
         progress=true,
         save_state=true,

@@ -32,7 +32,9 @@ function estimate_rbc_1_joint(d)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
 
     chain = sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
-        d.num_samples;
+        MCMCThreads(),
+        d.num_samples,
+        d.num_chains;
         init_params=[p_d..., ϵ0],
         progress=true,
         save_state=true,

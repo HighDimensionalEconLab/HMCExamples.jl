@@ -35,7 +35,9 @@ function estimate_rbc_2_joint(d)
     chain = sample(
         turing_model,
         NUTS(num_adapts, d[:target_acceptance_rate]; max_depth = d[:max_depth]),
-        d[:num_samples];
+        MCMCThreads(),
+        d.num_samples,
+        d.num_chains;
         init_params=[p_d..., ϵ0],
         progress=true,
         save_state=true,
