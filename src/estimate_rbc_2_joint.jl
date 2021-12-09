@@ -36,7 +36,7 @@ function estimate_rbc_2_joint(d)
         turing_model,
         NUTS(num_adapts, d[:target_acceptance_rate]; max_depth = d[:max_depth]),
         d[:num_samples];
-        init_params=[d.p,ϵ0],
+        init_params=[p_d..., ϵ0],
         progress=true,
         save_state=true,
         callback,
@@ -62,12 +62,24 @@ function parse_commandline_rbc_2_joint(args)
         "--data_path"
         help = "relative path to data from the root of the package"
         arg_type = String
-        "--p"
+        "--alpha"
         help = "Initialization of parameters"
-        arg_type = Vector{Float64}
-        "--p_f"
+        arg_type = Float64
+        "--beta"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--rho"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--delta"
         help = "Value of fixed parameters"
-        arg_type = Vector{Float64}
+        arg_type = Float64
+        "--sigma"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--Omega_1"
+        help = "Value of fixed parameters"
+        arg_type = Float64
         "--alpha_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}

@@ -11,31 +11,31 @@ function estimate_rbc_1_kalman(d)
     use_tensorboard = true # could add toggle later
 
     # load data relative to the current path
-    data_path = joinpath(pkgdir(HMCExamples), d[:data_path])
+    data_path = joinpath(pkgdir(HMCExamples), d.data_path)
     df = Matrix(DataFrame(CSV.File(data_path)))
     z = [df[i, :] for i in 1:size(df, 1)]
 
     # Create the perturbation and the turing models
-    m = FirstOrderPerturbationModel(HMCExamples.rbc)
-    p_d = (α = d[:alpha], β = d[:beta], ρ = d[:rho])
-    p_f = (δ = d[:delta], σ = d[:sigma], Ω_1 = d[:Omega_1])
+    m = PerturbationModel(HMCExamples.rbc)
+    p_d = (α = d.alpha, β = d.beta, ρ = d.rho)
+    p_f = (δ = d.delta, σ = d.sigma, Ω_1 = d.Omega_1)
     c = SolverCache(m, Val(1), p_d)
     turing_model = rbc_kalman(
-        z, m, p_f, d[:alpha_prior], d[:beta_prior], d[:rho_prior], c, PerturbationSolverSettings(; print_level = d[:print_level]))
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, PerturbationSolverSettings(; print_level = d.print_level))
 
     # Sampler
-    name = "rbc-kalman-s$(d[:num_samples])-seed$(d[:seed])"
+    name = "rbc-kalman-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
-    callback = TensorBoardCallback(d[:results_path]; name, include=include_vars)
-    num_adapts = convert(Int64, floor(d[:num_samples] * d[:adapts_burnin_prop]))
+    callback = TensorBoardCallback(d.results_path; name, include=include_vars)
+    num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
-    Random.seed!(d[:seed])
-    @info "Generating $(d[:num_samples]) samples with $(num_adapts) adapts across $(d[:num_chains]) chains"
+    Random.seed!(d.seed)
+    @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
 
     chain = sample(
         turing_model,
-        NUTS(num_adapts, d[:target_acceptance_rate]; max_depth = d[:max_depth]),
-        d[:num_samples];
+        NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
+        d.num_samples;
         init_params=[p_d...],
         progress=true,
         save_state=true,
@@ -62,12 +62,24 @@ function parse_commandline_rbc_1_kalman(args)
         "--data_path"
         help = "relative path to data from the root of the package"
         arg_type = String
-        "--p"
+        "--alpha"
         help = "Initialization of parameters"
-        arg_type = Vector{Float64}
-        "--p_f"
+        arg_type = Float64
+        "--beta"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--rho"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--delta"
         help = "Value of fixed parameters"
-        arg_type = Vector{Float64}
+        arg_type = Float64
+        "--sigma"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--Omega_1"
+        help = "Value of fixed parameters"
+        arg_type = Float64
         "--alpha_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
