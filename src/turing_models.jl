@@ -105,7 +105,7 @@ end
     Λμ ~ Gamma(params.Λμ[1], params.Λμ[2])
     ΛA ~ Gamma(params.ΛA[1], params.ΛA[2])
     # Likelihood
-    θ = (; β, h, ϑ, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
+    θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 0) && @show θ
     #sol = generate_perturbation(m, θ; p_f, cache, settings)
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
@@ -121,14 +121,12 @@ end
     end
 end
 
-# Joint likelihood
 @model function FVGQ20_joint(z, m, p_f, params, cache, settings, x0 = zeros(m.n_x))
     T = length(z)
     # Priors
     β_draw ~ Gamma(params.β[1], params.β[2])
     β = 1 / (β_draw / 100 + 1)
     h ~ Beta(params.h[1], params.h[2])
-    ϑ = 1.0
     κ ~ truncated(Normal(params.κ[1], params.κ[2]), params.κ[3], params.κ[4])
     χ ~ Beta(params.χ[1], params.χ[2])
     γR ~ Beta(params.γR[1], params.γR[2])
@@ -150,9 +148,48 @@ end
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = map(i -> ϵ_draw[((i-1)*m.n_ϵ+1):(i*m.n_ϵ)], 1:T)
     # Likelihood
-    θ = (; β, h, ϑ, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
+    θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 0) && @show θ
-    sol = generate_perturbation(m, θ; p_f, cache, settings)
+    sol = generate_perturbation(m, θ, p_f, Val(1); cache)
+    if !(sol.retcode == :Success)
+        Turing.@addlogprob! -Inf
+        return
+    end
+    z_trend = params.Hx * sol.x + params.Hy * sol.y
+    z_detrended = map(i -> z[i] - z_trend, eachindex(z))
+    Turing.@addlogprob! solve(sol, x0, (0, T); noise = ϵ, observables = z_detrended).logpdf
+end
+
+@model function FVGQ20_second(z, m, p_f, params, cache, settings, x0 = zeros(m.n_x))
+    T = length(z)
+    # Priors
+    β_draw ~ Gamma(params.β[1], params.β[2])
+    β = 1 / (β_draw / 100 + 1)
+    h ~ Beta(params.h[1], params.h[2])
+    κ ~ truncated(Normal(params.κ[1], params.κ[2]), params.κ[3], params.κ[4])
+    χ ~ Beta(params.χ[1], params.χ[2])
+    γR ~ Beta(params.γR[1], params.γR[2])
+    γΠ ~ truncated(Normal(params.γΠ[1], params.γΠ[2]), params.γΠ[3], params.γΠ[4])
+    Πbar_draw ~ Gamma(params.Πbar[1], params.Πbar[2])
+    Πbar = Πbar_draw / 100 + 1
+    ρd ~ Beta(params.ρd[1], params.ρd[2])
+    ρφ ~ Beta(params.ρφ[1], params.ρφ[2])
+    ρg ~ Beta(params.ρg[1], params.ρg[2])
+    g_bar ~ Beta(params.g_bar[1], params.g_bar[2])
+    σ_A ~ InverseGamma(params.σ_A[1], params.σ_A[2])
+    σ_d ~ InverseGamma(params.σ_d[1], params.σ_d[2])
+    σ_φ ~ InverseGamma(params.σ_φ[1], params.σ_φ[2])
+    σ_μ ~ InverseGamma(params.σ_μ[1], params.σ_μ[2])
+    σ_m ~ InverseGamma(params.σ_m[1], params.σ_m[2])
+    σ_g ~ InverseGamma(params.σ_g[1], params.σ_g[2])
+    Λμ ~ Gamma(params.Λμ[1], params.Λμ[2])
+    ΛA ~ Gamma(params.ΛA[1], params.ΛA[2])
+    ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
+    ϵ = map(i -> ϵ_draw[((i-1)*m.n_ϵ+1):(i*m.n_ϵ)], 1:T)
+    # Likelihood
+    θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
+    (settings.print_level > 0) && @show θ
+    sol = generate_perturbation(m, θ, p_f, Val(2); cache)
     if !(sol.retcode == :Success)
         Turing.@addlogprob! -Inf
         return
