@@ -33,6 +33,7 @@ end
         return
     end
     (settings.print_level > 1) && println("Calculating likelihood")
+    
     Turing.@addlogprob! solve(sol, sol.x_ergodic, (0, length(z)); observables = z).logpdf
 end
 
@@ -55,7 +56,28 @@ end
         return
     end
     (settings.print_level > 1) && println("Calculating likelihood")
-    Turing.@addlogprob! solve(sol, x0, (0, T); noise = ϵ, observables = z).logpdf
+
+    problem = StateSpaceProblem(
+        DifferentiableStateSpaceModels.dssm_evolution,
+        DifferentiableStateSpaceModels.dssm_volatility,
+        DifferentiableStateSpaceModels.dssm_observation,
+        x0,
+        (0,T),
+        sol,
+        noise=DefinedNoise(ϵ),
+        obs_noise=sol.D,
+        observables = z
+    )
+
+    simulation = solve(
+        problem, 
+        ConditionalGaussian(); 
+        # vectype=Zygote.Buffer
+    )
+
+    Turing.@addlogprob! simulation.likelihood
+
+    @info α β_draw β ρ simulation.likelihood
 end
 
 @model function rbc_second(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0 = zeros(m.n_x))
@@ -77,7 +99,26 @@ end
         return
     end
     (settings.print_level > 1) && println("Calculating likelihood")
-    Turing.@addlogprob! solve(sol, x0, (0, T); noise = ϵ, observables = z).logpdf
+
+    problem = StateSpaceProblem(
+        DifferentiableStateSpaceModels.dssm_evolution,
+        DifferentiableStateSpaceModels.dssm_volatility,
+        DifferentiableStateSpaceModels.dssm_observation,
+        x0,
+        (0,T),
+        sol,
+        noise=DefinedNoise(ϵ),
+        obs_noise=sol.D,
+        observables = z
+    )
+
+    simulation = solve(
+        problem, 
+        ConditionalGaussian(); 
+        vectype=Zygote.Buffer
+    )
+
+    Turing.@addlogprob! simulation.likelihood
 end
 
 @model function FVGQ20_kalman(z, m, p_f, params, cache, settings)

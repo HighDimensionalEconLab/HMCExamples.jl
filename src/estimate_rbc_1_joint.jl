@@ -31,7 +31,10 @@ function estimate_rbc_1_joint(d)
     Random.seed!(d.seed)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
 
-    chain = sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
+    chain = sample(
+        turing_model, 
+        # NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
+        MH(),
         d.num_samples;
         init_params=[p_d..., ϵ0],
         progress=true,
