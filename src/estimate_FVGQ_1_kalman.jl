@@ -15,7 +15,10 @@ function estimate_FVGQ_1_kalman(d)
     z = [df[i, :] for i in 1:size(df, 1)]
 
     # Create the perturbation and the turing models
-    m = FirstOrderPerturbationModel(FVGQ20_1)
+    m = PerturbationModel(HMCExamples.FVGQ20)
+    p_d = (β = d.beta, h = d.h, κ = d.kappa, χ = d.chi, γR = d.gamma_R, γΠ = d.gamma_Pi, Πbar = d.Pi_bar, ρd = d.rho_d, ρφ = d.rho_psi, ρg = d.rho_g, g_bar = d.g_bar, σ_A = d.sigma_A, σ_d = d.sigma_d, σ_φ = d.sigma_psi, σ_μ = d.sigma_mu, σ_m = d.sigma_m, σ_g = d.sigma_g, Λμ = d.Lambda_mu, ΛA = d.Lambda_A)
+    p_f = (ϑ = 1.0, δ = d.delta, ε = d.epsilon, ϕ = d.phi, γ2 = d.gamma2, Ω_ii = d.Omega_ii, α = d.alpha, γy = d.gamma_y, θp = d.theta_p)
+    c = SolverCache(m, Val(1), p_d)
     #create H prior
     Hx = zeros(6, m.n_x)
     Hy = zeros(6, m.n_y)
@@ -47,7 +50,7 @@ function estimate_FVGQ_1_kalman(d)
     Hy = Hy)
 
     turing_model = FVGQ20_kalman(
-        z, m, d.p_f, params, allocate_cache(m), PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, d.print_level, d.use_solution_cache)
+        z, m, p_f, params, c, PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, print_level = d.print_level)
     )
 
     # Sampler
@@ -58,7 +61,6 @@ function estimate_FVGQ_1_kalman(d)
 
     Random.seed!(d.seed)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
-    alg = NUTS(num_adapts, d.target_acceptance_rate)
 
     chain = sample(
         turing_model,
@@ -66,7 +68,7 @@ function estimate_FVGQ_1_kalman(d)
         MCMCThreads(),
         d.num_samples,
         d.num_chains;
-        init_params=d.p,
+        init_params=[p_d...],
         progress=true,
         save_state=true,
         callback,
@@ -92,12 +94,87 @@ function parse_commandline_FVGQ_1_kalman(args)
         "--data_path"
         help = "relative path to data from the root of the package"
         arg_type = String
-        "--p"
+        "--beta"
         help = "Initialization of parameters"
-        arg_type = Vector{Float64}
-        "--p_f"
+        arg_type = Float64
+        "--h"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--kappa"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--chi"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--gamma_R"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--gamma_Pi"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--Pi_bar"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--rho_d"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--rho_psi"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--rho_g"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--g_bar"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--sigma_A"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--sigma_d"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--sigma_psi"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--sigma_mu"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--sigma_m"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--sigma_g"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--Lambda_mu"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--Lambda_A"
+        help = "Initialization of parameters"
+        arg_type = Float64
+        "--delta"
         help = "Value of fixed parameters"
-        arg_type = Vector{Float64}
+        arg_type = Float64
+        "--epsilon"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--phi"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--gamma2"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--Omega_ii"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--alpha"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--gamma_y"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--theta_p"
+        help = "Value of fixed parameters"
+        arg_type = Float64
 
         "--kappa_prior"
         help = "Value of fixed parameters"
