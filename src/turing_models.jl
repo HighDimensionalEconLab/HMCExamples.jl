@@ -85,7 +85,6 @@ end
     β_draw ~ Gamma(params.β[1], params.β[2])
     β = 1 / (β_draw / 100 + 1)
     h ~ Beta(params.h[1], params.h[2])
-    ϑ = 1.0
     κ ~ truncated(Normal(params.κ[1], params.κ[2]), params.κ[3], params.κ[4])
     χ ~ Beta(params.χ[1], params.χ[2])
     γR ~ Beta(params.γR[1], params.γR[2])
@@ -107,18 +106,17 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 0) && @show θ
-    #sol = generate_perturbation(m, θ; p_f, cache, settings)
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")        
         Turing.@addlogprob! -Inf
-    else
-        z_trend = params.Hx * sol.x + params.Hy * sol.y
-        z_detrended = map(i -> z[i] - z_trend, eachindex(z))
-        (settings.print_level > 1) && println("Calculating likelihood")
-        Turing.@addlogprob! solve(sol, sol.x_ergodic, (0, length(z_detrended)); observables = z_detrended).logpdf
+        return
     end
+    z_trend = params.Hx * sol.x + params.Hy * sol.y
+    z_detrended = map(i -> z[i] - z_trend, eachindex(z))
+    (settings.print_level > 1) && println("Calculating likelihood")
+    Turing.@addlogprob! solve(sol, sol.x_ergodic, (0, length(z_detrended)); observables = z_detrended).logpdf
 end
 
 @model function FVGQ20_joint(z, m, p_f, params, cache, settings, x0 = zeros(m.n_x))
