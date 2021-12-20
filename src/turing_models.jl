@@ -34,7 +34,26 @@ end
     end
     (settings.print_level > 1) && println("Calculating likelihood")
     
-    Turing.@addlogprob! solve(sol, sol.x_ergodic, (0, length(z)); observables = z).logpdf
+    # Simulate and get the likelihood.
+    T = length(z)
+    problem = LinearStateSpaceProblem(
+        sol.A,
+        sol.B,
+        sol.C,
+        sol.x_ergodic,
+        (0,T),
+        noise=sol.Q,
+        obs_noise=sol.D,
+        observables = z
+    )
+
+    simulation = solve(
+        problem, 
+        KalmanFilter(); 
+        vectype=Zygote.Buffer
+    )
+
+    Turing.@addlogprob! simulation.likelihood
 end
 
 @model function rbc_joint(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0 = zeros(m.n_x))
@@ -57,6 +76,7 @@ end
     end
     (settings.print_level > 1) && println("Calculating likelihood")
 
+    # Simulate and get the likelihood.
     problem = StateSpaceProblem(
         DifferentiableStateSpaceModels.dssm_evolution,
         DifferentiableStateSpaceModels.dssm_volatility,
@@ -72,12 +92,10 @@ end
     simulation = solve(
         problem, 
         ConditionalGaussian(); 
-        # vectype=Zygote.Buffer
+        vectype=Zygote.Buffer
     )
 
     Turing.@addlogprob! simulation.likelihood
-
-    @info α β_draw β ρ simulation.likelihood
 end
 
 @model function rbc_second(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0 = zeros(m.n_x))
@@ -100,6 +118,7 @@ end
     end
     (settings.print_level > 1) && println("Calculating likelihood")
 
+    # Simulate and get the likelihood.
     problem = StateSpaceProblem(
         DifferentiableStateSpaceModels.dssm_evolution,
         DifferentiableStateSpaceModels.dssm_volatility,
@@ -158,7 +177,25 @@ end
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = map(i -> z[i] - z_trend, eachindex(z))
         (settings.print_level > 1) && println("Calculating likelihood")
-        Turing.@addlogprob! solve(sol, sol.x_ergodic, (0, length(z_detrended)); observables = z_detrended).logpdf
+
+        # Simulate and get the likelihood.
+        T = length(z)
+        problem = LinearStateSpaceProblem(
+            sol.A,
+            sol.B,
+            sol.C,
+            sol.x_ergodic,
+            (0,T),
+            noise=sol.Q,
+            obs_noise=sol.D,
+            observables = z_detrended
+        )
+
+        simulation = solve(
+            problem, 
+            KalmanFilter(); 
+            vectype=Zygote.Buffer
+        )
     end
 end
 
@@ -198,7 +235,27 @@ end
     end
     z_trend = params.Hx * sol.x + params.Hy * sol.y
     z_detrended = map(i -> z[i] - z_trend, eachindex(z))
-    Turing.@addlogprob! solve(sol, x0, (0, T); noise = ϵ, observables = z_detrended).logpdf
+
+    # Simulate and get the likelihood.
+    problem = StateSpaceProblem(
+        DifferentiableStateSpaceModels.dssm_evolution,
+        DifferentiableStateSpaceModels.dssm_volatility,
+        DifferentiableStateSpaceModels.dssm_observation,
+        x0,
+        (0,T),
+        sol,
+        noise=DefinedNoise(ϵ),
+        obs_noise=sol.D,
+        observables = z_detrended
+    )
+
+    simulation = solve(
+        problem, 
+        ConditionalGaussian(); 
+        vectype=Zygote.Buffer
+    )
+
+    Turing.@addlogprob! simulation.likelihood
 end
 
 @model function FVGQ20_second(z, m, p_f, params, cache, settings, x0 = zeros(m.n_x))
@@ -237,5 +294,25 @@ end
     end
     z_trend = params.Hx * sol.x + params.Hy * sol.y
     z_detrended = map(i -> z[i] - z_trend, eachindex(z))
-    Turing.@addlogprob! solve(sol, x0, (0, T); noise = ϵ, observables = z_detrended).logpdf
+    
+    # Simulate and get the likelihood.
+    problem = StateSpaceProblem(
+        DifferentiableStateSpaceModels.dssm_evolution,
+        DifferentiableStateSpaceModels.dssm_volatility,
+        DifferentiableStateSpaceModels.dssm_observation,
+        x0,
+        (0,T),
+        sol,
+        noise=DefinedNoise(ϵ),
+        obs_noise=sol.D,
+        observables = z_detrended
+    )
+
+    simulation = solve(
+        problem, 
+        ConditionalGaussian(); 
+        vectype=Zygote.Buffer
+    )
+
+    Turing.@addlogprob! simulation.likelihood
 end
