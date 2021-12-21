@@ -145,20 +145,16 @@ end
             sol.B,
             sol.C,
             sol.x_ergodic,
-            (0,T),
-            noise=sol.Q,
-            obs_noise=sol.D,
+            (0, T),
+            noise = sol.Q,
+            obs_noise = sol.D,
             observables = z_detrended
         )
 
-        simulation = solve(
-            problem, 
-            KalmanFilter(); 
-            vectype=Zygote.Buffer
-        )
-		
+        simulation = solve(problem, KalmanFilter(); vectype = Zygote.Buffer)
 		@addlogprob! simulation.likelihood
     end
+    return
 end
 
 @model function FVGQ20_joint(z, m, p_f, params, cache, settings, x0 = zeros(m.n_x))
@@ -203,19 +199,14 @@ end
             DifferentiableStateSpaceModels.dssm_volatility,
             DifferentiableStateSpaceModels.dssm_observation,
             x0,
-            (0,T),
+            (0, T),
             sol,
-            noise=DefinedNoise(ϵ),
-            obs_noise=sol.D,
+            noise = DefinedNoise(ϵ),
+            obs_noise = sol.D,
             observables = z_detrended
         )
 
-        simulation = solve(
-            problem, 
-            ConditionalGaussian(); 
-            vectype=Zygote.Buffer
-        )
-
+        simulation = solve(problem, ConditionalGaussian(); vectype = Zygote.Buffer)
         @addlogprob! simulation.likelihood
       end
       return
@@ -272,14 +263,8 @@ end
             observables = z_detrended
         )
 
-        simulation = solve(
-            problem, 
-            ConditionalGaussian(); 
-            vectype=Zygote.Buffer
-        )
-
+        simulation = solve(problem, ConditionalGaussian(); vectype=Zygote.Buffer)
         @addlogprob! simulation.likelihood
     end
-  
     return
 end
