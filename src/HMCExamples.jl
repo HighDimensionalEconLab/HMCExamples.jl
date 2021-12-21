@@ -2,7 +2,9 @@ module HMCExamples
 using Base: String
 using ArgParse, CSV, DataFrames, DelimitedFiles, DifferentiableStateSpaceModels, JLSO, JSON, LinearAlgebra, Logging, Random, Serialization, Turing, TuringCallbacks, TensorBoardLogger, Zygote 
 using DifferenceEquations
+using Turing: @addlogprob!
 import ArgParse.parse_item
+export Beta_tr, Gamma_tr, InvGamma_tr
 
 # auto-generated code from /deps/generate_models.jl
 include("generated_models/rbc.jl")

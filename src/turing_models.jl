@@ -29,31 +29,33 @@ end
 
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
-        Turing.@addlogprob! -Inf
-        return
-    end
-    (settings.print_level > 1) && println("Calculating likelihood")
+        @addlogprob! -Inf
+    else
+        (settings.print_level > 1) && println("Calculating likelihood")
     
-    # Simulate and get the likelihood.
-    T = length(z)
-    problem = LinearStateSpaceProblem(
-        sol.A,
-        sol.B,
-        sol.C,
-        sol.x_ergodic,
-        (0,T),
-        noise=sol.Q,
-        obs_noise=sol.D,
-        observables = z
-    )
+        # Simulate and get the likelihood.
+        T = length(z)
+        problem = LinearStateSpaceProblem(
+            sol.A,
+            sol.B,
+            sol.C,
+            sol.x_ergodic,
+            (0,T),
+            noise=sol.Q,
+            obs_noise=sol.D,
+            observables = z
+        )
 
-    simulation = solve(
-        problem, 
-        KalmanFilter(); 
-        vectype=Zygote.Buffer
-    )
+        simulation = solve(
+            problem, 
+            KalmanFilter(); 
+            vectype=Zygote.Buffer
+        )
 
-    Turing.@addlogprob! simulation.likelihood
+        @addlogprob! simulation.likelihood
+    end
+
+    return
 end
 
 @model function rbc_joint(z, m, p_f, α_prior, β_prior, ρ_prior, cache::DifferentiableStateSpaceModels.AbstractSolverCache{Order}, settings, x0 = zeros(m.n_x)) where {Order}
@@ -71,31 +73,33 @@ end
 
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
-        Turing.@addlogprob! -Inf
-        return
+        @addlogprob! -Inf
+    else
+       (settings.print_level > 1) && println("Calculating likelihood")
+
+        # Simulate and get the likelihood.
+        problem = StateSpaceProblem(
+            DifferentiableStateSpaceModels.dssm_evolution,
+            DifferentiableStateSpaceModels.dssm_volatility,
+            DifferentiableStateSpaceModels.dssm_observation,
+            x0,
+            (0,T),
+            sol,
+            noise=DefinedNoise(ϵ),
+            obs_noise=sol.D,
+            observables = z
+        )
+
+        simulation = solve(
+            problem, 
+            ConditionalGaussian(); 
+            vectype=Zygote.Buffer
+        )
+
+        @addlogprob! simulation.likelihood
     end
-    (settings.print_level > 1) && println("Calculating likelihood")
-
-    # Simulate and get the likelihood.
-    problem = StateSpaceProblem(
-        DifferentiableStateSpaceModels.dssm_evolution,
-        DifferentiableStateSpaceModels.dssm_volatility,
-        DifferentiableStateSpaceModels.dssm_observation,
-        x0,
-        (0,T),
-        sol,
-        noise=DefinedNoise(ϵ),
-        obs_noise=sol.D,
-        observables = z
-    )
-
-    simulation = solve(
-        problem, 
-        ConditionalGaussian(); 
-        vectype=Zygote.Buffer
-    )
-
-    Turing.@addlogprob! simulation.likelihood
+   
+    return
 end
 
 @model function rbc_second(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0 = zeros(m.n_x))
@@ -113,31 +117,32 @@ end
 
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
-        Turing.@addlogprob! -Inf
-        return
+        @addlogprob! -Inf
+    else
+        (settings.print_level > 1) && println("Calculating likelihood")
+
+        # Simulate and get the likelihood.
+        problem = StateSpaceProblem(
+            DifferentiableStateSpaceModels.dssm_evolution,
+            DifferentiableStateSpaceModels.dssm_volatility,
+            DifferentiableStateSpaceModels.dssm_observation,
+            x0,
+            (0,T),
+            sol,
+            noise=DefinedNoise(ϵ),
+            obs_noise=sol.D,
+            observables = z
+        )
+
+        simulation = solve(
+            problem, 
+            ConditionalGaussian(); 
+            vectype=Zygote.Buffer
+        )
+
+        @addlogprob! simulation.likelihood
     end
-    (settings.print_level > 1) && println("Calculating likelihood")
-
-    # Simulate and get the likelihood.
-    problem = StateSpaceProblem(
-        DifferentiableStateSpaceModels.dssm_evolution,
-        DifferentiableStateSpaceModels.dssm_volatility,
-        DifferentiableStateSpaceModels.dssm_observation,
-        x0,
-        (0,T),
-        sol,
-        noise=DefinedNoise(ϵ),
-        obs_noise=sol.D,
-        observables = z
-    )
-
-    simulation = solve(
-        problem, 
-        ConditionalGaussian(); 
-        vectype=Zygote.Buffer
-    )
-
-    Turing.@addlogprob! simulation.likelihood
+    return
 end
 
 @model function FVGQ20_kalman(z, m, p_f, params, cache, settings)
@@ -170,7 +175,7 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")        
-        Turing.@addlogprob! -Inf
+        @addlogprob! -Inf
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = map(i -> z[i] - z_trend, eachindex(z))
@@ -194,6 +199,8 @@ end
             KalmanFilter(); 
             vectype=Zygote.Buffer
         )
+		
+		@addlogprob! simulation.likelihood
     end
 end
 
@@ -228,32 +235,33 @@ end
     (settings.print_level > 0) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
     if !(sol.retcode == :Success)
-        Turing.@addlogprob! -Inf
-        return
-    end
-    z_trend = params.Hx * sol.x + params.Hy * sol.y
-    z_detrended = map(i -> z[i] - z_trend, eachindex(z))
+        @addlogprob! -Inf
+    else
+        z_trend = params.Hx * sol.x + params.Hy * sol.y
+        z_detrended = map(i -> z[i] - z_trend, eachindex(z))
 
-    # Simulate and get the likelihood.
-    problem = StateSpaceProblem(
-        DifferentiableStateSpaceModels.dssm_evolution,
-        DifferentiableStateSpaceModels.dssm_volatility,
-        DifferentiableStateSpaceModels.dssm_observation,
-        x0,
-        (0,T),
-        sol,
-        noise=DefinedNoise(ϵ),
-        obs_noise=sol.D,
-        observables = z_detrended
-    )
+        # Simulate and get the likelihood.
+        problem = StateSpaceProblem(
+            DifferentiableStateSpaceModels.dssm_evolution,
+            DifferentiableStateSpaceModels.dssm_volatility,
+            DifferentiableStateSpaceModels.dssm_observation,
+            x0,
+            (0,T),
+            sol,
+            noise=DefinedNoise(ϵ),
+            obs_noise=sol.D,
+            observables = z_detrended
+        )
 
-    simulation = solve(
-        problem, 
-        ConditionalGaussian(); 
-        vectype=Zygote.Buffer
-    )
+        simulation = solve(
+            problem, 
+            ConditionalGaussian(); 
+            vectype=Zygote.Buffer
+        )
 
-    Turing.@addlogprob! simulation.likelihood
+        @addlogprob! simulation.likelihood
+      end
+      return
 end
 
 @model function FVGQ20_joint(z, m, p_f, params, cache::DifferentiableStateSpaceModels.AbstractSolverCache{Order}, settings, x0 = zeros(m.n_x)) where {Order}
@@ -289,30 +297,32 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
-        Turing.@addlogprob! -Inf
-        return
+        @addlogprob! -Inf
+    else
+        z_trend = params.Hx * sol.x + params.Hy * sol.y
+        z_detrended = map(i -> z[i] - z_trend, eachindex(z))
+
+        # Simulate and get the likelihood.
+        problem = StateSpaceProblem(
+            DifferentiableStateSpaceModels.dssm_evolution,
+            DifferentiableStateSpaceModels.dssm_volatility,
+            DifferentiableStateSpaceModels.dssm_observation,
+            x0,
+            (0,T),
+            sol,
+            noise=DefinedNoise(ϵ),
+            obs_noise=sol.D,
+            observables = z_detrended
+        )
+
+        simulation = solve(
+            problem, 
+            ConditionalGaussian(); 
+            vectype=Zygote.Buffer
+        )
+
+        @addlogprob! simulation.likelihood
     end
-    z_trend = params.Hx * sol.x + params.Hy * sol.y
-    z_detrended = map(i -> z[i] - z_trend, eachindex(z))
-    
-    # Simulate and get the likelihood.
-    problem = StateSpaceProblem(
-        DifferentiableStateSpaceModels.dssm_evolution,
-        DifferentiableStateSpaceModels.dssm_volatility,
-        DifferentiableStateSpaceModels.dssm_observation,
-        x0,
-        (0,T),
-        sol,
-        noise=DefinedNoise(ϵ),
-        obs_noise=sol.D,
-        observables = z_detrended
-    )
-
-    simulation = solve(
-        problem, 
-        ConditionalGaussian(); 
-        vectype=Zygote.Buffer
-    )
-
-    Turing.@addlogprob! simulation.likelihood
+  
+    return
 end
