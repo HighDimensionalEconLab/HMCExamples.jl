@@ -307,13 +307,11 @@ version = "1.9.0"
 
 [[DifferenceEquations]]
 deps = ["CommonSolve", "Distributions", "LinearAlgebra", "SciMLBase", "StatsBase"]
-path = "/home/cameron/code/DifferenceEquations.jl/"
 uuid = "e0ca9c66-1f9e-11ec-127a-1304ce62169c"
 version = "0.2.0"
 
 [[DifferentiableStateSpaceModels]]
 deps = ["ChainRulesCore", "DifferenceEquations", "Distributions", "DistributionsAD", "DocStringExtensions", "Infiltrator", "LaTeXStrings", "Latexify", "LinearAlgebra", "Logging", "MacroTools", "MatrixEquations", "NLsolve", "Parameters", "RecursiveFactorization", "SparseArrays", "StatsBase", "StructArrays", "SymbolicUtils", "Symbolics", "TensorCast", "Tullio", "Zygote"]
-path = "/home/cameron/.julia/dev/DifferentiableStateSpaceModels"
 git-tree-sha1 = "44cdef7527ee32790caa6562fef0eba6b3795f08"
 uuid = "beacd9db-9e5e-4956-9b09-459a4b2028df"
 version = "0.4.3"
