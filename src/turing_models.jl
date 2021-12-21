@@ -149,12 +149,15 @@ end
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 0) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
+    (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
         Turing.@addlogprob! -Inf
         return
     end
     z_trend = params.Hx * sol.x + params.Hy * sol.y
     z_detrended = map(i -> z[i] - z_trend, eachindex(z))
+    (settings.print_level > 1) && println("Calculating likelihood")
     Turing.@addlogprob! solve(sol, x0, (0, T); noise = ϵ, observables = z_detrended).logpdf
 end
 
@@ -188,11 +191,14 @@ end
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 0) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(2); cache)
+    (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
         Turing.@addlogprob! -Inf
         return
     end
     z_trend = params.Hx * sol.x + params.Hy * sol.y
     z_detrended = map(i -> z[i] - z_trend, eachindex(z))
+    (settings.print_level > 1) && println("Calculating likelihood")
     Turing.@addlogprob! solve(sol, x0, (0, T); noise = ϵ, observables = z_detrended).logpdf
 end
