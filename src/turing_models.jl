@@ -56,7 +56,7 @@ end
     Turing.@addlogprob! simulation.likelihood
 end
 
-@model function rbc_joint(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0 = zeros(m.n_x))
+@model function rbc_joint(z, m, p_f, α_prior, β_prior, ρ_prior, cache::DifferentiableStateSpaceModels.AbstractSolverCache{Order}, settings, x0 = zeros(m.n_x)) where {Order}
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
@@ -66,7 +66,7 @@ end
     T = length(z)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = map(i -> ϵ_draw[((i - 1) * m.n_ϵ + 1):(i * m.n_ϵ)], 1:T)
-    sol = generate_perturbation(m, p_d, p_f, Val(1); cache)
+    sol = generate_perturbation(m, p_d, p_f, Val(Order); cache)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -108,7 +108,7 @@ end
     T = length(z)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = map(i -> ϵ_draw[((i - 1) * m.n_ϵ + 1):(i * m.n_ϵ)], 1:T)
-    sol = generate_perturbation(m, p_d, p_f, Val(2); cache)
+    sol = generate_perturbation(m, p_d, p_f, Val(Order); cache)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -145,7 +145,6 @@ end
     β_draw ~ Gamma(params.β[1], params.β[2])
     β = 1 / (β_draw / 100 + 1)
     h ~ Beta(params.h[1], params.h[2])
-    ϑ = 1.0
     κ ~ truncated(Normal(params.κ[1], params.κ[2]), params.κ[3], params.κ[4])
     χ ~ Beta(params.χ[1], params.χ[2])
     γR ~ Beta(params.γR[1], params.γR[2])
@@ -167,7 +166,6 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 0) && @show θ
-    #sol = generate_perturbation(m, θ; p_f, cache, settings)
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
@@ -258,7 +256,7 @@ end
     Turing.@addlogprob! simulation.likelihood
 end
 
-@model function FVGQ20_second(z, m, p_f, params, cache, settings, x0 = zeros(m.n_x))
+@model function FVGQ20_joint(z, m, p_f, params, cache::DifferentiableStateSpaceModels.AbstractSolverCache{Order}, settings, x0 = zeros(m.n_x)) where {Order}
     T = length(z)
     # Priors
     β_draw ~ Gamma(params.β[1], params.β[2])
@@ -287,8 +285,10 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 0) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(2); cache)
+    sol = generate_perturbation(m, θ, p_f, Val(Order); cache)
+    (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
         Turing.@addlogprob! -Inf
         return
     end
