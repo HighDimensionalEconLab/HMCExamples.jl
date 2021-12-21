@@ -29,11 +29,12 @@ end
 
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
-        Turing.@addlogprob! -Inf
-        return
+        @addlogprob! -Inf
+    else
+        (settings.print_level > 1) && println("Calculating likelihood")
+        @addlogprob! solve(sol, sol.x_ergodic, (0, length(z)); observables = z).logpdf
     end
-    (settings.print_level > 1) && println("Calculating likelihood")
-    Turing.@addlogprob! solve(sol, sol.x_ergodic, (0, length(z)); observables = z).logpdf
+    return
 end
 
 @model function rbc_joint(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0 = zeros(m.n_x))
@@ -110,13 +111,14 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")        
-        Turing.@addlogprob! -Inf
-        return
+        @addlogprob! -Inf
+    else
+        z_trend = params.Hx * sol.x + params.Hy * sol.y
+        z_detrended = map(i -> z[i] - z_trend, eachindex(z))
+        (settings.print_level > 1) && println("Calculating likelihood")
+        @addlogprob! solve(sol, sol.x_ergodic, (0, length(z_detrended)); observables = z_detrended).logpdf
     end
-    z_trend = params.Hx * sol.x + params.Hy * sol.y
-    z_detrended = map(i -> z[i] - z_trend, eachindex(z))
-    (settings.print_level > 1) && println("Calculating likelihood")
-    Turing.@addlogprob! solve(sol, sol.x_ergodic, (0, length(z_detrended)); observables = z_detrended).logpdf
+    return
 end
 
 @model function FVGQ20_joint(z, m, p_f, params, cache, settings, x0 = zeros(m.n_x))
