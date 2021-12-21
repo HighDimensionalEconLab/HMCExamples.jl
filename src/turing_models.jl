@@ -16,13 +16,13 @@ function InvGamma_tr(mu, sd)
     return a, b
 end
 
-function is_variance_pd(u0)
+function variance_check(u0)
     u0_variance = u0.C.U' * u0.C.U
 
     if maximum(abs.(u0_variance)) > 1e10
-        return false
-    else
         return true
+    else
+        return false
     end
 end
 
@@ -37,7 +37,7 @@ end
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
 
-    if !(sol.retcode == :Success) || is_variance_pd(sol.x_ergodic)
+    if !(sol.retcode == :Success) || variance_check(sol.x_ergodic)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
         @addlogprob! -Inf
     else
@@ -183,8 +183,8 @@ end
     (settings.print_level > 0) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
-    
-    if !(sol.retcode == :Success) || is_variance_pd(sol.x_ergodic)
+
+    if !(sol.retcode == :Success) || variance_check(sol.x_ergodic)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")        
         @addlogprob! -Inf
     else
