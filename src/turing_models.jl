@@ -50,18 +50,13 @@ end
             sol.B,
             sol.C,
             sol.x_ergodic,
-            (0,T),
-            noise=sol.Q,
-            obs_noise=sol.D,
+            (0, T),
+            noise = sol.Q,
+            obs_noise = sol.D,
             observables = z
         )
 
-        simulation = solve(
-            problem, 
-            KalmanFilter(); 
-            vectype=Zygote.Buffer
-        )
-
+        simulation = solve(problem, KalmanFilter(); vectype = Zygote.Buffer)
         @addlogprob! simulation.likelihood
     end
 
@@ -69,50 +64,6 @@ end
 end
 
 @model function rbc_joint(z, m, p_f, α_prior, β_prior, ρ_prior, cache::DifferentiableStateSpaceModels.AbstractSolverCache{Order}, settings, x0 = zeros(m.n_x)) where {Order}
-    α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
-    β_draw ~ Gamma(β_prior[1], β_prior[2])
-    ρ ~ Beta(ρ_prior[1], ρ_prior[2])
-    β = 1 / (β_draw / 100 + 1)
-    p_d = (; α, β, ρ)
-    (settings.print_level > 0) && @show p_d
-    T = length(z)
-    ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
-    ϵ = map(i -> ϵ_draw[((i - 1) * m.n_ϵ + 1):(i * m.n_ϵ)], 1:T)
-    sol = generate_perturbation(m, p_d, p_f, Val(Order); cache)
-    (settings.print_level > 1) && println("Perturbation generated")
-
-    if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
-        @addlogprob! -Inf
-    else
-       (settings.print_level > 1) && println("Calculating likelihood")
-
-        # Simulate and get the likelihood.
-        problem = StateSpaceProblem(
-            DifferentiableStateSpaceModels.dssm_evolution,
-            DifferentiableStateSpaceModels.dssm_volatility,
-            DifferentiableStateSpaceModels.dssm_observation,
-            x0,
-            (0,T),
-            sol,
-            noise=DefinedNoise(ϵ),
-            obs_noise=sol.D,
-            observables = z
-        )
-
-        simulation = solve(
-            problem, 
-            ConditionalGaussian(); 
-            vectype=Zygote.Buffer
-        )
-
-        @addlogprob! simulation.likelihood
-    end
-   
-    return
-end
-
-@model function rbc_second(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0 = zeros(m.n_x))
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
@@ -137,19 +88,14 @@ end
             DifferentiableStateSpaceModels.dssm_volatility,
             DifferentiableStateSpaceModels.dssm_observation,
             x0,
-            (0,T),
+            (0, T),
             sol,
-            noise=DefinedNoise(ϵ),
-            obs_noise=sol.D,
+            noise = DefinedNoise(ϵ),
+            obs_noise = sol.D,
             observables = z
         )
 
-        simulation = solve(
-            problem, 
-            ConditionalGaussian(); 
-            vectype=Zygote.Buffer
-        )
-
+        simulation = solve(problem, ConditionalGaussian(); vectype = Zygote.Buffer)
         @addlogprob! simulation.likelihood
     end
     return
@@ -199,20 +145,16 @@ end
             sol.B,
             sol.C,
             sol.x_ergodic,
-            (0,T),
-            noise=sol.Q,
-            obs_noise=sol.D,
+            (0, T),
+            noise = sol.Q,
+            obs_noise = sol.D,
             observables = z_detrended
         )
 
-        simulation = solve(
-            problem, 
-            KalmanFilter(); 
-            vectype=Zygote.Buffer
-        )
-		
+        simulation = solve(problem, KalmanFilter(); vectype = Zygote.Buffer)
 		@addlogprob! simulation.likelihood
     end
+    return
 end
 
 @model function FVGQ20_joint(z, m, p_f, params, cache, settings, x0 = zeros(m.n_x))
@@ -257,19 +199,14 @@ end
             DifferentiableStateSpaceModels.dssm_volatility,
             DifferentiableStateSpaceModels.dssm_observation,
             x0,
-            (0,T),
+            (0, T),
             sol,
-            noise=DefinedNoise(ϵ),
-            obs_noise=sol.D,
+            noise = DefinedNoise(ϵ),
+            obs_noise = sol.D,
             observables = z_detrended
         )
 
-        simulation = solve(
-            problem, 
-            ConditionalGaussian(); 
-            vectype=Zygote.Buffer
-        )
-
+        simulation = solve(problem, ConditionalGaussian(); vectype = Zygote.Buffer)
         @addlogprob! simulation.likelihood
       end
       return
@@ -326,14 +263,8 @@ end
             observables = z_detrended
         )
 
-        simulation = solve(
-            problem, 
-            ConditionalGaussian(); 
-            vectype=Zygote.Buffer
-        )
-
+        simulation = solve(problem, ConditionalGaussian(); vectype=Zygote.Buffer)
         @addlogprob! simulation.likelihood
     end
-  
     return
 end
