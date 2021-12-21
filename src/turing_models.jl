@@ -32,7 +32,22 @@ end
         @addlogprob! -Inf
     else
         (settings.print_level > 1) && println("Calculating likelihood")
-        @addlogprob! solve(sol, sol.x_ergodic, (0, length(z)); observables = z).logpdf
+    
+        # Simulate and get the likelihood.
+        T = length(z)
+        problem = LinearStateSpaceProblem(
+            sol.A,
+            sol.B,
+            sol.C,
+            sol.x_ergodic,
+            (0, T),
+            noise = sol.Q,
+            obs_noise = sol.D,
+            observables = z
+        )
+
+        simulation = solve(problem, KalmanFilter(); vectype = Zygote.Buffer)
+        @addlogprob! simulation.likelihood
     end
     return
 end
@@ -52,8 +67,25 @@ end
 
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
-        Turing.@addlogprob! -Inf
-        return
+        @addlogprob! -Inf
+    else
+        (settings.print_level > 1) && println("Calculating likelihood")
+
+        # Simulate and get the likelihood.
+        problem = StateSpaceProblem(
+            DifferentiableStateSpaceModels.dssm_evolution,
+            DifferentiableStateSpaceModels.dssm_volatility,
+            DifferentiableStateSpaceModels.dssm_observation,
+            x0,
+            (0, T),
+            sol,
+            noise = DefinedNoise(ϵ),
+            obs_noise = sol.D,
+            observables = z
+        )
+
+        simulation = solve(problem, ConditionalGaussian(); vectype = Zygote.Buffer)
+        @addlogprob! simulation.likelihood
     end
     (settings.print_level > 1) && println("Calculating likelihood")
     Turing.@addlogprob! solve(sol, x0, (0, T); noise = ϵ, observables = z).logpdf
