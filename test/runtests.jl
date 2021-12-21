@@ -1,4 +1,3 @@
-using Revise
 using HMCExamples
 
 # The main purpose is for tracing the compiler, not for execution speed or results.  Keep the number of samples small
