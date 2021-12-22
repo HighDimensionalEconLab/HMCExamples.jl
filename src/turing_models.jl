@@ -89,7 +89,7 @@ end
             observables = z
         )
 
-        simulation = DifferenceEquations.solve(problem, ConditionalGaussian(); vectype = Zygote.Buffer)
+        simulation = DifferenceEquations.solve(problem, NoiseConditionalFilter(); vectype = Zygote.Buffer)
         @addlogprob! simulation.likelihood
     end
     return
@@ -200,7 +200,7 @@ end
             observables = z_detrended
         )
 
-        simulation = DifferenceEquations.solve(problem, ConditionalGaussian(); vectype = Zygote.Buffer)
+        simulation = DifferenceEquations.solve(problem, NoiseConditionalFilter(); vectype = Zygote.Buffer)
         @addlogprob! simulation.likelihood
       end
       return
@@ -257,7 +257,7 @@ end
             observables = z_detrended
         )
 
-        simulation = DifferenceEquations.solve(problem, ConditionalGaussian(); vectype=Zygote.Buffer)
+        simulation = DifferenceEquations.solve(problem, NoiseConditionalFilter(); vectype=Zygote.Buffer)
         @addlogprob! simulation.likelihood
     end
     return
