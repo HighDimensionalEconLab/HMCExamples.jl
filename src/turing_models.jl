@@ -18,14 +18,8 @@ end
 
 function variance_check(u0)
     u0_variance = u0.C.U' * u0.C.U
-
-    if maximum(abs.(u0_variance)) > 1e10
-        return true
-    else
-        return false
-    end
+    return (maximum(abs.(u0_variance)) > 1e10)
 end
-
     
 @model function rbc_kalman(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
@@ -51,12 +45,12 @@ end
             sol.C,
             sol.x_ergodic,
             (0, T),
-            noise = sol.Q,
+            noise = ones(m.n_ϵ),
             obs_noise = sol.D,
             observables = z
         )
 
-        simulation = solve(problem, KalmanFilter(); vectype = Zygote.Buffer)
+        simulation = DifferenceEquations.solve(problem, KalmanFilter(); vectype = Zygote.Buffer)
         @addlogprob! simulation.likelihood
     end
 
@@ -95,7 +89,7 @@ end
             observables = z
         )
 
-        simulation = solve(problem, ConditionalGaussian(); vectype = Zygote.Buffer)
+        simulation = DifferenceEquations.solve(problem, ConditionalGaussian(); vectype = Zygote.Buffer)
         @addlogprob! simulation.likelihood
     end
     return
@@ -146,12 +140,12 @@ end
             sol.C,
             sol.x_ergodic,
             (0, T),
-            noise = sol.Q,
+            noise = ones(m.n_ϵ),
             obs_noise = sol.D,
             observables = z_detrended
         )
 
-        simulation = solve(problem, KalmanFilter(); vectype = Zygote.Buffer)
+        simulation = DifferenceEquations.solve(problem, KalmanFilter(); vectype = Zygote.Buffer)
 		@addlogprob! simulation.likelihood
     end
     return
@@ -206,7 +200,7 @@ end
             observables = z_detrended
         )
 
-        simulation = solve(problem, ConditionalGaussian(); vectype = Zygote.Buffer)
+        simulation = DifferenceEquations.solve(problem, ConditionalGaussian(); vectype = Zygote.Buffer)
         @addlogprob! simulation.likelihood
       end
       return
@@ -263,7 +257,7 @@ end
             observables = z_detrended
         )
 
-        simulation = solve(problem, ConditionalGaussian(); vectype=Zygote.Buffer)
+        simulation = DifferenceEquations.solve(problem, ConditionalGaussian(); vectype=Zygote.Buffer)
         @addlogprob! simulation.likelihood
     end
     return
