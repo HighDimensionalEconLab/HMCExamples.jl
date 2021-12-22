@@ -50,9 +50,9 @@ function estimate_FVGQ_2_joint(d)
     ΛA = Gamma_tr(d.Lambda_A_prior[1], d.Lambda_A_prior[2]),
     Hx = Hx,
     Hy = Hy)
-
+    # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
     turing_model = FVGQ20_joint(
-        z, m, p_f, params, c, PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, print_level = d.print_level)
+        z, m, p_f, params, c, PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, print_level = d.print_level), zeros(2 * m.n_x)
     )
 
     # Sampler

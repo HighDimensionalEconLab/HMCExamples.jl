@@ -20,8 +20,10 @@ function estimate_rbc_2_joint(d)
     p_d = (α = d.alpha, β = d.beta, ρ = d.rho)
     p_f = (δ = d.delta, σ = d.sigma, Ω_1 = d.Omega_1)
     c = SolverCache(m, Val(2), p_d)
+    # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
     turing_model = rbc_joint(
-        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, PerturbationSolverSettings(; print_level = d.print_level))
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, PerturbationSolverSettings(; print_level = d.print_level), zeros(2 * m.n_x)
+    )
 
     # Sampler
     name = "rbc-second-s$(d.num_samples)-seed$(d.seed)"
