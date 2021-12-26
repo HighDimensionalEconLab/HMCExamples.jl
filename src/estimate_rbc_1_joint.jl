@@ -20,7 +20,9 @@ function estimate_rbc_1_joint(d)
     p_d = (α = d.alpha, β = d.beta, ρ = d.rho)
     p_f = (δ = d.delta, σ = d.sigma, Ω_1 = d.Omega_1)
     c = SolverCache(m, Val(1), p_d)
-    turing_model = rbc_joint(z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, PerturbationSolverSettings(; print_level = d.print_level))
+    turing_model = rbc_joint(
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, PerturbationSolverSettings(; print_level = d.print_level), zeros(m.n_x)
+    )
     
     # Sampler
     name = "rbc-joint-s$(d.num_samples)-seed$(d.seed)"
