@@ -32,7 +32,7 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success) || variance_check(sol.x_ergodic)
-        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
         @addlogprob! -Inf
     else
         (settings.print_level > 1) && println("Calculating likelihood")
@@ -71,7 +71,7 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
         @addlogprob! -Inf
     else
         (settings.print_level > 1) && println("Calculating likelihood")
@@ -125,7 +125,7 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success) || variance_check(sol.x_ergodic)
-        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")        
+        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")        
         @addlogprob! -Inf
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
@@ -183,7 +183,7 @@ end
     sol = generate_perturbation(m, θ, p_f, Val(Order); cache)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
         @addlogprob! -Inf
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
