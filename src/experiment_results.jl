@@ -9,27 +9,30 @@ function calculate_experiment_results(chain, logger, include_vars)
     has_num_error =  (:numerical_error in keys(chain))
 
     # Store the chain in several formats.
-    JLSO.save(joinpath(logdir, "chain.jlso"), :chain => chain) # As JLSO, most robust
-    CSV.write(joinpath(logdir, "chain.csv"), DataFrame(chain)) # As CSV, in case everything else fails
+    # NOTE: For now, we save in JLS to start with. We comment out the next two lines for now.
+    # JLSO.save(joinpath(logdir, "chain.jlso"), :chain => chain) # As JLSO, most robust
+    # CSV.write(joinpath(logdir, "chain.csv"), DataFrame(chain)) # As CSV, in case everything else fails
     serialize(joinpath(logdir, "chain.jls"), chain)            # Fast but flimsy, no version control
 
     # summary statistics
     sum_stats = describe(chain[include_vars])
-    param_names = sum_stats[1][:,1]
-    param_mean = sum_stats[1][:,2]
-    param_sd = sum_stats[1][:,3]
-    param_ess = sum_stats[1][:,6]
-    param_rhat = sum_stats[1][:,7]
+    param_names = sum_stats[1][:, 1]
+    param_mean = sum_stats[1][:, 2]
+    param_sd = sum_stats[1][:, 3]
+    param_ess = sum_stats[1][:, 6]
+    param_rhat = sum_stats[1][:, 7]
+    param_esspersec = sum_stats[1][:, 8]
 
     CSV.write(
         joinpath(logdir, "sumstats.csv"),
         DataFrame(
-            Parameter=param_names,
-            Mean=param_mean,
-            sd=param_sd,
-            ess=param_ess,
-            rhat=param_rhat,
-            Num_error= has_num_error ? calculate_num_error_prop(chain) * ones(length(include_vars)) : missing # TODO: verify the "ones" logic here?
+            Parameter = param_names,
+            Mean = param_mean,
+            StdDev = param_sd,
+            ESS = param_ess,
+            Rhat = param_rhat,
+            ESSpersec = param_esspersec, 
+            Num_error = has_num_error ? calculate_num_error_prop(chain) * ones(length(include_vars)) : missing # TODO: verify the "ones" logic here?
         )
     )
     # Save the preconditioner if one is available
@@ -89,8 +92,14 @@ function calculate_experiment_results(chain, logger, include_vars)
         parameters["$(pname)_std"] = param_sd[i]
         parameters["$(pname)_ess"] = param_ess[i]
         parameters["$(pname)_rhat"] = param_rhat[i]
+        parameters["$(pname)_esspersec"] = param_esspersec[i]
     end
     
+    # Add time difference if there is such information
+    if :start_time in keys(chain.info)
+        parameters["time_elapsed"] = chain.info.stop_time - chain.info.start_time
+    end
+
     result_path = joinpath(logdir, "result.json")
     @info "Storing results at $result_path"
     open(result_path, "w") do io
