@@ -45,13 +45,12 @@ end
             sol.C,
             sol.x_ergodic,
             (0, T),
-            noise = ones(m.n_ϵ),
+            noise = nothing,
             obs_noise = sol.D,
             observables = z
         )
 
-        simulation = DifferenceEquations.solve(problem, KalmanFilter(); vectype = Zygote.Buffer)
-        @addlogprob! simulation.loglikelihood
+        @addlogprob! solve(problem, KalmanFilter()).loglikelihood
     end
 
     return
@@ -84,13 +83,12 @@ end
             x0,
             (0, T),
             sol,
-            noise = DefinedNoise(ϵ),
+            noise = ϵ,
             obs_noise = sol.D,
             observables = z
         )
 
-        simulation = DifferenceEquations.solve(problem, NoiseConditionalFilter(); vectype = Zygote.Buffer)
-        @addlogprob! simulation.loglikelihood
+        @addlogprob! solve(problem, NoiseConditionalFilter()).loglikelihood
     end
     return
 end
@@ -140,13 +138,12 @@ end
             sol.C,
             sol.x_ergodic,
             (0, T),
-            noise = ones(m.n_ϵ),
+            noise = nothing,
             obs_noise = sol.D,
             observables = z_detrended
         )
 
-        simulation = DifferenceEquations.solve(problem, KalmanFilter(); vectype = Zygote.Buffer)
-		@addlogprob! simulation.loglikelihood
+		@addlogprob! solve(problem, KalmanFilter()).loglikelihood
     end
     return
 end
@@ -197,13 +194,12 @@ end
             x0,
             (0,T),
             sol,
-            noise=DefinedNoise(ϵ),
-            obs_noise=sol.D,
+            noise = ϵ,
+            obs_noise = sol.D,
             observables = z_detrended
         )
 
-        simulation = DifferenceEquations.solve(problem, NoiseConditionalFilter(); vectype=Zygote.Buffer)
-        @addlogprob! simulation.loglikelihood
+        @addlogprob! solve(problem, NoiseConditionalFilter()).loglikelihood
     end
     return
 end
