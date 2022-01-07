@@ -8,7 +8,7 @@ Then
 ## CLI Usage
 To use with default options
 ```bash
-julia --project --threads auto fit_rbc_1_kalman.jl
+julia --project --threads auto bin/fit_rbc_1_kalman.jl
 ```
 (although the `--threads auto` may or may not be useful in this example.)
 
