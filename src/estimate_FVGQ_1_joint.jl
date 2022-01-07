@@ -51,7 +51,7 @@ function estimate_FVGQ_1_joint(d)
     Hx = Hx,
     Hy = Hy)
 
-    turing_model = FVGQ20_joint(
+    turing_model = FVGQ20_joint_1(
         z, m, p_f, params, c, PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, print_level = d.print_level), zeros(m.n_x)
     )
 
