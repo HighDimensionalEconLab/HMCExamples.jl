@@ -40,7 +40,7 @@ end
         T = length(z)
         problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, sol.x_ergodic, (0, T),
                                           noise = nothing, obs_noise = sol.D, observables = z)
-        @addlogprob! solve(problem, KalmanFilter()).loglikelihood
+        @addlogprob! solve(problem, KalmanFilter(); save_everystep = false).loglikelihood
     end
     return
 end
@@ -66,7 +66,7 @@ end
         # Simulate and get the likelihood.
         problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, x0, (0, T),
                                           noise = ϵ, obs_noise = sol.D, observables = z)
-        @addlogprob! solve(problem, NoiseConditionalFilter()).loglikelihood
+        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
     end
     return
 end
@@ -101,7 +101,7 @@ end
             obs_noise = sol.D,
             observables = z
         )
-        @addlogprob! solve(problem, NoiseConditionalFilter()).loglikelihood
+        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
     end
     return
 end
@@ -147,7 +147,7 @@ end
         T = length(z)
         problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, sol.x_ergodic, (0, T),
                                           noise = nothing, obs_noise = sol.D, observables = z_detrended)
-        @addlogprob! solve(problem, KalmanFilter()).loglikelihood
+        @addlogprob! solve(problem, KalmanFilter(); save_everystep = false).loglikelihood
     end
     return
 end
@@ -246,7 +246,7 @@ end
             obs_noise = sol.D,
             observables = z_detrended
         )
-        @addlogprob! solve(problem, NoiseConditionalFilter()).loglikelihood
+        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
     end
     return
 end
