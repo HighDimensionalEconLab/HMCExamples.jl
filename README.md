@@ -8,13 +8,13 @@ Then
 ## CLI Usage
 To use with default options
 ```bash
-julia --project --threads auto bin/fit_rbc_1_kalman.jl
+julia --project --threads auto -O1 bin/fit_rbc_1_kalman.jl
 ```
 (although the `--threads auto` may or may not be useful in this example.)
 
 Or with options
 ```bash
-julia --project --threads auto bin/fit_rbc_1_kalman.jl --num_samples 1000
+julia --project --threads auto -O1 bin/fit_rbc_1_kalman.jl --num_samples 1000
 ```
 To run tensorboard, ensure tensorboard is installed (e.g. with  `pip install -r requirements.txt` ) and
 ```bash
@@ -31,7 +31,7 @@ Then when you use vscode it will load the custom sysimage as long as you have th
 
 On the commandline you will need to manually provide it.  For example, 
 ```bash
-julia --project --sysimage JuliaSysimage.dll --threads auto bin/fit_rbc_1_kalman.jl --num_samples 1000
+julia --project --sysimage JuliaSysimage.dll --threads auto -O1 bin/fit_rbc_1_kalman.jl --num_samples 1000
 ```
 
 ## Grid
