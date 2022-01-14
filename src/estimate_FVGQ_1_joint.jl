@@ -12,7 +12,7 @@ function estimate_FVGQ_1_joint(d)
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
     df = Matrix(DataFrame(CSV.File(data_path)))
-    z = [df[i, :] for i in 1:size(df, 1)]
+    z = collect(Matrix(DataFrame(CSV.File(data_path)))')
 
     ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_FVGQ20_1.csv");header=false)))
 

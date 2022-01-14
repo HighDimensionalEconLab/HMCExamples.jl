@@ -13,7 +13,7 @@ function estimate_rbc_2_joint(d)
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
     df = Matrix(DataFrame(CSV.File(data_path)))
-    z = [df[i, :] for i in 1:size(df, 1)]
+    z = collect(Matrix(DataFrame(CSV.File(data_path)))')
     ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_rbc_2.csv");header=false)))
     # Create the perturbation and the turing models
     m = PerturbationModel(HMCExamples.rbc)
@@ -21,8 +21,8 @@ function estimate_rbc_2_joint(d)
     p_f = (δ = d.delta, σ = d.sigma, Ω_1 = d.Omega_1)
     c = SolverCache(m, Val(2), p_d)
     # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
-    turing_model = rbc_joint(
-        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, PerturbationSolverSettings(; print_level = d.print_level), zeros(2 * m.n_x)
+    turing_model = rbc_joint_2(
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, PerturbationSolverSettings(; print_level = d.print_level), zeros(m.n_x)
     )
 
     # Sampler

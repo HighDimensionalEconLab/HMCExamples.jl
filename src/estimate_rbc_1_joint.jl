@@ -13,7 +13,7 @@ function estimate_rbc_1_joint(d)
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
     df = Matrix(DataFrame(CSV.File(data_path)))
-    z = [df[i, :] for i in 1:size(df, 1)]
+    z = collect(Matrix(DataFrame(CSV.File(data_path)))')
     ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_rbc_1.csv");header=false)))
     # Create the perturbation and the turing models
     m = PerturbationModel(HMCExamples.rbc)
@@ -34,7 +34,9 @@ function estimate_rbc_1_joint(d)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
 
     chain = sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
-        d.num_samples;
+        MCMCThreads(),
+        d.num_samples,
+        d.num_chains;
         init_params=[p_d..., ϵ0],
         progress=true,
         save_state=true,
