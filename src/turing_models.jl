@@ -78,9 +78,9 @@ end
     β = 1 / (β_draw / 100 + 1)
     p_d = (; α, β, ρ)
     (settings.print_level > 0) && @show p_d
-    T = length(z)
+    T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
-    ϵ = map(i -> ϵ_draw[((i - 1) * m.n_ϵ + 1):(i * m.n_ϵ)], 1:T)
+    ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     sol = generate_perturbation(m, p_d, p_f, Val(2); cache)
     (settings.print_level > 1) && println("Perturbation generated")
 
@@ -189,7 +189,7 @@ end
 end
 
 @model function FVGQ20_joint_2(z, m, p_f, params, cache, settings, x0)
-    T = length(z)
+    T = size(z, 2)
     # Priors
     β_draw ~ Gamma(params.β[1], params.β[2])
     β = 1 / (β_draw / 100 + 1)
@@ -213,7 +213,7 @@ end
     Λμ ~ Gamma(params.Λμ[1], params.Λμ[2])
     ΛA ~ Gamma(params.ΛA[1], params.ΛA[2])
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
-    ϵ = map(i -> ϵ_draw[((i-1)*m.n_ϵ+1):(i*m.n_ϵ)], 1:T)
+    ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 0) && @show θ
@@ -224,7 +224,7 @@ end
         @addlogprob! -Inf
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
-        z_detrended = map(i -> z[i] - z_trend, eachindex(z))
+        z_detrended = z .- z_trend
         # Simulate and get the likelihood.
         problem = StateSpaceProblem(
             DifferentiableStateSpaceModels.dssm_evolution,

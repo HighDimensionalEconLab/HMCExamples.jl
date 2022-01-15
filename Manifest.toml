@@ -307,7 +307,9 @@ version = "1.9.0"
 
 [[DifferenceEquations]]
 deps = ["ChainRulesCore", "CommonSolve", "Distributions", "DistributionsAD", "LinearAlgebra", "SciMLBase", "StatsBase", "Zygote"]
-git-tree-sha1 = "adaf21dfefe36b8764e835419a7cd923797c06d6"
+git-tree-sha1 = "d380fd80c11c1fde55532fe539913ce989bfed8f"
+repo-rev = "main"
+repo-url = "https://github.com/SciML/DifferenceEquations.jl.git"
 uuid = "e0ca9c66-1f9e-11ec-127a-1304ce62169c"
 version = "0.4.6"
 

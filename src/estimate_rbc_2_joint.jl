@@ -12,7 +12,6 @@ function estimate_rbc_2_joint(d)
 
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
-    df = Matrix(DataFrame(CSV.File(data_path)))
     z = collect(Matrix(DataFrame(CSV.File(data_path)))')
     ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_rbc_2.csv");header=false)))
     # Create the perturbation and the turing models
