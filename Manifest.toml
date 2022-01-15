@@ -307,9 +307,9 @@ version = "1.9.0"
 
 [[DifferenceEquations]]
 deps = ["ChainRulesCore", "CommonSolve", "Distributions", "DistributionsAD", "LinearAlgebra", "SciMLBase", "StatsBase", "Zygote"]
-git-tree-sha1 = "71b182ec578971aaab02659386a20a55f5b3a9aa"
+git-tree-sha1 = "adaf21dfefe36b8764e835419a7cd923797c06d6"
 uuid = "e0ca9c66-1f9e-11ec-127a-1304ce62169c"
-version = "0.4.5"
+version = "0.4.6"
 
 [[DifferentiableStateSpaceModels]]
 deps = ["ChainRulesCore", "Distributions", "DistributionsAD", "DocStringExtensions", "Infiltrator", "LaTeXStrings", "Latexify", "LinearAlgebra", "Logging", "MacroTools", "MatrixEquations", "NLsolve", "Parameters", "RecursiveFactorization", "SparseArrays", "StructArrays", "SymbolicUtils", "Symbolics", "TensorCast", "Tullio", "Zygote"]
