@@ -50,8 +50,8 @@ function estimate_FVGQ_2_joint(d)
     Hx = Hx,
     Hy = Hy)
     # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
-    turing_model = FVGQ20_joint(
-        z, m, p_f, params, c, PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, print_level = d.print_level), zeros(2 * m.n_x)
+    turing_model = FVGQ20_joint_2(
+        z, m, p_f, params, c, PerturbationSolverSettings(;ϵ_BK = d.epsilon_BK, print_level = d.print_level), zeros(m.n_x)
     )
 
     # Sampler
@@ -66,9 +66,7 @@ function estimate_FVGQ_2_joint(d)
     chain = sample(
         turing_model,
         NUTS(num_adapts, d.target_acceptance_rate; d.max_depth),
-        MCMCThreads(),
-        d.num_samples,
-        d.num_chains;
+        d.num_samples;
         init_params=[p_d..., ϵ0],
         progress=true,
         save_state=true,

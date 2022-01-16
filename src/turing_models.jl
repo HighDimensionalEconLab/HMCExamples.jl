@@ -226,17 +226,8 @@ end
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
-        problem = StateSpaceProblem(
-            DifferentiableStateSpaceModels.dssm_evolution,
-            DifferentiableStateSpaceModels.dssm_volatility,
-            DifferentiableStateSpaceModels.dssm_observation,
-            x0,
-            (0,T),
-            sol,
-            noise = ϵ,
-            obs_noise = sol.D,
-            observables = z_detrended
-        )
+        problem = QuadraticStateSpaceProblem(sol.A_0, sol.A_1, sol.A_2, sol.B, sol.C_0, sol.C_1, sol.C_2, x0, (0, T),
+                                             noise = ϵ, obs_noise = sol.D, observables = z_detrended)
         @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
     end
     return
