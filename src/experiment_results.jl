@@ -1,12 +1,52 @@
+
+function prepare_output_directory(use_tensorboard, d, include_vars)
+    #name = "$(d.num_samples)-seed$(d.seed)" # or something along those lines.
+
+    #callback = nothing ? use_tensorboard == false: TensorBoardCallback(d.results_path; name, include=include_vars) # later support tensorboard callbacks
+    #If using tensorboard callback, the `logdir` will need to be the `.logdir` AFTER the samppler.  It will not be the `--results_path` directly
+
+    # If the d.results_dir is a valid directory and does not exist, then create it
+    # If the d.results_dir is a valid directory and not empty then check if we want to overwrite.
+    # otherwise fail
+
+    logdir = d.results_path
+
+    if isdir(logdir) && d.overwrite_path # not a path
+        return logdir, callback
+    else
+    end
+
+
+    callback = nothing
+    return logdir, callback
+end
+
 function calculate_num_error_prop(chain)
     num_error = get(chain, :numerical_error)
     return 100 * sum(num_error.numerical_error.data) / length(num_error.numerical_error.data)
 end
 
+
+function log_summary_statistics!(callback::Nothing, param_names, param_ess, param_rhat)
+    return nothing
+    # noop if nothing, later add in suppport for tensorbard callbacks
+    # for (i, name) = enumerate(param_names)
+    #     TensorBoardLogger.log_value(
+    #         callback.logger,
+    #         "$(name)_ess_per_sec",
+    #         param_ess[i],
+    #     )
+    #     TensorBoardLogger.log_value(
+    #         callback.logger,
+    #         "$(name)_rhat",
+    #         param_rhat[i],
+    #     )
+end
+
+
 #function calculate_experiment_results(@nospecialize(chain), @nospecialize(logger), include_vars)
-function calculate_experiment_results(chain, logger, include_vars)
-    logdir = logger.logdir
-    has_num_error =  (:numerical_error in keys(chain))
+function calculate_experiment_results(chain, logdir, callback, include_vars)
+    has_num_error = (:numerical_error in keys(chain))
 
     # Store the chain in several formats.
     # NOTE: For now, we save in JLS to start with. We comment out the next two lines for now.
@@ -31,7 +71,7 @@ function calculate_experiment_results(chain, logger, include_vars)
             StdDev = param_sd,
             ESS = param_ess,
             Rhat = param_rhat,
-            ESSpersec = param_esspersec, 
+            ESSpersec = param_esspersec,
             Num_error = has_num_error ? calculate_num_error_prop(chain) * ones(length(include_vars)) : missing # TODO: verify the "ones" logic here?
         )
     )
@@ -55,8 +95,8 @@ function calculate_experiment_results(chain, logger, include_vars)
             end
 
             # Write it to disk
-            writedlm(joinpath(logdir,"preconditioner.csv"), m, ',')
-            end
+            writedlm(joinpath(logdir, "preconditioner.csv"), m, ',')
+        end
 
         # cumulative averages
         for var in include_vars
@@ -71,18 +111,8 @@ function calculate_experiment_results(chain, logger, include_vars)
     end
 
     # Log the ESS/sec and rhat.  Nice to show as summary results from tensorboard
-    for (i, name) = enumerate(param_names)
-        TensorBoardLogger.log_value(
-            logger,
-            "$(name)_ess_per_sec",
-            param_ess[i],
-        )
-        TensorBoardLogger.log_value(
-            logger,
-            "$(name)_rhat",
-            param_rhat[i],
-        )
-    end
+    # a noop if callback = nothing
+    log_summary_statistics!(callback, param_names, param_ess, param_rhat)
 
     # Make a succinct results JSON
     parameters = JSON.parsefile(joinpath(logdir, "parameters.json"))
@@ -94,7 +124,7 @@ function calculate_experiment_results(chain, logger, include_vars)
         parameters["$(pname)_rhat"] = param_rhat[i]
         parameters["$(pname)_esspersec"] = param_esspersec[i]
     end
-    
+
     # Add time difference if there is such information
     if :start_time in keys(chain.info)
         parameters["time_elapsed"] = chain.info.stop_time - chain.info.start_time

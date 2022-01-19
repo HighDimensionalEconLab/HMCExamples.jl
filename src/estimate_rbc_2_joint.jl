@@ -1,5 +1,5 @@
 # Entry for script
-function main_rbc_2_joint(args=ARGS)
+function main_rbc_2_joint(args = ARGS)
     d = parse_commandline_rbc_2_joint(args)
     return estimate_rbc_2_joint((; d...)) # to named tuple
 end
@@ -8,12 +8,11 @@ function estimate_rbc_2_joint(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
     HMCExamples.set_BLAS_threads()
-    use_tensorboard = true # could add toggle later
 
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
     z = collect(Matrix(DataFrame(CSV.File(data_path)))')
-    ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_rbc_2.csv");header=false)))
+    ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_rbc_2.csv"); header = false)))
     # Create the perturbation and the turing models
     m = PerturbationModel(HMCExamples.rbc)
     p_d = (α = d.alpha, β = d.beta, ρ = d.rho)
@@ -27,7 +26,7 @@ function estimate_rbc_2_joint(d)
     # Sampler
     name = "rbc-second-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
-    callback = TensorBoardCallback(d.results_path; name, include=include_vars)
+    callback = TensorBoardCallback(d.results_path; name, include = include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
     Random.seed!(d.seed)
@@ -37,10 +36,10 @@ function estimate_rbc_2_joint(d)
         MCMCThreads(),
         d.num_samples,
         d.num_chains;
-        init_params=[p_d..., ϵ0],
-        progress=true,
-        save_state=true,
-        callback,
+        init_params = [p_d..., ϵ0],
+        d.progress,
+        save_state = true,
+        callback
     )
 
     # Store parameters in log directory
@@ -56,7 +55,7 @@ function estimate_rbc_2_joint(d)
 end
 
 function parse_commandline_rbc_2_joint(args)
-    s = ArgParseSettings(; fromfile_prefix_chars=['@'])
+    s = ArgParseSettings(; fromfile_prefix_chars = ['@'])
 
     # See the appropriate _defaults.txt file for the default vvalues.
     @add_arg_table! s begin
@@ -111,18 +110,23 @@ function parse_commandline_rbc_2_joint(args)
         "--results_path"
         arg_type = String
         help = "Location to store results and logs"
+        "--overwrite_results"
+        arg_type = Bool
+        help = "Overwrite results at results_path"        
         "--print_level"
         arg_type = Int64
         help = "Print level for output during sampling"
         "--epsilon_BK"
         arg_type = Float64
-        help = "Threshold for Checking Blanchard-Khan condition"        
-        "--use_solution_cache"
+        help = "Threshold for Checking Blanchard-Khan condition"
+        "--use_tensorboard"
         arg_type = Bool
-        help = "Use solution cache in perturbation solutions"
-
+        help = "Log to tensorboard"
+        "--progress"
+        arg_type = Bool
+        help = "Show progress"
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_2_joint_defaults.txt", args)
-    return parse_args(args_with_default, s; as_symbols=true)
+    return parse_args(args_with_default, s; as_symbols = true)
 end
