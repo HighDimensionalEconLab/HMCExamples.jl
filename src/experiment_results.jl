@@ -1,5 +1,8 @@
 
 function prepare_output_directory(use_tensorboard, d, include_vars)
+    @assert d.use_tensorboard == false # will add support later
+
+    # Later for supporting tensorboard:
     #name = "$(d.num_samples)-seed$(d.seed)" # or something along those lines.
 
     #callback = nothing ? use_tensorboard == false: TensorBoardCallback(d.results_path; name, include=include_vars) # later support tensorboard callbacks
@@ -9,16 +12,20 @@ function prepare_output_directory(use_tensorboard, d, include_vars)
     # If the d.results_dir is a valid directory and not empty then check if we want to overwrite.
     # otherwise fail
 
-    logdir = d.results_path
+    # Fail if path exists and 
 
-    if isdir(logdir) && d.overwrite_path # not a path
-        return logdir, callback
-    else
+    if isdir(d.results_path) && !d.overwrite_results
+        error("Directory $(d.results_path) already exists, and overwrite_results = false")
     end
 
+    # delete directory if it exists. No failure if directory doesn't exist.
+    @info "Saving results to $(d.results_path) and removing contents if non-empty"
+    rm(d.results_path, force = true, recursive = true)
+    mkpath(d.results_path)
 
     callback = nothing
-    return logdir, callback
+
+    return d.results_path, callback
 end
 
 function calculate_num_error_prop(chain)

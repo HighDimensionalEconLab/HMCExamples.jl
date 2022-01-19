@@ -24,7 +24,6 @@ function estimate_rbc_1_joint(d)
 
     # Sampler
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
-    @assert d.use_tensorboard == false # will add support later
     logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
@@ -32,13 +31,7 @@ function estimate_rbc_1_joint(d)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
 
     chain = sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
-        MCMCThreads(),
-        d.num_samples,
-        d.num_chains;
-        init_params = [p_d..., ϵ0],
-        d.progress,
-        save_state = true,
-        callback
+        MCMCThreads(), d.num_samples, d.num_chains; init_params = [p_d..., ϵ0], d.progress, save_state = true, callback
     )
 
     # Store parameters in log directory
@@ -124,7 +117,7 @@ function parse_commandline_rbc_1_joint(args)
         "--progress"
         arg_type = Bool
         help = "Show progress"
-        
+
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_joint_defaults.txt", args)

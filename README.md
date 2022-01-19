@@ -6,15 +6,15 @@ Then
 `julia --project -e "using Pkg; Pkg.instantiate()"`
 
 ## CLI Usage
-To use with default options
+To use with default options, and specifying a directory
 ```bash
-julia --project --threads auto -O1 bin/fit_rbc_1_kalman.jl
+julia --project --threads auto -O1 bin/fit_rbc_1_kalman.jl --results_path ./results/main_rbc_1_kalman --overwrite_results true
 ```
 (although the `--threads auto` may or may not be useful in this example.)
 
 Or with options
 ```bash
-julia --project --threads auto -O1 bin/fit_rbc_1_kalman.jl --num_samples 1000
+julia --project --threads auto -O1 bin/fit_rbc_1_kalman.jl --results_path ./results/main_rbc_1_kalman --overwrite_results true --num_samples 1000
 ```
 To run tensorboard, ensure tensorboard is installed (e.g. with  `pip install -r requirements.txt` ) and
 ```bash
