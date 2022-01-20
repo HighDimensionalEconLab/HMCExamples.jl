@@ -55,7 +55,7 @@ function estimate_FVGQ_1_kalman(d)
     # Sampler
     name = "FQGV-kalman-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["β_draw", "h", "κ", "χ", "γR", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
-    callback = TensorBoardCallback(d.results_path; name, include = include_vars)
+    logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)    
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
     Random.seed!(d.seed)
@@ -74,7 +74,7 @@ function estimate_FVGQ_1_kalman(d)
     )
 
     # Store parameters in log directory
-    parameter_save_path = joinpath(callback.logger.logdir, "parameters.json")
+    parameter_save_path = joinpath(logdir, "parameters.json")
 
     @info "Storing Parameters at $(parameter_save_path) "
     open(parameter_save_path, "w") do f
@@ -82,7 +82,7 @@ function estimate_FVGQ_1_kalman(d)
     end
 
     # Calculate and save results into the logdir
-    calculate_experiment_results(chain, callback.logger, include_vars)
+    calculate_experiment_results(chain, logdir, callback, include_vars)
 end
 
 function parse_commandline_FVGQ_1_kalman(args)
