@@ -17,5 +17,5 @@
 --print_level=0
 --epsilon_BK=1e-6
 --use_tensorboard=false
---num_chains=4
+--num_chains=1
 --progress=true

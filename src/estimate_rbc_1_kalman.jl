@@ -29,18 +29,9 @@ function estimate_rbc_1_kalman(d)
 
     Random.seed!(d.seed)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
-
-    chain = sample(
-        turing_model,
-        NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
-        MCMCThreads(),
-        d.num_samples,
-        d.num_chains;
-        init_params = [p_d...],
-        d.progress,
-        save_state = true,
-        callback
-    )
+    init_params = [p_d...]
+    chain = (d.num_chains == 1) ? sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
+        d.num_samples; init_params, d.progress, save_state = true) : sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),MCMCThreads(), d.num_samples, d.num_chains; init_params, d.progress, save_state = true, callback)
 
     # Store parameters in log directory
     parameter_save_path = joinpath(logdir, "parameters.json")

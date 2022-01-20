@@ -26,3 +26,4 @@ docs/site/
 test/.results/*
 JuliaSysimage.dll
 grid_artifacts
+results/*
