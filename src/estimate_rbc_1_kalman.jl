@@ -1,5 +1,5 @@
 # Entry for script
-function main_rbc_1_kalman(args=ARGS)
+function main_rbc_1_kalman(args = ARGS)
     d = parse_commandline_rbc_1_kalman(args)
     return estimate_rbc_1_kalman((; d...)) # to named tuple
 end
@@ -8,7 +8,6 @@ function estimate_rbc_1_kalman(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
     HMCExamples.set_BLAS_threads()
-    use_tensorboard = true # could add toggle later
 
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
@@ -25,26 +24,17 @@ function estimate_rbc_1_kalman(d)
     # Sampler
     name = "rbc-kalman-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
-    callback = TensorBoardCallback(d.results_path; name, include=include_vars)
+    logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)    
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
     Random.seed!(d.seed)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
-
-    chain = sample(
-        turing_model,
-        NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
-        MCMCThreads(),
-        d.num_samples,
-        d.num_chains;
-        init_params=[p_d...],
-        progress=true,
-        save_state=true,
-        callback,
-    )
+    init_params = [p_d...]
+    chain = (d.num_chains == 1) ? sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
+        d.num_samples; init_params, d.progress, save_state = true) : sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),MCMCThreads(), d.num_samples, d.num_chains; init_params, d.progress, save_state = true, callback)
 
     # Store parameters in log directory
-    parameter_save_path = joinpath(callback.logger.logdir, "parameters.json")
+    parameter_save_path = joinpath(logdir, "parameters.json")
 
     @info "Storing Parameters at $(parameter_save_path) "
     open(parameter_save_path, "w") do f
@@ -52,11 +42,11 @@ function estimate_rbc_1_kalman(d)
     end
 
     # Calculate and save results into the logdir
-    calculate_experiment_results(chain, callback.logger, include_vars)
+    calculate_experiment_results(chain, logdir, callback, include_vars)
 end
 
 function parse_commandline_rbc_1_kalman(args)
-    s = ArgParseSettings(; fromfile_prefix_chars=['@'])
+    s = ArgParseSettings(; fromfile_prefix_chars = ['@'])
 
     # See the appropriate _defaults.txt file for the default vvalues.
     @add_arg_table! s begin
@@ -111,18 +101,23 @@ function parse_commandline_rbc_1_kalman(args)
         "--results_path"
         arg_type = String
         help = "Location to store results and logs"
+        "--overwrite_results"
+        arg_type = Bool
+        help = "Overwrite results at results_path"        
         "--print_level"
         arg_type = Int64
         help = "Print level for output during sampling"
         "--epsilon_BK"
         arg_type = Float64
-        help = "Threshold for Checking Blanchard-Khan condition"        
-        "--use_solution_cache"
+        help = "Threshold for Checking Blanchard-Khan condition"
+        "--use_tensorboard"
         arg_type = Bool
-        help = "Use solution cache in perturbation solutions"
-
+        help = "Log to tensorboard"
+        "--progress"
+        arg_type = Bool
+        help = "Show progress"
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_kalman_defaults.txt", args)
-    return parse_args(args_with_default, s; as_symbols=true)
+    return parse_args(args_with_default, s; as_symbols = true)
 end
