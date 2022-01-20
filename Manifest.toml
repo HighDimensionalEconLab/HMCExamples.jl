@@ -132,21 +132,21 @@ version = "0.1.6"
 
 [[CSV]]
 deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings"]
-git-tree-sha1 = "b313cd21aca0e129625ceeb253ef3806ad370fde"
+git-tree-sha1 = "9519274b50500b8029973d241d32cfbf0b127d97"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.10.0"
+version = "0.10.2"
 
 [[ChainRules]]
-deps = ["ChainRulesCore", "Compat", "LinearAlgebra", "Random", "RealDot", "Statistics"]
-git-tree-sha1 = "d69f59229f8f9955b1e16febeafe6f288b0618b5"
+deps = ["ChainRulesCore", "Compat", "IrrationalConstants", "LinearAlgebra", "Random", "RealDot", "Statistics"]
+git-tree-sha1 = "e659ddd9b3d67b236c750805e0176217f26d70a9"
 uuid = "082447d4-558c-5d27-93f4-14fc19e9eca2"
-version = "1.20.1"
+version = "1.23.0"
 
 [[ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra", "SparseArrays"]
-git-tree-sha1 = "6e39c91fb4b84dcb870813c91674bdebb9145895"
+git-tree-sha1 = "54fc4400de6e5c3e27be6047da2ef6ba355511f8"
 uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-version = "1.11.5"
+version = "1.11.6"
 
 [[ChangesOfVariables]]
 deps = ["ChainRulesCore", "LinearAlgebra", "Test"]
@@ -285,10 +285,10 @@ uuid = "e0ca9c66-1f9e-11ec-127a-1304ce62169c"
 version = "0.4.7"
 
 [[DifferentiableStateSpaceModels]]
-deps = ["ChainRulesCore", "Distributions", "DistributionsAD", "DocStringExtensions", "GeneralizedSylvesterSolver", "Infiltrator", "LaTeXStrings", "Latexify", "LinearAlgebra", "Logging", "MacroTools", "MatrixEquations", "NLsolve", "Parameters", "RecursiveFactorization", "SparseArrays", "StructArrays", "SymbolicUtils", "Symbolics", "TensorCast", "Tullio", "Zygote"]
-git-tree-sha1 = "76f5b20830c0516a717d9e854fa4ff589e72810f"
+deps = ["ChainRulesCore", "Distributions", "DistributionsAD", "DocStringExtensions", "Infiltrator", "LaTeXStrings", "Latexify", "LinearAlgebra", "Logging", "MacroTools", "MatrixEquations", "NLsolve", "Parameters", "RecursiveFactorization", "SparseArrays", "StructArrays", "SymbolicUtils", "Symbolics", "TensorCast", "Tullio", "Zygote"]
+git-tree-sha1 = "23397a8485655da171b0763f16ae1d5d5ddd35af"
 uuid = "beacd9db-9e5e-4956-9b09-459a4b2028df"
-version = "0.4.9"
+version = "0.4.8"
 
 [[Distances]]
 deps = ["LinearAlgebra", "SparseArrays", "Statistics", "StatsAPI"]
@@ -369,12 +369,6 @@ git-tree-sha1 = "c6033cc3892d0ef5bb9cd29b7f2f0331ea5184ea"
 uuid = "f5851436-0d7a-5f13-b9de-f02708fd171a"
 version = "3.3.10+0"
 
-[[FastLapackInterface]]
-deps = ["LinearAlgebra"]
-git-tree-sha1 = "cee4196734ac31b158ef80a5eb844a809ed554f3"
-uuid = "29a986be-02c6-4525-aec4-84b980013641"
-version = "0.1.3"
-
 [[FilePathsBase]]
 deps = ["Compat", "Dates", "Mmap", "Printf", "Test", "UUIDs"]
 git-tree-sha1 = "04d13bfa8ef11720c24e4d840c0033d145537df7"
@@ -419,12 +413,6 @@ deps = ["Adapt", "LinearAlgebra", "Printf", "Random", "Serialization", "Statisti
 git-tree-sha1 = "d9681e61fbce7dde48684b40bdb1a319c4083be7"
 uuid = "0c68f7d7-f131-5f86-a1c3-88cf8149b2d7"
 version = "8.1.3"
-
-[[GeneralizedSylvesterSolver]]
-deps = ["FastLapackInterface", "KroneckerTools", "LinearAlgebra", "QuasiTriangular"]
-git-tree-sha1 = "fc76da1bf0fbabcae19bfb9f50d7a9db39f94c2b"
-uuid = "3b00829b-373b-4a35-afa6-09f888b04ecd"
-version = "0.1.2"
 
 [[HostCPUFeatures]]
 deps = ["BitTwiddlingConvenienceFunctions", "IfElse", "Libdl", "Static"]
@@ -543,12 +531,6 @@ deps = ["Distributions", "DocStringExtensions", "FFTW", "Interpolations", "Stats
 git-tree-sha1 = "591e8dc09ad18386189610acafb970032c519707"
 uuid = "5ab0869b-81aa-558d-bb23-cbf5423bbe9b"
 version = "0.6.3"
-
-[[KroneckerTools]]
-deps = ["LinearAlgebra", "QuasiTriangular"]
-git-tree-sha1 = "4d10b5380330679eeff1e7324309f596db426d9b"
-uuid = "7e59e93b-e0cb-42c7-aa95-426cb754d61e"
-version = "0.1.1"
 
 [[LaTeXStrings]]
 git-tree-sha1 = "f2355693d6778a178ade15952b7ac47a4ff97996"
@@ -885,12 +867,6 @@ git-tree-sha1 = "78aadffb3efd2155af139781b8a8df1ef279ea39"
 uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
 version = "2.4.2"
 
-[[QuasiTriangular]]
-deps = ["LinearAlgebra"]
-git-tree-sha1 = "dfd970532acdead120491c712d0e8a90a1e70e64"
-uuid = "e29349eb-b3c8-4189-b6e7-6b7aca9b1830"
-version = "0.1.0"
-
 [[REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
@@ -1112,9 +1088,9 @@ uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[SymbolicUtils]]
 deps = ["AbstractTrees", "Bijections", "ChainRulesCore", "Combinatorics", "ConstructionBase", "DataStructures", "DocStringExtensions", "DynamicPolynomials", "IfElse", "LabelledArrays", "LinearAlgebra", "Metatheory", "MultivariatePolynomials", "NaNMath", "Setfield", "SparseArrays", "SpecialFunctions", "StaticArrays", "TermInterface", "TimerOutputs"]
-git-tree-sha1 = "3f8f28a4d36f224bb3f79ddc5b675b78cec2e16b"
+git-tree-sha1 = "8acca4433a95c150fe177512f43bba7377476d97"
 uuid = "d1185830-fcd6-423d-90d6-eec64667417b"
-version = "0.19.2"
+version = "0.19.6"
 
 [[Symbolics]]
 deps = ["ArrayInterface", "ConstructionBase", "DataStructures", "DiffRules", "Distributions", "DocStringExtensions", "DomainSets", "IfElse", "Latexify", "Libdl", "LinearAlgebra", "MacroTools", "Metatheory", "NaNMath", "RecipesBase", "Reexport", "Requires", "RuntimeGeneratedFunctions", "SciMLBase", "Setfield", "SparseArrays", "SpecialFunctions", "StaticArrays", "SymbolicUtils", "TermInterface", "TreeViews"]
