@@ -27,3 +27,4 @@ test/.results/*
 JuliaSysimage.dll
 grid_artifacts
 results/*
+robust/

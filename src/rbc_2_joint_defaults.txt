@@ -1,4 +1,4 @@
---data_path=data/rbc_1.csv
+--data_path=data/rbc_2.csv
 --alpha=0.2981
 --beta=0.1891
 --rho=0.9002
