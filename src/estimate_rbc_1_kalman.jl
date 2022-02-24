@@ -7,7 +7,6 @@ end
 function estimate_rbc_1_kalman(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
-    HMCExamples.set_BLAS_threads()
 
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)

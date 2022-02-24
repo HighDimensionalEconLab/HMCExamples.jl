@@ -1,26 +1,25 @@
 function Beta_tr(mu, sd)
-    a = ((1 - mu) / sd ^ 2 - 1 / mu) * mu ^ 2 
+    a = ((1 - mu) / sd^2 - 1 / mu) * mu^2
     b = a * (1 / mu - 1)
     return a, b
 end
 
 function Gamma_tr(mu, sd)
-    b = sd ^ 2 / mu
+    b = sd^2 / mu
     a = mu / b
     return a, b
 end
 
 function InvGamma_tr(mu, sd)
-    a = mu ^ 2 / sd ^ 2 + 2
+    a = mu^2 / sd^2 + 2
     b = mu * (a - 1)
     return a, b
 end
 
-function variance_check(u0)
-    u0_variance = u0.C.U' * u0.C.U
-    return (maximum(abs.(u0_variance)) > 1e10)
+function variance_check(u0) # todo: very inefficient and ends up differentiated. Add check to DSSM
+    return norm(cov(u0)) > 1e10#(maximum(abs.(cov(u0))) > 1e10)
 end
-    
+
 @model function rbc_kalman(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
@@ -36,10 +35,10 @@ end
         (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
         @addlogprob! -Inf
     else
-        (settings.print_level > 1) && println("Calculating likelihood")   
+        (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
         problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, sol.x_ergodic, (0, T),
-                                          noise = nothing, obs_noise = sol.D, observables = z)
+            noise = nothing, obs_noise = sol.D, observables = z)
         @addlogprob! solve(problem, KalmanFilter(); save_everystep = false).loglikelihood
     end
     return
@@ -65,7 +64,7 @@ end
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
         problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, x0, (0, T),
-                                          noise = ϵ, obs_noise = sol.D, observables = z)
+            noise = ϵ, obs_noise = sol.D, observables = z)
         @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
     end
     return
@@ -91,7 +90,7 @@ end
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
         problem = QuadraticStateSpaceProblem(sol.A_0, sol.A_1, sol.A_2, sol.B, sol.C_0, sol.C_1, sol.C_2, x0, (0, T),
-                                             noise = ϵ, obs_noise = sol.D, observables = z)
+            noise = ϵ, obs_noise = sol.D, observables = z)
         @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
     end
     return
@@ -128,7 +127,7 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success) || variance_check(sol.x_ergodic)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")        
+        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
         @addlogprob! -Inf
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
@@ -137,7 +136,7 @@ end
 
         # Simulate and get the likelihood.
         problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, sol.x_ergodic, (0, T),
-                                          noise = nothing, obs_noise = sol.D, observables = z_detrended)
+            noise = nothing, obs_noise = sol.D, observables = z_detrended)
         @addlogprob! solve(problem, KalmanFilter(); save_everystep = false).loglikelihood
     end
     return
@@ -182,7 +181,7 @@ end
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
         problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, x0, (0, T),
-                                          noise = ϵ, obs_noise = sol.D, observables = z_detrended)
+            noise = ϵ, obs_noise = sol.D, observables = z_detrended)
         @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
     end
     return
@@ -227,7 +226,7 @@ end
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
         problem = QuadraticStateSpaceProblem(sol.A_0, sol.A_1, sol.A_2, sol.B, sol.C_0, sol.C_1, sol.C_2, x0, (0, T),
-                                             noise = ϵ, obs_noise = sol.D, observables = z_detrended)
+            noise = ϵ, obs_noise = sol.D, observables = z_detrended)
         @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
     end
     return
