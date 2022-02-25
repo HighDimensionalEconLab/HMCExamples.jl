@@ -16,10 +16,6 @@ function InvGamma_tr(mu, sd)
     return a, b
 end
 
-function variance_check(u0) # todo: very inefficient and ends up differentiated. Add check to DSSM
-    return norm(cov(u0)) > 1e10#(maximum(abs.(cov(u0))) > 1e10)
-end
-
 @model function rbc_kalman(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
@@ -31,8 +27,8 @@ end
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
 
-    if !(sol.retcode == :Success) || variance_check(sol.x_ergodic)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+    if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
     else
         (settings.print_level > 1) && println("Calculating likelihood")
@@ -58,8 +54,9 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
@@ -84,8 +81,9 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
@@ -122,13 +120,14 @@ end
     ΛA ~ Gamma(params.ΛA[1], params.ΛA[2])
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
-    (settings.print_level > 0) && @show θ
+    (settings.print_level > 1) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
 
-    if !(sol.retcode == :Success) || variance_check(sol.x_ergodic)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+    if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
@@ -170,12 +169,13 @@ end
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
-    (settings.print_level > 0) && @show θ
+    (settings.print_level > 1) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
@@ -215,12 +215,13 @@ end
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
-    (settings.print_level > 0) && @show θ
+    (settings.print_level > 1) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(2); cache)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
