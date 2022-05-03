@@ -30,7 +30,7 @@ After: when you use vscode it will load the custom sysimage as long as you have 
 
 On the commandline you will need to manually provide it.  For example, 
 ```bash
-julia --project --sysimage JuliaSysimage.dll --threads auto -O1 bin/fit_rbc_1_kalman.jl --results_path ./results/main_rbc_1_kalman --overwrite_results true --num_samples 100
+julia --project --sysimage JuliaSysimage.dll --threads auto -O1 bin/fit_rbc_1_kalman.jl --results_path ./results/main_rbc_1_kalman --overwrite_results true --num_samples 1000
 ```
 ## Grid
 On grid.ai commandline:
