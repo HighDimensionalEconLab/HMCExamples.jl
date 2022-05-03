@@ -1,5 +1,5 @@
 # Entry for script
-function main_rbc_1_joint(args = ARGS)
+function main_rbc_1_joint(args=ARGS)
     d = parse_commandline_rbc_1_joint(args)
     return estimate_rbc_1_joint((; d...)) # to named tuple
 end
@@ -11,14 +11,16 @@ function estimate_rbc_1_joint(d)
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
     z = collect(Matrix(DataFrame(CSV.File(data_path)))')
-    ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_rbc_1.csv"); header = false)))
+    ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_rbc_1.csv"); header=false)))
     # Create the perturbation and the turing models
     m = PerturbationModel(HMCExamples.rbc)
-    p_d = (α = d.alpha, β = d.beta, ρ = d.rho)
-    p_f = (δ = d.delta, σ = d.sigma, Ω_1 = d.Omega_1)
+    p_d = (α=d.alpha, β=d.beta, ρ=d.rho)
+    p_f = (δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1)
     c = SolverCache(m, Val(1), p_d)
+    
+    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.check_posdef_cholesky, d.perturb_covariance)
     turing_model = rbc_joint_1(
-        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, PerturbationSolverSettings(; print_level = d.print_level), zeros(m.n_x)
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c,settings, zeros(m.n_x)
     )
 
     # Sampler
@@ -31,8 +33,9 @@ function estimate_rbc_1_joint(d)
 
 
     init_params = [p_d..., ϵ0]
-    chain = (d.num_chains == 1) ? sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
-        d.num_samples; init_params, d.progress, save_state = true) : sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),MCMCThreads(), d.num_samples, d.num_chains; init_params, d.progress, save_state = true, callback)
+    sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
+    chain = (d.num_chains == 1) ? sample(turing_model, sampler,
+        d.num_samples; init_params, d.progress, save_state=true) : sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; init_params=[init_params for _ in 1:d.num_chains], d.progress, save_state=true)
 
     # Store parameters in log directory
     parameter_save_path = joinpath(logdir, "parameters.json")
@@ -47,7 +50,7 @@ function estimate_rbc_1_joint(d)
 end
 
 function parse_commandline_rbc_1_joint(args)
-    s = ArgParseSettings(; fromfile_prefix_chars = ['@'])
+    s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
     # See the appropriate _defaults.txt file for the default vvalues.
     @add_arg_table! s begin
@@ -111,6 +114,15 @@ function parse_commandline_rbc_1_joint(args)
         "--epsilon_BK"
         arg_type = Float64
         help = "Threshold for Checking Blanchard-Khan condition"
+        "--tol_cholesky"
+        arg_type = Float64
+        help = "Tolerance for checking explosiveness of the norm of the covariance matrix"
+        "--perturb_covariance"
+        arg_type = Float64
+        help = "Perturb diagonal of the covariance matrix before taking cholesky. Defaults to machine epsilon"
+        "--check_posdef_cholesky"
+        arg_type = Bool
+        help = "Check whether the cholesky is positive definite "
         "--use_tensorboard"
         arg_type = Bool
         help = "Log to tensorboard"
@@ -121,5 +133,5 @@ function parse_commandline_rbc_1_joint(args)
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_joint_defaults.txt", args)
-    return parse_args(args_with_default, s; as_symbols = true)
+    return parse_args(args_with_default, s; as_symbols=true)
 end

@@ -1,5 +1,5 @@
 # Entry for script
-function main_FVGQ_1_joint(args = ARGS)
+function main_FVGQ_1_joint(args=ARGS)
     d = parse_commandline_FVGQ_1_joint(args)
     return estimate_FVGQ_1_joint((; d...)) # to named tuple
 end
@@ -13,12 +13,12 @@ function estimate_FVGQ_1_joint(d)
     df = Matrix(DataFrame(CSV.File(data_path)))
     z = collect(Matrix(DataFrame(CSV.File(data_path)))')
 
-    ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_FVGQ20_1.csv"); header = false)))
+    ϵ0 = Matrix(DataFrame(CSV.File(joinpath(pkgdir(HMCExamples), "data/epsilons_burnin_FVGQ20_1.csv"); header=false)))
 
     # Create the perturbation and the turing models
     m = PerturbationModel(HMCExamples.FVGQ20)
-    p_d = (β = d.beta, h = d.h, κ = d.kappa, χ = d.chi, γR = d.gamma_R, γΠ = d.gamma_Pi, Πbar = d.Pi_bar, ρd = d.rho_d, ρφ = d.rho_psi, ρg = d.rho_g, g_bar = d.g_bar, σ_A = d.sigma_A, σ_d = d.sigma_d, σ_φ = d.sigma_psi, σ_μ = d.sigma_mu, σ_m = d.sigma_m, σ_g = d.sigma_g, Λμ = d.Lambda_mu, ΛA = d.Lambda_A)
-    p_f = (ϑ = 1.0, δ = d.delta, ε = d.epsilon, ϕ = d.phi, γ2 = d.gamma2, Ω_ii = d.Omega_ii, α = d.alpha, γy = d.gamma_y, θp = d.theta_p)
+    p_d = (β=d.beta, h=d.h, κ=d.kappa, χ=d.chi, γR=d.gamma_R, γΠ=d.gamma_Pi, Πbar=d.Pi_bar, ρd=d.rho_d, ρφ=d.rho_psi, ρg=d.rho_g, g_bar=d.g_bar, σ_A=d.sigma_A, σ_d=d.sigma_d, σ_φ=d.sigma_psi, σ_μ=d.sigma_mu, σ_m=d.sigma_m, σ_g=d.sigma_g, Λμ=d.Lambda_mu, ΛA=d.Lambda_A)
+    p_f = (ϑ=1.0, δ=d.delta, ε=d.epsilon, ϕ=d.phi, γ2=d.gamma2, Ω_ii=d.Omega_ii, α=d.alpha, γy=d.gamma_y, θp=d.theta_p)
     c = SolverCache(m, Val(1), p_d)
     #create H prior
     Hx = zeros(6, m.n_x)
@@ -28,43 +28,44 @@ function estimate_FVGQ_1_joint(d)
     Hy[3, 18] = 1 # dw, trend is μz
     Hy[4, 18] = 1 # dy, trend is μz
     Hy[6, 24] = 1 # μ-1
-    params = (β = Gamma_tr(d.beta_prior[1], d.beta_prior[2]),
-        h = Beta_tr(d.h_prior[1], d.h_prior[2]),
-        κ = (d.kappa_prior[1], d.kappa_prior[2], d.kappa_prior[3], d.kappa_prior[4]),
-        γΠ = (d.gamma_Pi_prior[1], d.gamma_Pi_prior[2], d.gamma_Pi_prior[3], d.gamma_Pi_prior[4]),
-        χ = Beta_tr(d.chi_prior[1], d.chi_prior[2]),
-        γR = Beta_tr(d.gamma_R_prior[1], d.gamma_R_prior[2]),
-        Πbar = Gamma_tr(d.Pi_bar_prior[1], d.Pi_bar_prior[2]),
-        ρd = Beta_tr(d.rho_d_prior[1], d.rho_d_prior[2]),
-        ρφ = Beta_tr(d.rho_psi_prior[1], d.rho_psi_prior[2]),
-        ρg = Beta_tr(d.rho_g_prior[1], d.rho_g_prior[2]),
-        g_bar = Beta_tr(d.g_bar_prior[1], d.g_bar_prior[2]),
-        σ_A = InvGamma_tr(d.sigma_A_prior[1], d.sigma_A_prior[2]),
-        σ_d = InvGamma_tr(d.sigma_d_prior[1], d.sigma_d_prior[2]),
-        σ_φ = InvGamma_tr(d.sigma_psi_prior[1], d.sigma_psi_prior[2]),
-        σ_μ = InvGamma_tr(d.sigma_mu_prior[1], d.sigma_mu_prior[2]),
-        σ_m = InvGamma_tr(d.sigma_m_prior[1], d.sigma_m_prior[2]),
-        σ_g = InvGamma_tr(d.sigma_g_prior[1], d.sigma_g_prior[2]),
-        Λμ = Gamma_tr(d.Lambda_mu_prior[1], d.Lambda_mu_prior[2]),
-        ΛA = Gamma_tr(d.Lambda_A_prior[1], d.Lambda_A_prior[2]),
-        Hx = Hx,
-        Hy = Hy)
+    params = (β=Gamma_tr(d.beta_prior[1], d.beta_prior[2]),
+        h=Beta_tr(d.h_prior[1], d.h_prior[2]),
+        κ=(d.kappa_prior[1], d.kappa_prior[2], d.kappa_prior[3], d.kappa_prior[4]),
+        γΠ=(d.gamma_Pi_prior[1], d.gamma_Pi_prior[2], d.gamma_Pi_prior[3], d.gamma_Pi_prior[4]),
+        χ=Beta_tr(d.chi_prior[1], d.chi_prior[2]),
+        γR=Beta_tr(d.gamma_R_prior[1], d.gamma_R_prior[2]),
+        Πbar=Gamma_tr(d.Pi_bar_prior[1], d.Pi_bar_prior[2]),
+        ρd=Beta_tr(d.rho_d_prior[1], d.rho_d_prior[2]),
+        ρφ=Beta_tr(d.rho_psi_prior[1], d.rho_psi_prior[2]),
+        ρg=Beta_tr(d.rho_g_prior[1], d.rho_g_prior[2]),
+        g_bar=Beta_tr(d.g_bar_prior[1], d.g_bar_prior[2]),
+        σ_A=InvGamma_tr(d.sigma_A_prior[1], d.sigma_A_prior[2]),
+        σ_d=InvGamma_tr(d.sigma_d_prior[1], d.sigma_d_prior[2]),
+        σ_φ=InvGamma_tr(d.sigma_psi_prior[1], d.sigma_psi_prior[2]),
+        σ_μ=InvGamma_tr(d.sigma_mu_prior[1], d.sigma_mu_prior[2]),
+        σ_m=InvGamma_tr(d.sigma_m_prior[1], d.sigma_m_prior[2]),
+        σ_g=InvGamma_tr(d.sigma_g_prior[1], d.sigma_g_prior[2]),
+        Λμ=Gamma_tr(d.Lambda_mu_prior[1], d.Lambda_mu_prior[2]),
+        ΛA=Gamma_tr(d.Lambda_A_prior[1], d.Lambda_A_prior[2]),
+        Hx=Hx,
+        Hy=Hy)
 
-    turing_model = FVGQ20_joint_1(
-        z, m, p_f, params, c, PerturbationSolverSettings(; ϵ_BK = d.epsilon_BK, print_level = d.print_level), zeros(m.n_x)
+        settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.check_posdef_cholesky, d.perturb_covariance)
+    turing_model = FVGQ20_joint_1(z, m, p_f, params, c, settings, zeros(m.n_x)
     )
 
     # Sampler
     include_vars = ["β_draw", "h", "κ", "χ", "γR", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
-    logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)    
+    logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
     Random.seed!(d.seed)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
 
-    init_params = [p_d..., ϵ0];
-    chain = (d.num_chains == 1) ? sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),
-        d.num_samples; init_params, d.progress, save_state = true) : sample(turing_model, NUTS(num_adapts, d.target_acceptance_rate; max_depth = d.max_depth),MCMCThreads(), d.num_samples, d.num_chains; init_params, d.progress, save_state = true, callback)
+    init_params = [p_d..., ϵ0]
+    sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
+    chain = (d.num_chains == 1) ? sample(turing_model, sampler,
+        d.num_samples; init_params, d.progress, save_state=true) : sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; init_params=[init_params for _ in 1:d.num_chains], d.progress, save_state=true)
 
     # Store parameters in log directory
     parameter_save_path = joinpath(logdir, "parameters.json")
@@ -79,7 +80,7 @@ function estimate_FVGQ_1_joint(d)
 end
 
 function parse_commandline_FVGQ_1_joint(args)
-    s = ArgParseSettings(; fromfile_prefix_chars = ['@'])
+    s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
     # See the appropriate _defaults.txt file for the default vvalues.
     @add_arg_table! s begin
@@ -260,6 +261,15 @@ function parse_commandline_FVGQ_1_joint(args)
         "--epsilon_BK"
         arg_type = Float64
         help = "Threshold for Checking Blanchard-Khan condition"
+        "--tol_cholesky"
+        arg_type = Float64
+        help = "Tolerance for checking explosiveness of the norm of the covariance matrix"
+        "--perturb_covariance"
+        arg_type = Float64
+        help = "Perturb diagonal of the covariance matrix before taking cholesky. Defaults to machine epsilon"
+        "--check_posdef_cholesky"
+        arg_type = Bool
+        help = "Check whether the cholesky is positive definite "
         "--use_tensorboard"
         arg_type = Bool
         help = "Log to tensorboard"
@@ -269,6 +279,6 @@ function parse_commandline_FVGQ_1_joint(args)
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/FVGQ_1_joint_defaults.txt", args)
-    return parse_args(args_with_default, s; as_symbols = true)
+    return parse_args(args_with_default, s; as_symbols=true)
 
 end

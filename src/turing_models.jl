@@ -33,9 +33,8 @@ end
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, sol.x_ergodic, (0, T),
-            noise = nothing, obs_noise = sol.D, observables = z)
-        @addlogprob! solve(problem, KalmanFilter(); save_everystep = false).loglikelihood
+        problem = LinearStateSpaceProblem(sol, sol.x_ergodic, (0, T), observables=z)
+        @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
 end
@@ -60,9 +59,8 @@ end
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, x0, (0, T),
-            noise = ϵ, obs_noise = sol.D, observables = z)
-        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
+        problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end
@@ -87,9 +85,8 @@ end
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        problem = QuadraticStateSpaceProblem(sol.A_0, sol.A_1, sol.A_2, sol.B, sol.C_0, sol.C_1, sol.C_2, x0, (0, T),
-            noise = ϵ, obs_noise = sol.D, observables = z)
-        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
+        problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end
@@ -134,9 +131,8 @@ end
         (settings.print_level > 1) && println("Calculating likelihood")
 
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, sol.x_ergodic, (0, T),
-            noise = nothing, obs_noise = sol.D, observables = z_detrended)
-        @addlogprob! solve(problem, KalmanFilter(); save_everystep = false).loglikelihood
+        problem = LinearStateSpaceProblem(sol, sol.x_ergodic, (0, T), observables=z_detrended)
+        @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
 end
@@ -180,9 +176,8 @@ end
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, x0, (0, T),
-            noise = ϵ, obs_noise = sol.D, observables = z_detrended)
-        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
+        problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end
@@ -226,9 +221,8 @@ end
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
-        problem = QuadraticStateSpaceProblem(sol.A_0, sol.A_1, sol.A_2, sol.B, sol.C_0, sol.C_1, sol.C_2, x0, (0, T),
-            noise = ϵ, obs_noise = sol.D, observables = z_detrended)
-        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
+        problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end

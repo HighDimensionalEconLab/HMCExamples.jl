@@ -21,7 +21,7 @@ julia --project --threads auto -O1 bin/fit_rbc_1_kalman.jl --results_path ./resu
 Given the slow startup speed, it can be helpful to compile a custom sysimage.  This would be used by both vscode and the commandline.  To do this, execute the following in a commandline
 ```bash
 julia --threads auto -e 'using Pkg; Pkg.add(\"PackageCompiler\")'
-julia --threads auto --project ./deps/create_sysimage.jl
+julia --project --threads auto ./deps/create_sysimage.jl
 ```
 
 Grab coffee.  This will take at least 10 minutes to run.
