@@ -51,8 +51,11 @@
 --max_depth=5
 --seed=0
 --overwrite_results=false
---print_level=3
+--print_level=0
 --epsilon_BK=1e-6
+--tol_cholesky=1e9
+--check_posdef_cholesky=true
+--perturb_covariance=2.2e-16
 --use_tensorboard=false
 --num_chains=1
 --progress=true

@@ -1,26 +1,21 @@
 function Beta_tr(mu, sd)
-    a = ((1 - mu) / sd ^ 2 - 1 / mu) * mu ^ 2 
+    a = ((1 - mu) / sd^2 - 1 / mu) * mu^2
     b = a * (1 / mu - 1)
     return a, b
 end
 
 function Gamma_tr(mu, sd)
-    b = sd ^ 2 / mu
+    b = sd^2 / mu
     a = mu / b
     return a, b
 end
 
 function InvGamma_tr(mu, sd)
-    a = mu ^ 2 / sd ^ 2 + 2
+    a = mu^2 / sd^2 + 2
     b = mu * (a - 1)
     return a, b
 end
 
-function variance_check(u0)
-    u0_variance = u0.C.U' * u0.C.U
-    return (maximum(abs.(u0_variance)) > 1e10)
-end
-    
 @model function rbc_kalman(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
@@ -32,15 +27,14 @@ end
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
 
-    if !(sol.retcode == :Success) || variance_check(sol.x_ergodic)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+    if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
     else
-        (settings.print_level > 1) && println("Calculating likelihood")   
+        (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, sol.x_ergodic, (0, T),
-                                          noise = nothing, obs_noise = sol.D, observables = z)
-        @addlogprob! solve(problem, KalmanFilter(); save_everystep = false).loglikelihood
+        problem = LinearStateSpaceProblem(sol, sol.x_ergodic, (0, T), observables=z)
+        @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
 end
@@ -59,14 +53,14 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, x0, (0, T),
-                                          noise = ϵ, obs_noise = sol.D, observables = z)
-        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
+        problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end
@@ -85,14 +79,14 @@ end
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        problem = QuadraticStateSpaceProblem(sol.A_0, sol.A_1, sol.A_2, sol.B, sol.C_0, sol.C_1, sol.C_2, x0, (0, T),
-                                             noise = ϵ, obs_noise = sol.D, observables = z)
-        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
+        problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end
@@ -123,22 +117,22 @@ end
     ΛA ~ Gamma(params.ΛA[1], params.ΛA[2])
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
-    (settings.print_level > 0) && @show θ
+    (settings.print_level > 1) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
 
-    if !(sol.retcode == :Success) || variance_check(sol.x_ergodic)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")        
+    if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         (settings.print_level > 1) && println("Calculating likelihood")
 
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, sol.x_ergodic, (0, T),
-                                          noise = nothing, obs_noise = sol.D, observables = z_detrended)
-        @addlogprob! solve(problem, KalmanFilter(); save_everystep = false).loglikelihood
+        problem = LinearStateSpaceProblem(sol, sol.x_ergodic, (0, T), observables=z_detrended)
+        @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
 end
@@ -171,19 +165,19 @@ end
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
-    (settings.print_level > 0) && @show θ
+    (settings.print_level > 1) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol.A, sol.B, sol.C, x0, (0, T),
-                                          noise = ϵ, obs_noise = sol.D, observables = z_detrended)
-        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
+        problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end
@@ -216,19 +210,19 @@ end
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
-    (settings.print_level > 0) && @show θ
+    (settings.print_level > 1) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(2); cache)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed / Infinite variance with retcode $(sol.retcode)")
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
-        problem = QuadraticStateSpaceProblem(sol.A_0, sol.A_1, sol.A_2, sol.B, sol.C_0, sol.C_1, sol.C_2, x0, (0, T),
-                                             noise = ϵ, obs_noise = sol.D, observables = z_detrended)
-        @addlogprob! solve(problem, NoiseConditionalFilter(); save_everystep = false).loglikelihood
+        problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end
