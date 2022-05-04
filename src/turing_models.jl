@@ -22,7 +22,7 @@ end
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
     β = 1 / (β_draw / 100 + 1)
     p_d = (; α, β, ρ)
-    (settings.print_level > 0) && @show p_d
+    (settings.print_level > 1) && @show p_d
     T = size(z, 2)
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
@@ -45,7 +45,7 @@ end
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
     β = 1 / (β_draw / 100 + 1)
     p_d = (; α, β, ρ)
-    (settings.print_level > 0) && @show p_d
+    (settings.print_level > 1) && @show p_d
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
@@ -71,7 +71,7 @@ end
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
     β = 1 / (β_draw / 100 + 1)
     p_d = (; α, β, ρ)
-    (settings.print_level > 0) && @show p_d
+    (settings.print_level > 1) && @show p_d
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
