@@ -4,7 +4,9 @@ using Libdl, PackageCompiler, HMCExamples
 #project = dirname(@__DIR__)  # Must be one level deep below the project file
 sysimage_path = joinpath(pkgdir(HMCExamples), "JuliaSysimage.$(Libdl.dlext)")  # consistent naming with vscode
 precompile_execution_file = joinpath(pkgdir(HMCExamples), "test", "runtests.jl")
-sysimage_build_args = Cmd(["-O1"])
+sysimage_build_args = `-O1`
+ENV["JULIA_DEBUG"] = "PackageCompiler"
+
 
 @info "Using unit tests for precompile execution file."
 @info "Now building a custom sysimage for the environment to $sysimage_path"
