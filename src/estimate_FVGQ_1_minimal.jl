@@ -14,8 +14,57 @@ function estimate_FVGQ_1_minimal(d)
 
     # Create the perturbation and the turing models
     m = PerturbationModel(HMCExamples.FVGQ20)
-    p_d = (β=d.beta, h=d.h, κ=d.kappa, χ=d.chi, γR=d.gamma_R, γΠ=d.gamma_Pi, Πbar=d.Pi_bar, ρd=d.rho_d, ρφ=d.rho_psi, ρg=d.rho_g, g_bar=d.g_bar, σ_A=d.sigma_A, σ_d=d.sigma_d, σ_φ=d.sigma_psi, σ_μ=d.sigma_mu, σ_m=d.sigma_m, σ_g=d.sigma_g, Λμ=d.Lambda_mu, ΛA=d.Lambda_A)
-    p_f = (ϑ=1.0, δ=d.delta, ε=d.epsilon, ϕ=d.phi, γ2=d.gamma2, Ω_ii=d.Omega_ii, α=d.alpha, γy=d.gamma_y, θp=d.theta_p)
+    p_d = (
+        # β=d.beta,
+        #h=d.h,
+        #κ=d.kappa,
+        #χ=d.chi,
+        #γR=d.gamma_R,
+        #γΠ=d.gamma_Pi,
+        Πbar=d.Pi_bar,
+        ρd=d.rho_d,
+        ρφ=d.rho_psi,
+        #ρg=d.rho_g,
+        g_bar=d.g_bar,
+        σ_A=d.sigma_A,
+        σ_d=d.sigma_d,
+        σ_φ=d.sigma_psi,
+        σ_μ=d.sigma_mu,
+        σ_m=d.sigma_m,
+        σ_g=d.sigma_g,
+        Λμ=d.Lambda_mu,
+        ΛA=d.Lambda_A,
+    )
+    p_f = (ϑ=1.0,
+        δ=d.delta,
+        ε=d.epsilon,
+        ϕ=d.phi,
+        γ2=d.gamma2,
+        Ω_ii=d.Omega_ii,
+        α=d.alpha,
+        γy=d.gamma_y,
+        θp=d.theta_p,
+        # others potentially fixing from p_d
+        β=d.beta,
+        h=d.h,
+        κ=d.kappa,
+        χ=d.chi,
+        γR=d.gamma_R,
+        γΠ=d.gamma_Pi,
+        # Πbar=d.Pi_bar,
+        # ρd=d.rho_d,
+        # ρφ=d.rho_psi,
+        ρg=d.rho_g,
+        # g_bar=d.g_bar,
+        # σ_A=d.sigma_A,
+        # σ_d=d.sigma_d,
+        # σ_φ=d.sigma_psi,
+        # σ_μ=d.sigma_mu,
+        # σ_m=d.sigma_m,
+        # σ_g=d.sigma_g,
+        # Λμ=d.Lambda_mu,
+        # ΛA=d.Lambda_A,        
+    )
     c = SolverCache(m, Val(1), p_d)
     #create H prior
     Hx = zeros(6, m.n_x)
@@ -25,7 +74,8 @@ function estimate_FVGQ_1_minimal(d)
     Hy[3, 18] = 1 # dw, trend is μz
     Hy[4, 18] = 1 # dy, trend is μz
     Hy[6, 24] = 1 # μ-1
-    params = (β=Gamma_tr(d.beta_prior[1], d.beta_prior[2]),
+    params = (
+        β=Gamma_tr(d.beta_prior[1], d.beta_prior[2]),
         h=Beta_tr(d.h_prior[1], d.h_prior[2]),
         κ=(d.kappa_prior[1], d.kappa_prior[2], d.kappa_prior[3], d.kappa_prior[4]),
         γΠ=(d.gamma_Pi_prior[1], d.gamma_Pi_prior[2], d.gamma_Pi_prior[3], d.gamma_Pi_prior[4]),
@@ -52,7 +102,27 @@ function estimate_FVGQ_1_minimal(d)
 
     # Sampler
     name = "FQGV-kalman-s$(d.num_samples)-seed$(d.seed)"
-    include_vars = ["β_draw", "h", "κ", "χ", "γR", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
+    include_vars = [
+        # "β_draw",
+        # "h",
+        # "κ",
+        # "χ",
+        # "γR",
+        # "γΠ",
+        "Πbar_draw",
+        "ρd",
+        "ρφ",
+        # "ρg",
+        "g_bar",
+        "σ_A",
+        "σ_d",
+        "σ_φ",
+        "σ_μ",
+        "σ_m",
+        "σ_g",
+        "Λμ",
+        "ΛA",
+    ]  # variables to log
     logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 

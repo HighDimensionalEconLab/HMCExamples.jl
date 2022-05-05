@@ -92,20 +92,20 @@ end
 end
 
 @model function FVGQ20_minimal(z, m, p_f, params, cache, settings)
-    T = size(z, 2)
+
     # Priors
-    β_draw ~ Gamma(params.β[1], params.β[2])
-    β = 1 / (β_draw / 100 + 1)
-    h ~ Beta(params.h[1], params.h[2])
-    κ ~ truncated(Normal(params.κ[1], params.κ[2]), params.κ[3], params.κ[4])
-    χ ~ Beta(params.χ[1], params.χ[2])
-    γR ~ Beta(params.γR[1], params.γR[2])
-    γΠ ~ truncated(Normal(params.γΠ[1], params.γΠ[2]), params.γΠ[3], params.γΠ[4])
+    # β_draw ~ Gamma(params.β[1], params.β[2])
+    # β = 1 / (β_draw / 100 + 1)
+    # h ~ Beta(params.h[1], params.h[2])
+    # κ ~ truncated(Normal(params.κ[1], params.κ[2]), params.κ[3], params.κ[4])
+    # χ ~ Beta(params.χ[1], params.χ[2])
+    # γR ~ Beta(params.γR[1], params.γR[2])
+    # γΠ ~ truncated(Normal(params.γΠ[1], params.γΠ[2]), params.γΠ[3], params.γΠ[4])
     Πbar_draw ~ Gamma(params.Πbar[1], params.Πbar[2])
     Πbar = Πbar_draw / 100 + 1
     ρd ~ Beta(params.ρd[1], params.ρd[2])
     ρφ ~ Beta(params.ρφ[1], params.ρφ[2])
-    ρg ~ Beta(params.ρg[1], params.ρg[2])
+    # ρg ~ Beta(params.ρg[1], params.ρg[2])
     g_bar ~ Beta(params.g_bar[1], params.g_bar[2])
     σ_A ~ InverseGamma(params.σ_A[1], params.σ_A[2])
     σ_d ~ InverseGamma(params.σ_d[1], params.σ_d[2])
@@ -115,8 +115,28 @@ end
     σ_g ~ InverseGamma(params.σ_g[1], params.σ_g[2])
     Λμ ~ Gamma(params.Λμ[1], params.Λμ[2])
     ΛA ~ Gamma(params.ΛA[1], params.ΛA[2])
+
     # Likelihood
-    θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
+    θ = (;
+        # β,
+        # h,
+        # κ,
+        # χ,
+        # γR,
+        # γΠ,
+        Πbar,
+        ρd,
+        ρφ,
+        # ρg,
+        g_bar,
+        σ_A,
+        σ_d,
+        σ_φ,
+        σ_μ,
+        σ_m,
+        σ_g,
+        Λμ,
+        ΛA)
     (settings.print_level > 1) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(1); cache)
     (settings.print_level > 1) && println("Perturbation generated")
@@ -131,7 +151,7 @@ end
         (settings.print_level > 1) && println("Calculating likelihood")
 
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol, sol.x_ergodic, (0, T), observables=z_detrended)
+        problem = LinearStateSpaceProblem(sol, sol.x_ergodic, (0, size(z, 2)), observables=z_detrended)
         @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
