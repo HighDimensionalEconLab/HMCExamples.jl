@@ -47,7 +47,7 @@ function estimate_FVGQ_1_kalman(d)
         Hx=Hx,
         Hy=Hy)
 
-        settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.check_posdef_cholesky, d.perturb_covariance)
+        settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.check_posdef_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
     turing_model = FVGQ20_kalman(z, m, p_f, params, c, settings)
 
     # Sampler
@@ -267,7 +267,10 @@ function parse_commandline_FVGQ_1_kalman(args)
         help = "Perturb diagonal of the covariance matrix before taking cholesky. Defaults to machine epsilon"
         "--check_posdef_cholesky"
         arg_type = Bool
-        help = "Check whether the cholesky is positive definite "
+        help = "Check whether the cholesky is positive definite"
+        "--calculate_ergodic_distribution"
+        arg_type = Bool
+        help = "Calculate the covariance matrix of the ergodic distribution"   
         "--use_tensorboard"
         arg_type = Bool
         help = "Log to tensorboard"

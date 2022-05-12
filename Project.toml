@@ -5,8 +5,8 @@ version = "0.1.0"
 
 [compat]
 julia = "1.7"
-DifferentiableStateSpaceModels = "0.4.13"
-DifferenceEquations = "0.4.10"
+DifferentiableStateSpaceModels = "0.4.15"
+DifferenceEquations = "0.4.12"
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"

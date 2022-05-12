@@ -24,7 +24,7 @@ end
     p_d = (; α, β, ρ)
     (settings.print_level > 1) && @show p_d
     T = size(z, 2)
-    sol = generate_perturbation(m, p_d, p_f, Val(1); cache)
+    sol = generate_perturbation(m, p_d, p_f, Val(1); cache,settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -49,7 +49,7 @@ end
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
-    sol = generate_perturbation(m, p_d, p_f, Val(1); cache)
+    sol = generate_perturbation(m, p_d, p_f, Val(1); cache,settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -75,7 +75,7 @@ end
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
-    sol = generate_perturbation(m, p_d, p_f, Val(2); cache)
+    sol = generate_perturbation(m, p_d, p_f, Val(2); cache,settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -138,7 +138,7 @@ end
         Λμ,
         ΛA)
     (settings.print_level > 1) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(1); cache)
+    sol = generate_perturbation(m, θ, p_f, Val(1);cache,settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -184,7 +184,7 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 1) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(1); cache)
+    sol = generate_perturbation(m, θ, p_f, Val(1); cache,settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -232,7 +232,7 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 1) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(1); cache)
+    sol = generate_perturbation(m, θ, p_f, Val(1); cache,settings)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
@@ -277,7 +277,7 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 1) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(2); cache)
+    sol = generate_perturbation(m, θ, p_f, Val(2); cache,settings)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
