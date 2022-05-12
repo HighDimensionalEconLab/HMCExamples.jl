@@ -5,7 +5,7 @@ version = "0.1.0"
 
 [compat]
 julia = "1.7"
-DifferentiableStateSpaceModels = "0.4.15"
+DifferentiableStateSpaceModels = "0.4.16"
 DifferenceEquations = "0.4.13"
 
 [deps]
