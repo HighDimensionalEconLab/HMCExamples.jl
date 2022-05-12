@@ -106,11 +106,11 @@ function calculate_experiment_results(chain, logdir, callback, include_vars)
         end
 
         # cumulative averages
-        for var in include_vars
+        for (i, var) in enumerate(include_vars)
             values = chain[var]
             cum_average = MCMCChains.cummean(values)
             writedlm(
-                joinpath(logdir, "cumaverage_$(var).csv"),
+                joinpath(logdir, "cumaverage_$(i).csv"),
                 cum_average,
                 ','
             )
