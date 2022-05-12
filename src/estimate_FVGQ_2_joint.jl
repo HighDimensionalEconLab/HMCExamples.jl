@@ -49,7 +49,7 @@ function estimate_FVGQ_2_joint(d)
         Hx=Hx,
         Hy=Hy)
     # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
-    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.check_posdef_cholesky, d.perturb_covariance)
+    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.check_posdef_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
     turing_model = FVGQ20_joint_2(z, m, p_f, params, c, settings, zeros(m.n_x))
 
     # Sampler
@@ -269,7 +269,10 @@ function parse_commandline_FVGQ_2_joint(args)
         help = "Perturb diagonal of the covariance matrix before taking cholesky. Defaults to machine epsilon"
         "--check_posdef_cholesky"
         arg_type = Bool
-        help = "Check whether the cholesky is positive definite "
+        help = "Check whether the cholesky is positive definite"
+        "--calculate_ergodic_distribution"
+        arg_type = Bool
+        help = "Calculate the covariance matrix of the ergodic distribution"   
         "--use_tensorboard"
         arg_type = Bool
         help = "Log to tensorboard"

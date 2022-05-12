@@ -54,8 +54,10 @@
 --print_level=0
 --epsilon_BK=1e-6
 --tol_cholesky=1e9
---check_posdef_cholesky=true
---perturb_covariance=2.2e-16
+--check_posdef_cholesky=false
+--perturb_covariance=1e-12
+--singular_covariance_value=1e-8
+--calculate_ergodic_distribution=true
 --use_tensorboard=false
 --num_chains=1
 --progress=true

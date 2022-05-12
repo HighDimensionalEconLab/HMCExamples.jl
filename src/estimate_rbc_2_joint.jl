@@ -18,7 +18,7 @@ function estimate_rbc_2_joint(d)
     p_f = (δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1)
     c = SolverCache(m, Val(2), p_d)
     # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
-    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.check_posdef_cholesky, d.perturb_covariance)
+    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.check_posdef_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
     turing_model = rbc_joint_2(
         z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings, zeros(m.n_x)
     )
@@ -122,7 +122,10 @@ function parse_commandline_rbc_2_joint(args)
         help = "Perturb diagonal of the covariance matrix before taking cholesky. Defaults to machine epsilon"
         "--check_posdef_cholesky"
         arg_type = Bool
-        help = "Check whether the cholesky is positive definite "
+        help = "Check whether the cholesky is positive definite"
+        "--calculate_ergodic_distribution"
+        arg_type = Bool
+        help = "Calculate the covariance matrix of the ergodic distribution"   
         "--use_tensorboard"
         arg_type = Bool
         help = "Log to tensorboard"
