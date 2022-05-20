@@ -3,6 +3,8 @@
 # adapted from https://github.com/robert-s-lee/grid-julia/blob/main/run.sh
 # pull script from params and truncate param list accordingly
 
+echo "Using MKL"
+
 echo "Arguments"
 echo "$@"
 
