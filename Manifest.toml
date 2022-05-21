@@ -1,6 +1,6 @@
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.7.2"
+julia_version = "1.7.1"
 manifest_format = "2.0"
 
 [[deps.AbstractAlgebra]]
@@ -721,6 +721,12 @@ deps = ["AbstractFFTs", "DataAPI", "Distributions", "LinearAlgebra", "MLJModelIn
 git-tree-sha1 = "058d08594e91ba1d98dcc3669f9421a76824aa95"
 uuid = "be115224-59cd-429b-ad48-344e309966f0"
 version = "0.1.3"
+
+[[deps.MKL]]
+deps = ["Artifacts", "Libdl", "LinearAlgebra", "MKL_jll"]
+git-tree-sha1 = "e1ad60943045f666863e9112701bc77fd19d946b"
+uuid = "33e6dc65-8f57-5167-99aa-e5a354878fb2"
+version = "0.5.0"
 
 [[deps.MKL_jll]]
 deps = ["Artifacts", "IntelOpenMP_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "Pkg"]

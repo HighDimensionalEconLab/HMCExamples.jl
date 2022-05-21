@@ -1,12 +1,7 @@
-authors = ["Jesse Perla <jesseperla@gmail.com> and contributors"]
 name = "HMCExamples"
 uuid = "04c4e5f0-d543-11eb-2b99-3f716ccaf3f5"
+authors = ["Jesse Perla <jesseperla@gmail.com> and contributors"]
 version = "0.1.0"
-
-[compat]
-julia = "1.7"
-DifferentiableStateSpaceModels = "0.4.16"
-DifferenceEquations = "0.4.13"
 
 [deps]
 ArgParse = "c7e460c6-2fb9-53a9-8c5b-16f535851c63"
@@ -19,9 +14,15 @@ JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+MKL = "33e6dc65-8f57-5167-99aa-e5a354878fb2"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 SymbolicUtils = "d1185830-fcd6-423d-90d6-eec64667417b"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+
+[compat]
+DifferenceEquations = "0.4.13"
+DifferentiableStateSpaceModels = "0.4.16"
+julia = "1.7"
