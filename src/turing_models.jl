@@ -33,7 +33,7 @@ end
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol, sol.x_ergodic, (0, T), observables=z)
+        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A,1)), (0, T), observables=z)
         @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
@@ -151,7 +151,7 @@ end
         (settings.print_level > 1) && println("Calculating likelihood")
 
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol, sol.x_ergodic, (0, size(z, 2)), observables=z_detrended)
+        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A,1)), (0, size(z, 2)), observables=z_detrended)
         @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
@@ -197,7 +197,7 @@ end
         (settings.print_level > 1) && println("Calculating likelihood")
 
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol, sol.x_ergodic, (0, T), observables=z_detrended)
+        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A,1)), (0, T), observables=z_detrended)
         @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return

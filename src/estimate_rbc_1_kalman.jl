@@ -17,7 +17,7 @@ function estimate_rbc_1_kalman(d)
     p_d = (α=d.alpha, β=d.beta, ρ=d.rho)
     p_f = (δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1)
     c = SolverCache(m, Val(1), p_d)
-    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.check_posdef_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
+    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky,  d.calculate_ergodic_distribution, d.perturb_covariance)
     turing_model = rbc_kalman(z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings)
 
     # Sampler
@@ -116,9 +116,6 @@ function parse_commandline_rbc_1_kalman(args)
         "--perturb_covariance"
         arg_type = Float64
         help = "Perturb diagonal of the covariance matrix before taking cholesky. Defaults to machine epsilon"
-        "--check_posdef_cholesky"
-        arg_type = Bool
-        help = "Check whether the cholesky is positive definite"
         "--calculate_ergodic_distribution"
         arg_type = Bool
         help = "Calculate the covariance matrix of the ergodic distribution"   
