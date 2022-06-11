@@ -4,7 +4,7 @@
 --rho=0.9002
 --delta=0.025
 --sigma=0.01
---Omega_1=0.003162277
+--Omega_1=0.1
 --alpha_prior=[0.3, 0.025, 0.2, 0.5]
 --beta_prior=[6.25, 0.04]
 --rho_prior=[2.625, 2.625]
@@ -17,7 +17,6 @@
 --print_level=0
 --epsilon_BK=1e-6
 --tol_cholesky=1e9
---check_posdef_cholesky=false
 --perturb_covariance=1e-12
 --calculate_ergodic_distribution=false
 --use_tensorboard=false

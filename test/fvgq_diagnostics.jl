@@ -45,7 +45,7 @@ params = (β=Gamma_tr(d.beta_prior[1], d.beta_prior[2]),
     Hx=Hx,
     Hy=Hy)
 
-settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.check_posdef_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
+settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky,  d.calculate_ergodic_distribution, d.perturb_covariance)
 turing_model = FVGQ20_kalman(z, m, p_f, params, c, settings)
 
 # Sampler
