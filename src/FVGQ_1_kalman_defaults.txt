@@ -22,7 +22,7 @@
 --epsilon=10
 --phi=0
 --gamma2=0.01
---Omega_ii=0.06
+--Omega_ii=0.03
 --alpha=0.2851
 --gamma_y=0.7841
 --theta_p=0.0958
