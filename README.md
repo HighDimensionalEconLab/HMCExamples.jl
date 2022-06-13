@@ -46,7 +46,7 @@ To download the results when complete `grid artifacts rbc-test`
 
 To load a file into a chain with some path which saved with baseline serialization
 ```julia
-using Serialization, HMCExamples
+using Serialization, HMCExamples, DelimitedFiles
 chain = open(deserialize, joinpath(pkgdir(HMCExamples), ".results/rbc_1_joint/chain.jls"))
 ```
 
@@ -64,6 +64,7 @@ To extract the entire chain for some parameters
 vals = get(chain, [:α,:β_draw])
 ```
 
+Or to get a slice of all parameters for the last draw in the chain
 ```julia
 last_draw = chain.value[end,:,1][chain.name_map.parameters] |> Array
 end
