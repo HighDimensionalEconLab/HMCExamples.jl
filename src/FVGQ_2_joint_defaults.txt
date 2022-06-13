@@ -59,5 +59,7 @@
 --use_tensorboard=false
 --num_chains=1
 --progress=true
---save_hd5=true
---save_jls=true
+--save_hd5=false
+--save_jls=false
+--init_params_file=data/FVGQ_2_joint_burnin.csv
+--discard_initial=-1

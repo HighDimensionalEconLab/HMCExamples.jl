@@ -30,20 +30,13 @@ function estimate_rbc_2_joint(d)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
     Random.seed!(d.seed)
-    @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
+    print_info(d, num_adapts)
 
-    init_params = [p_d..., ϵ0]
+    init_params = (d.init_params_file == "") ? [p_d..., ϵ0] : readdlm(joinpath(pkgdir(HMCExamples), d.init_params_file), ',', Float64, '\n')[:, 1]
+
     sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
     chain = (d.num_chains == 1) ? sample(turing_model, sampler,
-        d.num_samples; init_params, d.progress, save_state=true) : sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; init_params=[init_params for _ in 1:d.num_chains], d.progress, save_state=true)
-
-    # Store parameters in log directory
-    parameter_save_path = joinpath(logdir, "parameters.json")
-
-    @info "Storing Parameters at $(parameter_save_path) "
-    open(parameter_save_path, "w") do f
-        write(f, JSON.json(d))
-    end
+        d.num_samples; init_params, d.progress, save_state=true, discard_initial = d.discard_initial) : sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; init_params=[init_params for _ in 1:d.num_chains], d.progress, save_state=true, discard_initial = d.discard_initial)
 
     # Calculate and save results into the logdir
     calculate_experiment_results(d, chain, logdir, callback, include_vars)
@@ -135,7 +128,14 @@ function parse_commandline_rbc_2_joint(args)
         "--save_hd5"
         arg_type = Bool
         help = "Save the hd5 serialization"
-    end
+        "--init_params_file"
+        arg_type = String
+        help = "Use file for initializing the chain. Ignores other initial conditions"
+        "--discard_initial"
+        arg_type = Int64
+        help = "Number of draws to discard for warmup"
+
+end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_2_joint_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)

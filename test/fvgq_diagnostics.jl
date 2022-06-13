@@ -54,5 +54,5 @@ num_adapts = convert(Int64, floor(num_samples * d.adapts_burnin_prop))
 
 Random.seed!(d.seed)
 init_params = [p_d...]
-sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
+sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth, discard_initial = d.discard_initial)
 chain = sample(turing_model, sampler, num_samples; init_params, d.progress, save_state=true)
