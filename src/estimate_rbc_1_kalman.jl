@@ -43,7 +43,7 @@ function estimate_rbc_1_kalman(d)
     end
 
     # Calculate and save results into the logdir
-    calculate_experiment_results(chain, logdir, callback, include_vars)
+    calculate_experiment_results(d, chain, logdir, callback, include_vars)
 end
 
 function parse_commandline_rbc_1_kalman(args)
@@ -126,6 +126,12 @@ function parse_commandline_rbc_1_kalman(args)
         "--progress"
         arg_type = Bool
         help = "Show progress"
+        "--save_jls"
+        arg_type = Bool
+        help = "Save the jls serialization (not portable)"
+        "--save_hd5"
+        arg_type = Bool
+        help = "Save the hd5 serialization"
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_kalman_defaults.txt", args)

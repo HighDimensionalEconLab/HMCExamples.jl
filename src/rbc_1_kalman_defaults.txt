@@ -22,3 +22,5 @@
 --use_tensorboard=false
 --num_chains=1
 --progress=true
+--save_hd5=true
+--save_jls=true

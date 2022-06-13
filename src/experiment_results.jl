@@ -56,14 +56,20 @@ maybe_save_metric(filename, mass) = nothing # otherwise don't do anything
 
 
 #function calculate_experiment_results(@nospecialize(chain), @nospecialize(logger), include_vars)
-function calculate_experiment_results(chain, logdir, callback, include_vars)
+function calculate_experiment_results(d, chain, logdir, callback, include_vars)
     has_num_error = (:numerical_error in keys(chain))
 
-    # Store the chain in several formats.
-    # NOTE: For now, we save in JLS to start with. We comment out the next two lines for now.
-    # JLSO.save(joinpath(logdir, "chain.jlso"), :chain => chain) # As JLSO, most robust
-    # CSV.write(joinpath(logdir, "chain.csv"), DataFrame(chain)) # As CSV, in case everything else fails
-    serialize(joinpath(logdir, "chain.jls"), chain)            # Fast but flimsy, no version control
+    # Store the chain
+    if d.save_jls
+        serialize(joinpath(logdir, "chain.jls"), chain) # Basic Julia serialization.  Not portable beetween versions/machines
+    end
+
+    # Use HDF5 with MCMCChainsStorage
+    if d.save_hd5
+        h5open(joinpath(logdir, "chain.h5"), "w") do f
+        write(f, chain)
+        end
+    end
 
     # summary statistics
     sum_stats = describe(chain[include_vars])
