@@ -51,7 +51,6 @@ function estimate_FVGQ_1_kalman(d)
     turing_model = FVGQ20_kalman(z, m, p_f, params, c, settings)
 
     # Sampler
-    name = "FQGV-kalman-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["β_draw", "h", "κ", "χ", "γR", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
     logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))

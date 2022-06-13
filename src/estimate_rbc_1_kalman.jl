@@ -21,7 +21,6 @@ function estimate_rbc_1_kalman(d)
     turing_model = rbc_kalman(z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings)
 
     # Sampler
-    name = "rbc-kalman-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
     logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
