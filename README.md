@@ -40,3 +40,26 @@ grid run --name rbc-test --config scripts/default_compute.yml bin/fit_rbc_1_kalm
 To see the logs during execution (which could be 10ish minutes to build the container) do `grid logs rbc-test`.
 
 To download the results when complete `grid artifacts rbc-test`
+
+# Analyzing the Chain
+To load a file into a chain with some path,
+```julia
+using Serialization, HMCExamples
+chain = open(deserialize, joinpath(pkgdir(HMCExamples), "results/main_FVGQ_2_joint/chain.jls"))
+```
+
+To extract the entire chain for some parameters
+```
+vals = get(chain, [:h,:κ])
+```
+
+And to get all of the values in an array for the last draw in the chain and then save into a file,
+```julia
+last_draw = chain.value[end,:,1][chain.name_map.parameters] |> Array
+writedlm(joinpath(pkgdir(HMCExamples), "data/FVGQ_2_burnin_draw.csv"), last_draw, ',')
+```
+Then you could edit the `init_param` in the samplers to use that as an initial condition in the `estimate_` files.  For example,
+```julia
+init_param = readdlm(joinpath(pkgdir(HMCExamples), "data/FVGQ_2_burnin_draw.csv"), ',', Float64, '\n')[:,1]
+```
+

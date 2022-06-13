@@ -1,6 +1,8 @@
 module HMCExamples
 using Base: String
 using ArgParse, CSV, DataFrames, DifferenceEquations, DelimitedFiles, DifferentiableStateSpaceModels, JSON, LinearAlgebra, Logging, Random, Serialization, Turing, Zygote
+using AdvancedHMC: DiagEuclideanMetric, UnitEuclideanMetric, DenseEuclideanMetric # for preconditioning
+using Turing: NUTS
 # using JLSO?
 # using TuringCallbacks, TensorBoardLogger,   # Will turn on later after fixing MCMCThreads logging issues.
 using Turing: @addlogprob!
