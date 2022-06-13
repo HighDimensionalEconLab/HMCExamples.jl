@@ -33,14 +33,13 @@ function estimate_rbc_1_joint(d)
 
 
     init_params = [p_d..., ϵ0]
+    #    init_params = readdlm(joinpath(pkgdir(HMCExamples), "data/rbc_1_joint_burnin_Omega_03.csv"), ',', Float64, '\n')[:, 1]
+
     sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
     chain = (d.num_chains == 1) ? sample(turing_model, sampler,
         d.num_samples; init_params, d.progress, save_state=true) : sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; init_params=[init_params for _ in 1:d.num_chains], d.progress, save_state=true)
 
-    # Store parameters in log directory
-    parameter_save_path = joinpath(logdir, "parameters.json")
-
-    @info "Storing Parameters at $(parameter_save_path) "
+    # Store parameters in log directory 
     open(parameter_save_path, "w") do f
         write(f, JSON.json(d))
     end
