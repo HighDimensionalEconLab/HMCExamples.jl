@@ -20,9 +20,11 @@ julia --project --threads auto -O1 bin/fit_rbc_1_kalman.jl --results_path ./.res
 
 ## Some Features
 A few features for sampling and output:
+- `--target_acceptance_rate 0.65` set the target acceptance for NUTS
+- `--max_depth 5` set the max_depth for NUTS
 - `--discard_initial 100` etc. discards draws as a warmup
-- `--save_jls true`  save the entire chain as an (unportable) JLS file
-- `--save_hd5 true` saves as a portable HDF5 file format
+- `--save_jls true`  save the entire chain as an (unportable) JLS file.  Default is false
+- `--save_hd5 true` saves as a portable HDF5 file format.  Default is false
 - `--init_params_file data/my_file.csv` uses that file as the initial condition for sampling
 
 In all cases, for long-burnins you can find the final draw of the chain as the `last_draw.csv` file, which can be used with the `init_params_file` argument after moving/renaming
