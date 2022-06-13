@@ -20,7 +20,7 @@ function prepare_output_directory(use_tensorboard, d, include_vars)
 
     # delete directory if it exists. No failure if directory doesn't exist.
     @info "Saving results to $(d.results_path) and removing contents if non-empty"
-    rm(d.results_path, force = true, recursive = true)
+    rm(d.results_path, force=true, recursive=true)
     mkpath(d.results_path)
 
     callback = nothing
@@ -50,16 +50,26 @@ function log_summary_statistics!(callback::Nothing, param_names, param_ess, para
     #     )
 end
 
+# Save depends on the type of mass matrix
+maybe_save_metric(filename, mass::AbstractArray) = writedlm(filename, mass, ',')
+maybe_save_metric(filename, mass) = nothing # otherwise don't do anything
+
 
 #function calculate_experiment_results(@nospecialize(chain), @nospecialize(logger), include_vars)
-function calculate_experiment_results(chain, logdir, callback, include_vars)
+function calculate_experiment_results(d, chain, logdir, callback, include_vars)
     has_num_error = (:numerical_error in keys(chain))
 
-    # Store the chain in several formats.
-    # NOTE: For now, we save in JLS to start with. We comment out the next two lines for now.
-    # JLSO.save(joinpath(logdir, "chain.jlso"), :chain => chain) # As JLSO, most robust
-    # CSV.write(joinpath(logdir, "chain.csv"), DataFrame(chain)) # As CSV, in case everything else fails
-    serialize(joinpath(logdir, "chain.jls"), chain)            # Fast but flimsy, no version control
+    # Store the chain
+    if d.save_jls
+        serialize(joinpath(logdir, "chain.jls"), chain) # Basic Julia serialization.  Not portable beetween versions/machines
+    end
+
+    # Use HDF5 with MCMCChainsStorage
+    if d.save_hd5
+        h5open(joinpath(logdir, "chain.h5"), "w") do f
+        write(f, chain)
+        end
+    end
 
     # summary statistics
     sum_stats = describe(chain[include_vars])
@@ -73,13 +83,13 @@ function calculate_experiment_results(chain, logdir, callback, include_vars)
     CSV.write(
         joinpath(logdir, "sumstats.csv"),
         DataFrame(
-            Parameter = param_names,
-            Mean = param_mean,
-            StdDev = param_sd,
-            ESS = param_ess,
-            Rhat = param_rhat,
-            ESSpersec = param_esspersec,
-            Num_error = has_num_error ? calculate_num_error_prop(chain) * ones(length(include_vars)) : missing # TODO: verify the "ones" logic here?
+            Parameter=param_names,
+            Mean=param_mean,
+            StdDev=param_sd,
+            ESS=param_ess,
+            Rhat=param_rhat,
+            ESSpersec=param_esspersec,
+            Num_error=has_num_error ? calculate_num_error_prop(chain) * ones(length(include_vars)) : missing # TODO: verify the "ones" logic here?
         )
     )
     # Save the preconditioner if one is available
@@ -88,21 +98,7 @@ function calculate_experiment_results(chain, logdir, callback, include_vars)
 
         # Check if there's a Hamiltonian in the state
         if :hamiltonian in propertynames(state)
-            h = state.hamiltonian
-
-            # Get the metric
-            mass = h.metric.M⁻¹
-            mass_shape = size(mass)
-
-            # If it's diagonal, make it dense
-            m = if length(mass_shape) == 1
-                diagm(mass)
-            else
-                mass
-            end
-
-            # Write it to disk
-            writedlm(joinpath(logdir, "preconditioner.csv"), m, ',')
+            maybe_save_metric(joinpath(logdir, "preconditioner.csv"), state.hamiltonian.metric.M⁻¹)
         end
 
         # cumulative averages

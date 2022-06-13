@@ -97,7 +97,7 @@ function estimate_FVGQ_1_minimal(d)
         Hx=Hx,
         Hy=Hy)
 
-    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance,d.singular_covariance_value)
+    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance, d.singular_covariance_value)
     turing_model = FVGQ20_minimal(z, m, p_f, params, c, settings)
 
     # Sampler
@@ -142,7 +142,7 @@ function estimate_FVGQ_1_minimal(d)
     end
 
     # Calculate and save results into the logdir
-    calculate_experiment_results(chain, logdir, callback, include_vars)
+    calculate_experiment_results(d, chain, logdir, callback, include_vars)
 end
 
 function parse_commandline_FVGQ_1_minimal(args)
@@ -337,16 +337,22 @@ function parse_commandline_FVGQ_1_minimal(args)
         help = "Perturb diagonal of the covariance matrix before taking cholesky. Defaults to machine epsilon"
         "--singular_covariance_value"
         arg_type = Float64
-        help = "Value to set the covariance matrix when singular"        
+        help = "Value to set the covariance matrix when singular"
         "--calculate_ergodic_distribution"
         arg_type = Bool
-        help = "Calculate the covariance matrix of the ergodic distribution"   
+        help = "Calculate the covariance matrix of the ergodic distribution"
         "--use_tensorboard"
         arg_type = Bool
         help = "Log to tensorboard"
         "--progress"
         arg_type = Bool
         help = "Show progress"
+        "--save_jls"
+        arg_type = Bool
+        help = "Save the jls serialization (not portable)"
+        "--save_hd5"
+        arg_type = Bool
+        help = "Save the hd5 serialization"
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/FVGQ_1_minimal_defaults.txt", args)

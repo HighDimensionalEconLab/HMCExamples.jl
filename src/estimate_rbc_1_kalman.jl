@@ -17,7 +17,7 @@ function estimate_rbc_1_kalman(d)
     p_d = (α=d.alpha, β=d.beta, ρ=d.rho)
     p_f = (δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1)
     c = SolverCache(m, Val(1), p_d)
-    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky,  d.calculate_ergodic_distribution, d.perturb_covariance)
+    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
     turing_model = rbc_kalman(z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings)
 
     # Sampler
@@ -29,7 +29,8 @@ function estimate_rbc_1_kalman(d)
     Random.seed!(d.seed)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
     init_params = [p_d...]
-    sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
+    metricT = DiagEuclideanMetric #  DiagEuclideanMetric, UnitEuclideanMetric, DenseEuclideanMetric
+    sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth, metricT)
     chain = (d.num_chains == 1) ? sample(turing_model, sampler,
         d.num_samples; init_params, d.progress, save_state=true) : sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; init_params=[init_params for _ in 1:d.num_chains], d.progress, save_state=true)
 
@@ -42,7 +43,7 @@ function estimate_rbc_1_kalman(d)
     end
 
     # Calculate and save results into the logdir
-    calculate_experiment_results(chain, logdir, callback, include_vars)
+    calculate_experiment_results(d, chain, logdir, callback, include_vars)
 end
 
 function parse_commandline_rbc_1_kalman(args)
@@ -118,13 +119,19 @@ function parse_commandline_rbc_1_kalman(args)
         help = "Perturb diagonal of the covariance matrix before taking cholesky. Defaults to machine epsilon"
         "--calculate_ergodic_distribution"
         arg_type = Bool
-        help = "Calculate the covariance matrix of the ergodic distribution"   
+        help = "Calculate the covariance matrix of the ergodic distribution"
         "--use_tensorboard"
         arg_type = Bool
         help = "Log to tensorboard"
         "--progress"
         arg_type = Bool
         help = "Show progress"
+        "--save_jls"
+        arg_type = Bool
+        help = "Save the jls serialization (not portable)"
+        "--save_hd5"
+        arg_type = Bool
+        help = "Save the hd5 serialization"
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_kalman_defaults.txt", args)

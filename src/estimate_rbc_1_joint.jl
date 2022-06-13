@@ -17,10 +17,10 @@ function estimate_rbc_1_joint(d)
     p_d = (α=d.alpha, β=d.beta, ρ=d.rho)
     p_f = (δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1)
     c = SolverCache(m, Val(1), p_d)
-    
+
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
     turing_model = rbc_joint_1(
-        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c,settings, zeros(m.n_x)
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings, zeros(m.n_x)
     )
 
     # Sampler
@@ -46,7 +46,7 @@ function estimate_rbc_1_joint(d)
     end
 
     # Calculate and save results into the logdir
-    calculate_experiment_results(chain, logdir, callback, include_vars)
+    calculate_experiment_results(d, chain, logdir, callback, include_vars)
 end
 
 function parse_commandline_rbc_1_joint(args)
@@ -122,13 +122,19 @@ function parse_commandline_rbc_1_joint(args)
         help = "Perturb diagonal of the covariance matrix before taking cholesky. Defaults to machine epsilon"
         "--calculate_ergodic_distribution"
         arg_type = Bool
-        help = "Calculate the covariance matrix of the ergodic distribution"   
+        help = "Calculate the covariance matrix of the ergodic distribution"
         "--use_tensorboard"
         arg_type = Bool
         help = "Log to tensorboard"
         "--progress"
         arg_type = Bool
         help = "Show progress"
+        "--save_jls"
+        arg_type = Bool
+        help = "Save the jls serialization (not portable)"
+        "--save_hd5"
+        arg_type = Bool
+        help = "Save the hd5 serialization"
 
     end
 
