@@ -17,6 +17,17 @@ Or with options such as multiple chains
 ```bash
 julia --project --threads auto -O1 bin/fit_rbc_1_kalman.jl --results_path ./.results/rbc_1_kalman --overwrite_results true --num_samples 1000 --num_chains 8
 ```
+
+## Some Features
+A few features for sampling and output:
+- `--target_acceptance_rate 0.65` set the target acceptance for NUTS
+- `--max_depth 5` set the max_depth for NUTS
+- `--discard_initial 100` etc. discards draws as a warmup
+- `--save_jls true`  save the entire chain as an (unportable) JLS file.  Default is false
+- `--save_hd5 true` saves as a portable HDF5 file format.  Default is false
+- `--init_params_file data/my_file.csv` uses that file as the initial condition for sampling
+
+In all cases, for long-burnins you can find the final draw of the chain as the `last_draw.csv` file, which can be used with the `init_params_file` argument after moving/renaming
 ## Package Compilation
 Given the slow startup speed, it can be helpful to compile a custom sysimage.  This would be used by both vscode and the commandline.  To do this, execute the following in a commandline
 ```bash
@@ -70,15 +81,4 @@ last_draw = chain.value[end,:,1][chain.name_map.parameters] |> Array
 end
 ```
 
-**NOTE** The h5 format may reorder the chain's variables, so you can't count on using them being in the right order.  Only do these steps with the jls files.
-
-To get all of the values in an array for the last draw in the chain and then save into a file,
-```julia
-last_draw = chain.value[end,:,1][chain.name_map.parameters] |> Array
-writedlm(joinpath(pkgdir(HMCExamples), "data/FVGQ_2_burnin_draw.csv"), last_draw, ',')
-```
-Then you could edit the `init_param` in the samplers to use that as an initial condition in the `estimate_` files.  For example,
-```julia
-init_param = readdlm(joinpath(pkgdir(HMCExamples), "data/FVGQ_2_burnin_draw.csv"), ',', Float64, '\n')[:,1]
-```
-
+**NOTE** The h5 format may reorder the chain's variables, so you can't count on using them being in the same order.

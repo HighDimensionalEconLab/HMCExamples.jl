@@ -51,25 +51,19 @@ function estimate_FVGQ_1_kalman(d)
     turing_model = FVGQ20_kalman(z, m, p_f, params, c, settings)
 
     # Sampler
-    name = "FQGV-kalman-s$(d.num_samples)-seed$(d.seed)"
     include_vars = ["β_draw", "h", "κ", "χ", "γR", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
     logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
     Random.seed!(d.seed)
-    @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains"
-    init_params = [p_d...]
-    sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
+    print_info(d, num_adapts)
+
+    init_params = (d.init_params_file == "") ? [p_d...] : readdlm(joinpath(pkgdir(HMCExamples), d.init_params_file), ',', Float64, '\n')[:, 1]
+
+    metricT = DiagEuclideanMetric #  DiagEuclideanMetric, UnitEuclideanMetric, DenseEuclideanMetric
+    sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth, metricT)
     chain = (d.num_chains == 1) ? sample(turing_model, sampler,
-        d.num_samples; init_params, d.progress, save_state=true) : sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; init_params=[init_params for _ in 1:d.num_chains], d.progress, save_state=true)
-
-    # Store parameters in log directory
-    parameter_save_path = joinpath(logdir, "parameters.json")
-
-    @info "Storing Parameters at $(parameter_save_path) "
-    open(parameter_save_path, "w") do f
-        write(f, JSON.json(d))
-    end
+        d.num_samples; init_params, d.progress, save_state=true, d.discard_initial) : sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; init_params=[init_params for _ in 1:d.num_chains], d.progress, save_state=true, d.discard_initial)
 
     # Calculate and save results into the logdir
     calculate_experiment_results(d, chain, logdir, callback, include_vars)
@@ -283,6 +277,13 @@ function parse_commandline_FVGQ_1_kalman(args)
         "--save_hd5"
         arg_type = Bool
         help = "Save the hd5 serialization"
+        "--init_params_file"
+        arg_type = String
+        help = "Use file for initializing the chain. Ignores other initial conditions"
+        "--discard_initial"
+        arg_type = Int64
+        help = "Number of draws to discard for warmup"
+
     end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/FVGQ_1_kalman_defaults.txt", args)

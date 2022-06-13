@@ -1,3 +1,8 @@
+function print_info(d, num_adapts)
+    discard_text = (d.discard_initial == -1) ? "" : " discarding the first $(d.discard_initial)"
+    init_params_text = d.init_params_file == "" ? "" : " using $(d.init_params_file) as initial condition"
+    @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains$(discard_text)$(init_params_text)"
+end
 
 function prepare_output_directory(use_tensorboard, d, include_vars)
     @assert d.use_tensorboard == false # will add support later
@@ -54,22 +59,34 @@ end
 maybe_save_metric(filename, mass::AbstractArray) = writedlm(filename, mass, ',')
 maybe_save_metric(filename, mass) = nothing # otherwise don't do anything
 
-
-#function calculate_experiment_results(@nospecialize(chain), @nospecialize(logger), include_vars)
 function calculate_experiment_results(d, chain, logdir, callback, include_vars)
+
+    # Store parameters in log directory
+    parameter_save_path = joinpath(logdir, "parameters.json")
+
+    open(parameter_save_path, "w") do f
+        write(f, JSON.json(d))
+    end
+
+    
     has_num_error = (:numerical_error in keys(chain))
 
     # Store the chain
     if d.save_jls
+        @info "Storing Chain at $(joinpath(logdir, "chain.jls"))"
         serialize(joinpath(logdir, "chain.jls"), chain) # Basic Julia serialization.  Not portable beetween versions/machines
     end
 
     # Use HDF5 with MCMCChainsStorage
     if d.save_hd5
+        @info "Storing Chain at $(joinpath(logdir, "chain.h5"))"        
         h5open(joinpath(logdir, "chain.h5"), "w") do f
         write(f, chain)
         end
     end
+
+    last_draw = chain.value[end,:,1][chain.name_map.parameters] |> Array    
+    writedlm(joinpath(logdir, "last_draw.csv"), last_draw, ',')
 
     # summary statistics
     sum_stats = describe(chain[include_vars])
