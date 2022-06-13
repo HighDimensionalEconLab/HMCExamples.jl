@@ -60,6 +60,6 @@
 --num_chains=1
 --progress=true
 --save_hd5=false
---save_jls=false
+--save_jls=true
 --init_params_file=data/FVGQ_2_joint_burnin.csv
 --discard_initial=-1

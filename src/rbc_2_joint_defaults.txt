@@ -23,6 +23,6 @@
 --num_chains=1
 --progress=true
 --save_hd5=false
---save_jls=false
+--save_jls=true
 --init_params_file=data/rbc_2_joint_burnin_Omega_03.csv
 --discard_initial=-1

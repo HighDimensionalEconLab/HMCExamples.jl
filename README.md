@@ -23,7 +23,7 @@ A few features for sampling and output:
 - `--target_acceptance_rate 0.65` set the target acceptance for NUTS
 - `--max_depth 5` set the max_depth for NUTS
 - `--discard_initial 100` etc. discards draws as a warmup
-- `--save_jls true`  save the entire chain as an (unportable) JLS file.  Default is false
+- `--save_jls true`  save the entire chain as an (unportable) JLS file.  Default is true
 - `--save_hd5 true` saves as a portable HDF5 file format.  Default is false
 - `--init_params_file data/my_file.csv` uses that file as the initial condition for sampling
 
@@ -57,7 +57,7 @@ To download the results when complete `grid artifacts rbc-test`
 
 To load a file into a chain with some path which saved with baseline serialization
 ```julia
-using Serialization, HMCExamples, DelimitedFiles
+using Serialization, HMCExamples, DelimitedFiles, MCMCChains
 chain = open(deserialize, joinpath(pkgdir(HMCExamples), ".results/rbc_1_joint/chain.jls"))
 ```
 
