@@ -30,10 +30,22 @@ function estimate_rbc_1_joint(d)
     print_info(d, num_adapts)
     sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
 
-    init_params = (d.init_params_file == "") ? nothing : readdlm(joinpath(pkgdir(HMCExamples), d.init_params_file), ',', Float64, '\n')[:, 1]
-
-    chain = (d.num_chains == 1) ? sample(turing_model, sampler,
-        d.num_samples; init_params, d.progress, save_state=true, d.discard_initial, callback) : sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; init_params=[init_params for _ in 1:d.num_chains], d.progress, save_state=true, d.discard_initial, callback)
+    # 4 cases just to be careful with type-stability
+    if (d.num_chains == 1) && (d.init_params_file == "")
+        chain = sample(turing_model, sampler, d.num_samples; d.progress, save_state=true, d.discard_initial, callback)
+        calculate_experiment_results(d, chain, logdir, callback, include_vars)
+    elseif (d.num_chains == 1) && (d.init_params_file != "")
+        init_params = readdlm(joinpath(pkgdir(HMCExamples), d.init_params_file), ',', Float64, '\n')[:, 1]
+        chain = sample(turing_model, sampler, d.num_samples; d.progress, save_state=true, d.discard_initial, callback, init_params)
+        calculate_experiment_results(d, chain, logdir, callback, include_vars)
+    elseif (d.num_chains > 1) && (d.init_params_file == "")
+        chain = sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback)
+        calculate_experiment_results(d, chain, logdir, callback, include_vars)
+    elseif (d.num_chains > 1) && (d.init_params_file != "")
+        init_params = readdlm(joinpath(pkgdir(HMCExamples), d.init_params_file), ',', Float64, '\n')[:, 1]
+        chain = sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback, init_params=[init_params for _ in 1:d.num_chains])
+        calculate_experiment_results(d, chain, logdir, callback, include_vars)
+    end
 
     # Calculate and save results into the logdir
     calculate_experiment_results(d, chain, logdir, callback, include_vars)
