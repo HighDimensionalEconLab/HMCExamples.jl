@@ -1,7 +1,4 @@
 --data_path=data/rbc_1.csv
---alpha=0.2981
---beta=0.1891
---rho=0.9002
 --delta=0.025
 --sigma=0.01
 --Omega_1=0.00316
@@ -24,5 +21,6 @@
 --progress=true
 --save_hd5=false
 --save_jls=true
---init_params_file=data/rbc_1_joint_burnin_Omega_03.csv
+--init_params_file=
 --discard_initial=-1
+--sampling_heartbeat=0

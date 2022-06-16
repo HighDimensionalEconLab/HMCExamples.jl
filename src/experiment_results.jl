@@ -1,7 +1,8 @@
 function print_info(d, num_adapts)
     discard_text = (d.discard_initial == -1) ? "" : " discarding the first $(d.discard_initial)"
     init_params_text = d.init_params_file == "" ? "" : " using $(d.init_params_file) as initial condition"
-    @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains$(discard_text)$(init_params_text)"
+    seed_text = (d.seed == -1) ? "" : " with seed = $(d.seed)"
+    @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains$(discard_text)$(init_params_text)$(seed_text)"
 end
 
 function prepare_output_directory(use_tensorboard, d, include_vars)
@@ -28,7 +29,15 @@ function prepare_output_directory(use_tensorboard, d, include_vars)
     rm(d.results_path, force=true, recursive=true)
     mkpath(d.results_path)
 
-    callback = nothing
+
+    function callback(rng, model, sampler, sample, state, i; kwargs...)
+        if (d.sampling_heartbeat > 0)
+            if i % d.sampling_heartbeat == 0
+                println("Drawing sample $i")
+            end
+        end
+        return
+    end
 
     return d.results_path, callback
 end
@@ -68,7 +77,7 @@ function calculate_experiment_results(d, chain, logdir, callback, include_vars)
         write(f, JSON.json(d))
     end
 
-    
+
     has_num_error = (:numerical_error in keys(chain))
 
     # Store the chain
@@ -79,13 +88,13 @@ function calculate_experiment_results(d, chain, logdir, callback, include_vars)
 
     # Use HDF5 with MCMCChainsStorage
     if d.save_hd5
-        @info "Storing Chain at $(joinpath(logdir, "chain.h5"))"        
+        @info "Storing Chain at $(joinpath(logdir, "chain.h5"))"
         h5open(joinpath(logdir, "chain.h5"), "w") do f
-        write(f, chain)
+            write(f, chain)
         end
     end
 
-    last_draw = chain.value[end,:,1][chain.name_map.parameters] |> Array    
+    last_draw = chain.value[end, :, 1][chain.name_map.parameters] |> Array
     writedlm(joinpath(logdir, "last_draw.csv"), last_draw, ',')
 
     # summary statistics
@@ -132,7 +141,7 @@ function calculate_experiment_results(d, chain, logdir, callback, include_vars)
 
     # Log the ESS/sec and rhat.  Nice to show as summary results from tensorboard
     # a noop if callback = nothing
-    log_summary_statistics!(callback, param_names, param_ess, param_rhat)
+    #log_summary_statistics!(callback, param_names, param_ess, param_rhat)
 
     # Make a succinct results JSON
     parameters = JSON.parsefile(joinpath(logdir, "parameters.json"))
