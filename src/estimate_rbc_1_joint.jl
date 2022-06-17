@@ -47,8 +47,6 @@ function estimate_rbc_1_joint(d)
         calculate_experiment_results(d, chain, logdir, callback, include_vars)
     end
 
-    # Calculate and save results into the logdir
-    calculate_experiment_results(d, chain, logdir, callback, include_vars)
 end
 
 function parse_commandline_rbc_1_joint(args)
