@@ -9,7 +9,7 @@
 --adapts_burnin_prop=0.1
 --target_acceptance_rate=0.65
 --max_depth=5
---seed=0
+--seed=-1
 --overwrite_results=false
 --print_level=0
 --epsilon_BK=1e-6
@@ -19,8 +19,8 @@
 --use_tensorboard=false
 --num_chains=1
 --progress=true
---save_hd5=false
---save_jls=true
+--save_hd5=true
+--save_jls=false
 --init_params_file=
 --discard_initial=-1
 --sampling_heartbeat=0
