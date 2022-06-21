@@ -17,9 +17,7 @@ function estimate_rbc_1_joint(d)
     c = SolverCache(m, Val(1), [:α, :β, :ρ])
 
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
-    turing_model = rbc_joint_1(
-        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings, zeros(m.n_x)
-    )
+    turing_model = rbc_joint_1(z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings)
 
     # Sampler
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
