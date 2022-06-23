@@ -1,7 +1,7 @@
 using HMCExamples, DifferentiableStateSpaceModels, DifferenceEquations, CSV, DataFrames, Random, RecursiveArrayTools
 using Turing
 
-Random.seed!(1) # fix a seed for reproducibility
+Random.seed!(0) # fix a seed for reproducibility
 
 m = PerturbationModel(HMCExamples.rbc)
 m_2 = PerturbationModel(HMCExamples.rbc)

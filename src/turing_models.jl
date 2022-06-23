@@ -39,7 +39,7 @@ end
     return
 end
 
-@model function rbc_joint_1(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0)
+@model function rbc_joint_1(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0_ignored)
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
@@ -59,6 +59,7 @@ end
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
+        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
         problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
         @addlogprob! solve(problem, DirectIteration()).logpdf
     end
