@@ -47,7 +47,7 @@ function estimate_FVGQ_2_joint(d)
         Hy=Hy)
     # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
-    turing_model = FVGQ20_joint_2(z, m, p_f, params, c, settings, zeros(m.n_x))
+    turing_model = FVGQ20_joint_2(z, m, p_f, params, c, settings)
 
     # Sampler
     include_vars = ["β_draw", "h", "κ", "χ", "γR", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log

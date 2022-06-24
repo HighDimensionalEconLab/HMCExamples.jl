@@ -47,7 +47,7 @@ function estimate_FVGQ_1_joint(d)
         Hy=Hy)
 
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
-    turing_model = FVGQ20_joint_1(z, m, p_f, params, c, settings, zeros(m.n_x)
+    turing_model = FVGQ20_joint_1(z, m, p_f, params, c, settings
     )
 
     # Sampler

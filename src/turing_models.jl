@@ -66,7 +66,7 @@ end
     return
 end
 
-@model function rbc_joint_2(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0)
+@model function rbc_joint_2(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
@@ -86,6 +86,7 @@ end
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
+        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
         problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
         @addlogprob! solve(problem, DirectIteration()).logpdf
     end
@@ -138,7 +139,7 @@ end
     return
 end
 
-@model function FVGQ20_joint_1(z, m, p_f, params, cache, settings, x0_unused)
+@model function FVGQ20_joint_1(z, m, p_f, params, cache, settings)
     T = size(z, 2)
     # Priors
     β_draw ~ Gamma(params.β[1], params.β[2])
@@ -184,7 +185,7 @@ end
     return
 end
 
-@model function FVGQ20_joint_2(z, m, p_f, params, cache, settings, x0)
+@model function FVGQ20_joint_2(z, m, p_f, params, cache, settings)
     T = size(z, 2)
     # Priors
     β_draw ~ Gamma(params.β[1], params.β[2])
@@ -223,6 +224,7 @@ end
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
+        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
         problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
         @addlogprob! solve(problem, DirectIteration()).logpdf
     end

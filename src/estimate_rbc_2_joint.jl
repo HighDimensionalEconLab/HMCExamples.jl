@@ -19,7 +19,7 @@ function estimate_rbc_2_joint(d)
     # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
     turing_model = rbc_joint_2(
-        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings, zeros(m.n_x)
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings
     )
 
     # Sampler
