@@ -237,7 +237,7 @@ function parse_commandline_FVGQ_2_joint(args)
         arg_type = Int64
         help = "Display draws at this frequency.  No output if it is 0"
 
-end
+    end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/FVGQ_2_joint_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)
