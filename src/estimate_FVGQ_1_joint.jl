@@ -59,7 +59,7 @@ function estimate_FVGQ_1_joint(d)
     print_info(d, num_adapts)
 
     sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
-    
+
     # 4 cases just to be careful with type-stability
     if (d.num_chains == 1) && (d.init_params_file == "")
         chain = sample(turing_model, sampler, d.num_samples; d.progress, save_state=true, d.discard_initial, callback)

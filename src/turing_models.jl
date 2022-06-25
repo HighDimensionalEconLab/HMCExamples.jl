@@ -24,7 +24,7 @@ end
     p_d = (; α, β, ρ)
     (settings.print_level > 1) && @show p_d
     T = size(z, 2)
-    sol = generate_perturbation(m, p_d, p_f, Val(1); cache,settings)
+    sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -33,7 +33,7 @@ end
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A,1)), (0, T), observables=z)
+        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A, 1)), (0, T), observables=z)
         @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
@@ -49,7 +49,7 @@ end
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
-    sol = generate_perturbation(m, p_d, p_f, Val(1); cache,settings)
+    sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -76,7 +76,7 @@ end
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
-    sol = generate_perturbation(m, p_d, p_f, Val(2); cache,settings)
+    sol = generate_perturbation(m, p_d, p_f, Val(2); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -120,7 +120,7 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 1) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(1); cache,settings)
+    sol = generate_perturbation(m, θ, p_f, Val(1); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -133,7 +133,7 @@ end
         (settings.print_level > 1) && println("Calculating likelihood")
 
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A,1)), (0, T), observables=z_detrended)
+        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A, 1)), (0, T), observables=z_detrended)
         @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
@@ -168,7 +168,7 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 1) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(1); cache,settings)
+    sol = generate_perturbation(m, θ, p_f, Val(1); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
@@ -214,7 +214,7 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 1) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(2); cache,settings)
+    sol = generate_perturbation(m, θ, p_f, Val(2); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
