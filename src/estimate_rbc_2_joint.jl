@@ -15,11 +15,11 @@ function estimate_rbc_2_joint(d)
     m = PerturbationModel(HMCExamples.rbc)
     p_f = (δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1)
     c = SolverCache(m, Val(2), [:α, :β, :ρ])
-    
+
     # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
     turing_model = rbc_joint_2(
-        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings, zeros(m.n_x)
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings
     )
 
     # Sampler
@@ -30,7 +30,7 @@ function estimate_rbc_2_joint(d)
     (d.seed == -1) || Random.seed!(d.seed)
     print_info(d, num_adapts)
     sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
-    
+
     # 4 cases just to be careful with type-stability
     if (d.num_chains == 1) && (d.init_params_file == "")
         chain = sample(turing_model, sampler, d.num_samples; d.progress, save_state=true, d.discard_initial, callback)
@@ -47,7 +47,7 @@ function estimate_rbc_2_joint(d)
         chain = sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback, init_params=[init_params for _ in 1:d.num_chains])
         calculate_experiment_results(d, chain, logdir, callback, include_vars)
     end
-    
+
 end
 
 function parse_commandline_rbc_2_joint(args)
@@ -137,7 +137,7 @@ function parse_commandline_rbc_2_joint(args)
         arg_type = Int64
         help = "Display draws at this frequency.  No output if it is 0"
 
-end
+    end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_2_joint_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)

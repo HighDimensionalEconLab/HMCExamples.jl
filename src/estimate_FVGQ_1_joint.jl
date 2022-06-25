@@ -47,7 +47,7 @@ function estimate_FVGQ_1_joint(d)
         Hy=Hy)
 
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
-    turing_model = FVGQ20_joint_1(z, m, p_f, params, c, settings, zeros(m.n_x)
+    turing_model = FVGQ20_joint_1(z, m, p_f, params, c, settings
     )
 
     # Sampler
@@ -59,7 +59,7 @@ function estimate_FVGQ_1_joint(d)
     print_info(d, num_adapts)
 
     sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
-    
+
     # 4 cases just to be careful with type-stability
     if (d.num_chains == 1) && (d.init_params_file == "")
         chain = sample(turing_model, sampler, d.num_samples; d.progress, save_state=true, d.discard_initial, callback)

@@ -45,7 +45,7 @@ function estimate_rbc_1_kalman(d)
         chain = sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback, init_params=[init_params for _ in 1:d.num_chains])
         calculate_experiment_results(d, chain, logdir, callback, include_vars)
     end
-    
+
 
 end
 
@@ -136,7 +136,7 @@ function parse_commandline_rbc_1_kalman(args)
         arg_type = Int64
         help = "Display draws at this frequency.  No output if it is 0"
 
-end
+    end
 
     args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_1_kalman_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)

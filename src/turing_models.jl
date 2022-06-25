@@ -24,7 +24,7 @@ end
     p_d = (; α, β, ρ)
     (settings.print_level > 1) && @show p_d
     T = size(z, 2)
-    sol = generate_perturbation(m, p_d, p_f, Val(1); cache,settings)
+    sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -33,13 +33,13 @@ end
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A,1)), (0, T), observables=z)
+        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A, 1)), (0, T), observables=z)
         @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
 end
 
-@model function rbc_joint_1(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0)
+@model function rbc_joint_1(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
@@ -49,7 +49,7 @@ end
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
-    sol = generate_perturbation(m, p_d, p_f, Val(1); cache,settings)
+    sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -59,13 +59,14 @@ end
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
+        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
         problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
         @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end
 
-@model function rbc_joint_2(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings, x0)
+@model function rbc_joint_2(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
     α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
@@ -75,7 +76,7 @@ end
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
-    sol = generate_perturbation(m, p_d, p_f, Val(2); cache,settings)
+    sol = generate_perturbation(m, p_d, p_f, Val(2); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -85,6 +86,7 @@ end
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
+        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
         problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
         @addlogprob! solve(problem, DirectIteration()).logpdf
     end
@@ -118,7 +120,7 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 1) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(1); cache,settings)
+    sol = generate_perturbation(m, θ, p_f, Val(1); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
@@ -131,13 +133,13 @@ end
         (settings.print_level > 1) && println("Calculating likelihood")
 
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A,1)), (0, T), observables=z_detrended)
+        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A, 1)), (0, T), observables=z_detrended)
         @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
 end
 
-@model function FVGQ20_joint_1(z, m, p_f, params, cache, settings, x0)
+@model function FVGQ20_joint_1(z, m, p_f, params, cache, settings)
     T = size(z, 2)
     # Priors
     β_draw ~ Gamma(params.β[1], params.β[2])
@@ -166,7 +168,7 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 1) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(1); cache,settings)
+    sol = generate_perturbation(m, θ, p_f, Val(1); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
@@ -176,13 +178,14 @@ end
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
+        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
         problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
         @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end
 
-@model function FVGQ20_joint_2(z, m, p_f, params, cache, settings, x0)
+@model function FVGQ20_joint_2(z, m, p_f, params, cache, settings)
     T = size(z, 2)
     # Priors
     β_draw ~ Gamma(params.β[1], params.β[2])
@@ -211,7 +214,7 @@ end
     # Likelihood
     θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
     (settings.print_level > 1) && @show θ
-    sol = generate_perturbation(m, θ, p_f, Val(2); cache,settings)
+    sol = generate_perturbation(m, θ, p_f, Val(2); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
@@ -221,6 +224,7 @@ end
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
+        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
         problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
         @addlogprob! solve(problem, DirectIteration()).logpdf
     end
