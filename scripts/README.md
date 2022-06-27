@@ -9,3 +9,5 @@ From inside the Docker instance:
 1. `git clone https://github.com/HighDimensionalEconLab/HMCExamples.jl`
 2. `cd HMCExamples.jl/scripts/dynare`
 3. `bash install_dynare.sh`
+4. `matlab` and then type in your license credentials
+5. run whichever `.m` files you wish to run
