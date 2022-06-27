@@ -4,6 +4,9 @@ sudo apt install wget xz-utils build-essential gfortran liboctave-dev libboost-g
 wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/dynare/5.1-2build1/dynare_5.1.orig.tar.xz
 tar -xf dynare_5.1.orig.tar.xz
 
+# make data folders in advance
+mkdir dynare_chains_1 dynare_chains_2 dynare_chains_timed
+
 cd dynare-5.1
 sudo ./configure --with-matlab=/opt/matlab/R2022b/ --disable-octave --disable-doc
 
