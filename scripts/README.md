@@ -9,7 +9,7 @@ To use the following instructions, first clone the repo via `git clone https://g
 ## Dynare 
 
 1. `bash HMCExamples.jl/scripts/dynare/dynare_bootup.sh`
-2. `sudo docker run -it --rm --shm-size=512M mathworks/matlab:r2022b -shell`
+2. `sudo docker run -it --rm --shm-size=512M mathworks/matlab:r2022a -shell`
 
 From inside the Docker instance:
 1. `sudo apt update`
