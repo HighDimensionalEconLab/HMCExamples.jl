@@ -72,4 +72,4 @@ end;
 varobs c_obs i_obs;
 
 options_.cova_compute = 0;
-estimation(datafile = 'rbc_1.csv', mode_file = 'rbc_start.mat', order = 1, mh_nblocks = 1, mh_replic = 100000, mh_drop = 0.1, mh_jscale = 0.005, mode_compute = 0, mcmc_jumping_covariance = identity_matrix);
+estimation(datafile = '../../data/rbc_1.csv', mode_file = 'rbc_start.mat', order = 1, mh_nblocks = 1, mh_replic = 100000, mh_drop = 0.1, mh_jscale = 0.005, mode_compute = 0, mcmc_jumping_covariance = identity_matrix);
