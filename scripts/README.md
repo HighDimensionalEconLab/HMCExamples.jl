@@ -1,7 +1,9 @@
 # Replication procedure
 
-You may wish to use `tmux` to leave a terminal running unattended.
-If `tmux` is not already installed, do a `sudo apt update` followed by `sudo apt install tmux`.
+You may wish to use `tmux` to leave a terminal running unattended.\
+If `tmux` is not already installed, do a `sudo apt update` followed by `sudo apt install tmux`.\
+Create a new session using `tmux new-session -s ubuntu` and retrieve it using `tmux attach-session -t ubuntu`.
+
 
 ## Dynare 
 
