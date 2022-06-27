@@ -4,12 +4,11 @@ You may wish to use `tmux` to leave a terminal running unattended.\
 If `tmux` is not already installed, do a `sudo apt update` followed by `sudo apt install tmux`.\
 Create a new session using `tmux new-session -s ubuntu` and retrieve it using `tmux attach-session -t ubuntu`.
 
-To use the following instructions, first clone the repo via `git clone https://github.com/HighDimensionalEconLab/HMCExamples.jl`.\
-Then do `cd HMCExamples.jl`.
+To use the following instructions, first clone the repo via `git clone https://github.com/HighDimensionalEconLab/HMCExamples.jl`.
 
 ## Dynare 
 
-1. `bash scripts/dynare/dynare_bootup.sh`
+1. `bash HMCExamples.jl/scripts/dynare/dynare_bootup.sh`
 2. `sudo docker run -it --rm --shm-size=512M mathworks/matlab:r2022b -shell`
 
 From inside the Docker instance:
