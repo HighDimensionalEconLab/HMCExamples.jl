@@ -21,7 +21,7 @@ for i = 1:n_alpha
                 tic
                 dynare rbc_1_robustness.mod;
                 rt = toc;
-                load("rbc_1/metropolis/rbc_1_mh1_blck1.mat");
+                load("rbc_1_robustness/metropolis/rbc_1_mh1_blck1.mat");
                 save("dynare_chains_1/chains_" + filename + ".mat", "logpo2", "x2", "rt");
             end
         end
