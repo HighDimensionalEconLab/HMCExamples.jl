@@ -16,4 +16,5 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave 
 sudo make
 
 # https://www.mathworks.com/matlabcentral/answers/329796-issue-with-libstdc-so-6 to allow matlab to launch properly
-sudo mv /opt/matlab/R2022a/sys/os/glnxa64/libstdc++.so.6 /opt/matlab/R2022a/sys/os/glnxa64/libstdc++.so.6.old
+# this is apparently not a problem with 2022a but may need to uncomment + adjust paths if the error occurs in other versions
+# sudo mv /opt/matlab/R2020b/sys/os/glnxa64/libstdc++.so.6 /opt/matlab/R2020b/sys/os/glnxa64/libstdc++.so.6.old
