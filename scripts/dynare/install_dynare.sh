@@ -8,7 +8,7 @@ tar -xf dynare_5.1.orig.tar.xz
 mkdir dynare_chains_1 dynare_chains_2 dynare_chains_timed
 
 cd dynare-5.1
-sudo ./configure --with-matlab=/opt/matlab/R2022b/ --disable-octave --disable-doc
+sudo ./configure --with-matlab=/opt/matlab/R2022a/ --disable-octave --disable-doc
 
 # https://ahelpme.com/linux/ubuntu/install-and-make-gnu-gcc-10-default-in-ubuntu-20-04-focal/ to get around a versioning error for C++20
 sudo apt install -y gcc-10 g++-10 cpp-10
@@ -16,4 +16,4 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave 
 sudo make
 
 # https://www.mathworks.com/matlabcentral/answers/329796-issue-with-libstdc-so-6 to allow matlab to launch properly
-sudo mv /opt/matlab/R2022b/sys/os/glnxa64/libstdc++.so.6 /opt/matlab/R2022b/sys/os/glnxa64/libstdc++.so.6.old
+sudo mv /opt/matlab/R2022a/sys/os/glnxa64/libstdc++.so.6 /opt/matlab/R2022a/sys/os/glnxa64/libstdc++.so.6.old
