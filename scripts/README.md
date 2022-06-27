@@ -17,4 +17,4 @@ From inside the Docker instance:
 4. `cd HMCExamples.jl/scripts/dynare`
 5. `bash install_dynare.sh`
 6. `matlab` and then type in your license credentials
-7. run whichever `.m` files you wish to run
+7. Run whichever `.m` files you wish to run
