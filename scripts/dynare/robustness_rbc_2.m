@@ -19,7 +19,7 @@ for i = 1:n_alpha
                 xparam1 = [alpha_list(i); beta_list(j); rho_list(k)];
                 save("rbc_mode.mat", "xparam1");
                 tic
-                dynare rbc_2.mod;
+                dynare rbc_2_robustness.mod;
                 rt = toc;
                 load("rbc_2/metropolis/rbc_2_mh1_blck1.mat");
                 save("dynare_chains_2/chains_" + filename + ".mat", "logpo2", "x2", "rt");
