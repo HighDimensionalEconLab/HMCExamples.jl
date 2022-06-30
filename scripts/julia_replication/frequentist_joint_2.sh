@@ -1,5 +1,6 @@
 # instantiate project
 echo "***** Instantiating Data *****"
+mkdir .data
 ~/julia-1.7.1/bin/julia --project --sysimage JuliaSysimage.so scripts/julia_replication/generate_fake_data_ergodic_frequentist.jl
 
 # execute estimation scripts
