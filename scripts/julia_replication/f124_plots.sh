@@ -22,4 +22,4 @@ done
 wait
 
 echo "FINISHED"
-shutdown -h now
+sudo shutdown -h now
