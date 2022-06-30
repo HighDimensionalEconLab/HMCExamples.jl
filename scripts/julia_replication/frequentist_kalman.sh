@@ -1,6 +1,6 @@
 # instantiate project
-echo "***** Instantiating Project *****"
-~/julia-1.7.1/bin/julia --project -e "using Pkg; Pkg.instantiate()"
+echo "***** Instantiating Data *****"
+~/julia-1.7.1/bin/julia --project --sysimage JuliaSysimage.so scripts/julia_replication/generate_fake_data_ergodic_frequentist.jl
 
 # execute estimation scripts
 for i in `seq 10`
