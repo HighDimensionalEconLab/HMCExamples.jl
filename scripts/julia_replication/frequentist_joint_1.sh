@@ -30,4 +30,4 @@ do for i in `seq 10`
 done
 
 echo "FINISHED"
-shutdown -h now
+sudo shutdown -h now
