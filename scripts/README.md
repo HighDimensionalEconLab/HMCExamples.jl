@@ -18,7 +18,7 @@ From inside the Docker instance:
 4. `cd HMCExamples.jl/scripts/dynare`
 5. `bash install_dynare.sh`
 6. `matlab` and then type in your license credentials.
-7. Run whichever `.m` files you wish to run:
+7. Run whichever `.m` file from inside the `dynare` folder you wish to run:
   - `robustness_rbc_1.m`
   - `robustness_rbc_2.m`
   - `table_rbc_1.m`
@@ -28,8 +28,7 @@ From inside the Docker instance:
 
 1. `bash HMCExamples.jl/scripts/julia_replication/install_julia.sh`
 2. `cd HMCExamples.jl`
-
-Then run the required shellscript from inside the `julia_replication` folder:
+3. Run whichever shellscript from inside the `julia_replication` folder you wish to run:
   - `f124_plots.sh`
   - `frequentist_kalman.sh`
   - `frequentist_joint_1.sh`
