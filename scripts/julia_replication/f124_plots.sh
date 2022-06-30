@@ -1,6 +1,6 @@
 # instantiate project
 echo "***** Instantiating Project *****"
-julia --project -e "using Pkg; Pkg.instantiate()"
+~/julia-1.7.1/bin/julia --project -e "using Pkg; Pkg.instantiate()"
 
 # execute estimation scripts: 10 runs of 5000 samples each
 for seed in `seq 10`
