@@ -23,3 +23,16 @@ From inside the Docker instance:
   - `robustness_rbc_2.m`
   - `table_rbc_1.m`
   - `table_rbc_2.m` 
+
+## Julia
+
+1. `bash HMCExamples.jl/scripts/julia_replication/install_julia.sh`
+2. `cd HMCExamples.jl`
+
+Then run the required shellscript from inside the `julia_replication` folder:
+  - `f124_plots.sh`
+  - `frequentist_kalman.sh`
+  - `frequentist_joint_1.sh`
+  - `frequentist_joint_2.sh`
+  - `tables.sh`
+  - `robustness.sh`
