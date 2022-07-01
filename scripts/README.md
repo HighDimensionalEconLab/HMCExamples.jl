@@ -24,6 +24,14 @@ From inside the Docker instance:
   - `table_rbc_1.m`
   - `table_rbc_2.m` 
 
+For convenience, you may wish to push/pull folders in/out of the docker container (e.g. the dynare folder to avoid recompilation). An example:
+`sudo docker cp dynare-5.1 63d13510863a:/home/matlab/Documents/MATLAB/HMCExamples.jl/scripts/dynare/dynare-5.1`\
+where `63d13510863a` comes from `sudo docker ps`.
+
+Note that if using a pre-existing dynare folder, you will still need to run the following lines from `install_dynare.sh`:
+- `sudo apt install wget xz-utils build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex libfl-dev bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as`
+- `mkdir dynare_chains_1 dynare_chains_2 dynare_chains_timed`
+
 ## Julia
 
 1. `bash HMCExamples.jl/scripts/julia_replication/install_julia.sh`
