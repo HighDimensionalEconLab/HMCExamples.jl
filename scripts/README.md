@@ -24,9 +24,9 @@ From inside the Docker instance:
   - `table_rbc_1.m`
   - `table_rbc_2.m` 
 
-For convenience, you may wish to push/pull folders in/out of the docker container (e.g. the dynare folder to avoid recompilation). An example:
+For convenience, you may wish to push/pull folders in/out of the docker container (e.g. the dynare-5.1 folder to avoid recompilation). An example:
 `sudo docker cp dynare-5.1 63d13510863a:/home/matlab/Documents/MATLAB/HMCExamples.jl/scripts/dynare/dynare-5.1`\
-where `63d13510863a` comes from `sudo docker ps`.
+where `63d13510863a` comes from `sudo docker ps`. You will likely also want to do this to save the Dynare results folders at the end.
 
 Note that if using a pre-existing dynare folder, you will still need to run the following lines from `install_dynare.sh`:
 - `sudo apt install wget xz-utils build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex libfl-dev bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as`
@@ -43,3 +43,10 @@ Note that if using a pre-existing dynare folder, you will still need to run the 
   - `frequentist_joint_2.sh`
   - `tables.sh`
   - `robustness.sh`
+
+## Uploading results to an AWS S3 bucket
+
+1. Follow the [install instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) for AWS CLI.
+2. `aws configure`
+3. Access the `~/.aws/credentials` file and ensure the profile (the `[name]` at the top), key ID, key and region are correct.
+4. Upload folders through e.g. `aws s3 cp s3://the_store_path_name/experiments ./experiments --recursive --profile the_profile_name`.
