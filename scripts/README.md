@@ -74,6 +74,9 @@ The following options are available:
   - Ideally, this command should be run on a machine with as many threads as possible due to the slow execution time of StatsPlots.
 
 ### Julia
+- Numerical Error Presence Validation
+  - `python scripts/figplots/scan_for_errors.py`
+
 - Summary Statistics
   - `julia --project=scripts scripts/figplots/sumstats_julia.py`
 
