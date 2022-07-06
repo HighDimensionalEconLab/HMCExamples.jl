@@ -23,6 +23,8 @@ From inside the Docker instance:
   - `robustness_rbc_2.m`
   - `table_rbc_1.m`
   - `table_rbc_2.m` 
+  
+You may wish to log the Dynare output to inspect the acceptance rates over the course of a run. To do this, type `script` before starting Matlab, which will log all outputs to a file. This file can be parsed using a script in the `figplots` folder; see the summary tables section below.
 
 For convenience, you may wish to push/pull folders in/out of the docker container (e.g. the dynare-5.1 folder to avoid recompilation). An example:
 `sudo docker cp dynare-5.1 63d13510863a:/home/matlab/Documents/MATLAB/HMCExamples.jl/scripts/dynare_replication/dynare-5.1`\
@@ -65,6 +67,10 @@ Run `mkdir .tables .results .figures` to prevent filepath errors when running th
 The following options are available:
 
 ### Dynare
+- Dynare Log Parser
+  - Use this to read the Dynare logs if you saved it to a file earlier.
+  - `python scripts/figplots/parse_dynare_log.py`
+
 - Summary Statistics
   - First, pull the Matlab chain files into Julia by running `julia --project=scripts scripts/figplots/dynare_to_julia.jl`.
   - Next, parse the results into tables using `python scripts/figplots/sumstats_dynare.py`.
