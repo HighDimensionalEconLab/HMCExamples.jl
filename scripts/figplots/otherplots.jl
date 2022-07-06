@@ -2,8 +2,7 @@ using HDF5, MCMCChains, MCMCChainsStorage, CSV, DataFrames, StatsPlots, Measures
 
 function generate_plots(batch)
     println("generating plots for ", batch)
-    #.experiments/benchmarks_julia/rbc_$(batch)_timed
-    chain = h5open(".results/rbc_$(batch)/chain.h5", "r") do f
+    chain = h5open(".experiments/benchmarks_julia/rbc_$(batch)_timed/chain.h5", "r") do f
         read(f, Chains)
     end
     println("  deserialization complete")
@@ -26,12 +25,12 @@ function generate_plots(batch)
         ϵ_std = tmp[1][:, 3]
 
         # Import the true shock values
-        ϵ_true = vec(Matrix(DataFrame(CSV.File("data/rbc_$(batch)_shocks_fixed.csv"))))
+        ϵ_true = vec(Matrix(DataFrame(CSV.File("data/rbc_$(batch)_shocks.csv"))))
 
         # Plot and save
         ϵ_plot = plot(ϵ_mean[2:end], ribbon=2 * ϵ_std[2:end], label="Posterior mean")
         ϵ_plot = plot!(ϵ_true, label="True values")
-        savefig(ϵ_plot, ".figures/epsilons_rbc_$(batch)_fixed.png")
+        savefig(ϵ_plot, ".figures/epsilons_rbc_$(batch).png")
     end
     println("  plots complete")
 end
