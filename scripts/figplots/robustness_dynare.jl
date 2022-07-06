@@ -4,6 +4,7 @@ using Dates
 using Statistics
 using MAT
 using Base.Threads, Base.Iterators
+using Measures
 
 function cummean!(p, xs, array::Vector; title = "", fancy_time = -1)
     M = zeros(length(array))
@@ -16,7 +17,7 @@ function cummean!(p, xs, array::Vector; title = "", fancy_time = -1)
 
     return plot!(p, xs, M, label=false, title=title, alpha=0.5, xlim=(0,1.1),
                 xticks = (range(0, 1, length=4), ["0 minutes", "", "", "$fancy_time"]),
-                xlabel = "Compute time")
+                xlabel = "Compute time", left_margin = 15mm)
 end
 
 include_vars = ["α", "β_draw", "ρ"]
@@ -59,7 +60,7 @@ for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1
             alpha=0.3, legend=false, xlim=(0,1.1),
             ylim = var_ylim[variable],
             xticks = (range(0, 1, length=4), ["0 minutes", "", "", "$fancy_time"]),
-            xlabel = "Compute time")
+            xlabel = "Compute time", left_margin = 15mm)
     end
     j = 0
     for variable in include_vars 
