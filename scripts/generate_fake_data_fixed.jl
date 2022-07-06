@@ -12,15 +12,19 @@ T = 200
 mod_perturb = generate_perturbation(m, p_d, p_f)
 x0 = [0.0, 0.0]
 println("first-order running...")
-prob = LinearStateSpaceProblem(mod_perturb, x0, (0, T))
+prob = LinearStateSpaceProblem(mod_perturb, x0, (0, T); observables_noise = nothing)
 sol = solve(prob, DirectIteration())
 z_vec = VectorOfArray(sol.z)
+W_vec = vec(sol.W)
 CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_1_fixed.csv"), DataFrame(c_obs=z_vec[1, :], i_obs=z_vec[2, :]))
+CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_1_joint_shocks_fixed.csv"), DataFrame(epsilon=W_vec))
 
 mod_perturb_2 = generate_perturbation(m_2, p_d, p_f, Val(2))
 println("second-order running...")
 x0_2 = [0.0, 0.0]
-prob_2 = QuadraticStateSpaceProblem(mod_perturb_2, x0_2, (0, T))
+prob_2 = QuadraticStateSpaceProblem(mod_perturb_2, x0_2, (0, T); observables_noise = nothing)
 sol_2 = solve(prob_2, DirectIteration())
 z_vec_2 = VectorOfArray(sol_2.z)
+W_vec_2 = vec(sol_2.W)
 CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_2_fixed.csv"), DataFrame(c_obs=z_vec_2[1, :], i_obs=z_vec_2[2, :]))
+CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_2_joint_shocks_fixed.csv"), DataFrame(epsilon=W_vec_2))

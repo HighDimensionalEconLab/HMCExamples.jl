@@ -4,6 +4,7 @@ using Dates
 using Statistics
 using MAT
 using Base.Threads, Base.Iterators
+using Measures
 
 function cummean!(p, xs, array::Vector; title = "", fancy_time = -1)
     M = zeros(length(array))
@@ -16,7 +17,7 @@ function cummean!(p, xs, array::Vector; title = "", fancy_time = -1)
 
     return plot!(p, xs, M, label=false, title=title, alpha=0.5, xlim=(0,1.1),
                 xticks = (range(0, 1, length=4), ["0 minutes", "", "", "$fancy_time"]),
-                xlabel = "Compute time")
+                xlabel = "Compute time", left_margin = 15mm)
 end
 
 include_vars = ["α", "β_draw", "ρ"]
@@ -35,7 +36,7 @@ for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1
     results = []
     for file in files
         mat = matread(joinpath(folder, file))
-        push!(durations, mat["rt"] / 2)
+        push!(durations, mat["rt"] / 4)
         push!(results, [mat["x2"] mat["logpo2"]])
     end
     max_time = quantile(durations, [0.75])[1]
@@ -50,7 +51,7 @@ for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1
         push!(p1, plot())
     end
 
-    @threads for ((i, data), (j, variable)) in collect(product(collect(enumerate(results)), collect(enumerate(include_vars))))
+    for ((i, data), (j, variable)) in collect(product(collect(enumerate(results)), collect(enumerate(include_vars))))
         println(files[i], "  ", variable, " ", j)
         c = Chains(data, ["α", "β_draw", "ρ", "lp"])
         d = range(0, 1, length=size(c, 1))
@@ -59,20 +60,21 @@ for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1
             alpha=0.3, legend=false, xlim=(0,1.1),
             ylim = var_ylim[variable],
             xticks = (range(0, 1, length=4), ["0 minutes", "", "", "$fancy_time"]),
-            xlabel = "Compute time")
+            xlabel = "Compute time", left_margin = 15mm)
     end
-    j = 0
-    for variable in include_vars 
-        j += 1
-        xlabel!(p[j], "Compute time")
+
+    k = 0
+    for var in include_vars 
+        k += 1
+        xlabel!(p[k], "Compute time")
 
         savefig(
-            p[j],
-            ".figures/cummean_$(mapping[variable])_$(oldfoldername).png"
+            p[k],
+            ".figures/cummean_$(mapping[var])_$(oldfoldername).png"
         )
         savefig(
-            p1[j],
-            ".figures/trace_$(mapping[variable])_$(oldfoldername).png"
+            p1[k],
+            ".figures/trace_$(mapping[var])_$(oldfoldername).png"
         )
     end
 end

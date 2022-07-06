@@ -36,6 +36,8 @@ Note that if using a pre-existing dynare folder, you will still need to run the 
 
 ## Julia
 
+Note that if installing Julia on the command line, you will need to call it as `~/julia-1.7.1/bin/julia --project <scriptname>` i.e. specifying the full path of the Julia executable.
+
 1. `bash HMCExamples.jl/scripts/julia_replication/install_julia.sh`
 2. `cd HMCExamples.jl`
 3. Run whichever shellscript from inside the `julia_replication` folder you wish to run:
