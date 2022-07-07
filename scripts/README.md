@@ -92,7 +92,7 @@ The following options are available:
   - `julia --project=scripts scripts/figplots/statplots_julia.jl`
 
 - Platform Cross-Comparison, Scatterplot, Inferred Shocks
-  - `julia --project=scripts scripts/figplots/otherplots_julia.jl`
+  - `julia --project=scripts scripts/figplots/otherplots.jl`
 
 - Robustness Plots
   - `julia --project=scripts --threads auto scripts/figplots/robustness_julia.jl`
