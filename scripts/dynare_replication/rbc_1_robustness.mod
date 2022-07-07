@@ -17,7 +17,7 @@ parameters betap delta alpha rho sigma;
 alpha   = 0.3;
 betap   = 0.2;
 delta   = 0.025;
-rho     = 0.8;
+rho     = 0.9;
 sigma   = 0.01;
 
 %----------------------------------------------------------------
@@ -72,4 +72,4 @@ end;
 varobs c_obs i_obs;
 
 options_.cova_compute = 0;
-estimation(datafile = '../../data/rbc_1.csv', mode_file = 'rbc_mode.mat', order = 1, mh_nblocks = 1, mh_replic = 100000, mh_drop = 0.1, mh_jscale = 0.01, mode_compute = 0, mcmc_jumping_covariance = identity_matrix);
+estimation(datafile = '../../data/rbc_1.csv', mode_file = 'rbc_mode.mat', order = 1, mh_nblocks = 1, mh_replic = 175000, mh_drop = 0.1, mh_jscale = 0.01, mode_compute = 0, mcmc_jumping_covariance = identity_matrix);
