@@ -31,7 +31,7 @@ For convenience, you may wish to push/pull folders in/out of the docker containe
 where `63d13510863a` comes from `sudo docker ps`. You will likely also want to do this to save the Dynare results folders at the end.
 
 Note that if using a pre-existing dynare folder, you will still need to run the following lines from `install_dynare.sh`:
-- `sudo apt install wget xz-utils build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex libfl-dev bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as`
+- `sudo apt install -y wget xz-utils build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex libfl-dev bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as`
 - `mkdir dynare_chains_1 dynare_chains_2 dynare_chains_timed`
 
 ## Julia
