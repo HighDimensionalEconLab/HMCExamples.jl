@@ -19,7 +19,8 @@ function generate_plots(batch)
 
     if batch != "1_kalman"
         # epsilons (Figure 6)
-        ϵ_chain = chain[:, namesingroup(chain, :ϵ_draw), 1]
+        symbol_to_int(s) = parse(Int, replace(string(s), "ϵ_draw["=>"", "]"=>""))
+        ϵ_chain = sort(chain[:, [Symbol("ϵ_draw[$a]") for a in 1:201], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
         tmp = describe(ϵ_chain)
         ϵ_mean = tmp[1][:, 2]
         ϵ_std = tmp[1][:, 3]
