@@ -72,6 +72,7 @@ end;
 varobs c_obs i_obs;
 
 options_.cova_compute = 0;
+% these are incorrect now, see dynare_replication for working params
 estimation(datafile = '../fake_data_1.csv', mode_file = 'rbc_start.mat', order = 1, mh_nblocks = 1, mh_replic = 100000, mh_drop = 0.1, mh_jscale = 0.005, mode_compute = 0, mcmc_jumping_covariance = identity_matrix);
 %estimation(datafile = '../fake_data_2.csv', order = 2, mh_nblocks = 1, mh_replic = 10000, mh_drop = 0.1, mode_compute = 0, mcmc_jumping_covariance = identity_matrix, number_of_particles = 500, mh_jscale = 0.001);
 
