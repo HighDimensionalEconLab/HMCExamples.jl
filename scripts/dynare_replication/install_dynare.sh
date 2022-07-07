@@ -1,6 +1,6 @@
 # https://git.dynare.org/Dynare/dynare
 # wget and xz-utils for installing the ubuntu dynare instance, the rest for dynare compilation
-sudo apt install wget xz-utils build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex libfl-dev bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as
+sudo apt install -y wget xz-utils build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex libfl-dev bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as
 wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/dynare/5.1-2build1/dynare_5.1.orig.tar.xz
 tar -xf dynare_5.1.orig.tar.xz
 
