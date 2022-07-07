@@ -11,7 +11,7 @@ To use the following instructions, first clone the repo via `git clone https://g
 1. `bash HMCExamples.jl/scripts/dynare_replication/dynare_bootup.sh`
 2. `sudo docker run -it --rm --shm-size=512M mathworks/matlab:r2022a -shell`
 
-From inside the Docker instance (tip: copy lines 1-7 and paste all of them at the same time into the terminal):
+From inside the Docker instance:
 1. `sudo apt update`
 2. `sudo apt install -y git`
 3. `git clone https://github.com/HighDimensionalEconLab/HMCExamples.jl`
