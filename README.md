@@ -1,9 +1,7 @@
 # DSSM HMC Examples
 
 ## Installation
-Do an
-Then
-`julia --project -e "using Pkg; Pkg.instantiate()"`
+Do `julia --project -e "using Pkg; Pkg.instantiate()"`
 
 ## CLI Usage
 To use with default options, and specifying a directory
