@@ -17,7 +17,7 @@ parameters betap delta alpha rho sigma;
 alpha   = 0.3;
 betap   = 0.2;
 delta   = 0.025;
-rho     = 0.8;
+rho     = 0.9;
 sigma   = 0.01;
 
 %----------------------------------------------------------------
