@@ -13,7 +13,7 @@ To use the following instructions, first clone the repo via `git clone https://g
 
 From inside the Docker instance (tip: copy lines 1-7 and paste all of them at the same time into the terminal):
 1. `sudo apt update`
-2. `sudo apt install git`
+2. `sudo apt install -y git`
 3. `git clone https://github.com/HighDimensionalEconLab/HMCExamples.jl`
 4. `cd HMCExamples.jl/scripts/dynare_replication`
 5. `bash install_dynare.sh`
