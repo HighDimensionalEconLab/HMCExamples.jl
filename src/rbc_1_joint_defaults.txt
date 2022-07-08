@@ -14,7 +14,7 @@
 --print_level=0
 --epsilon_BK=1e-6
 --tol_cholesky=1e9
---perturb_covariance=1e-12
+--perturb_covariance=0
 --calculate_ergodic_distribution=true
 --use_tensorboard=false
 --num_chains=1
