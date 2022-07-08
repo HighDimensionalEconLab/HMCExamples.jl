@@ -84,6 +84,9 @@ The following options are available:
 ### Julia
 - Numerical Error Presence Validation
   - `python scripts/figplots/scan_for_errors.py`
+  
+- Robustness Rhat Analysis/Validation
+  - `python scripts/figplots/scan_rhat.py`
 
 - Summary Statistics
   - `julia --project=scripts scripts/figplots/sumstats_julia.py`
