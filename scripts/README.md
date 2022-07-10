@@ -98,8 +98,7 @@ The following options are available:
   - `julia --project=scripts scripts/figplots/otherplots.jl`
 
 - Robustness Plots
-  - `julia --project=scripts --threads auto scripts/figplots/robustness_julia.jl`
-  - Ideally, this command should be run on a machine with as many threads as possible due to the slow execution time of StatsPlots.
+  - `julia --project=scripts scripts/figplots/robustness_julia.jl`
 
 - Frequentist Statistics
   - First, run `julia --project=scripts scripts/figplots/frequentist_julia.jl`.
