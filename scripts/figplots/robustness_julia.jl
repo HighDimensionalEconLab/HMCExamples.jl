@@ -37,7 +37,7 @@ for (oldfoldername, batch) in [("kalman", "1_kalman"), ("1st-joint", "1_joint"),
     chains_arr_durations = []
     for (package, alpha) in [("first", "0_25"), ("second", "0_3"), ("third", "0_35"), ("fourth", "0_4")]
         for beta_draw in ["0_1", "0_175", "0_25", "0_325"]
-            for rho in ["0_3", "0_4625", "0_625", "0_7875"]
+            for rho in ["0_4625", "0_625", "0_7875", "0.95"]
                 chain = h5open(".experiments/robustness_julia/$(package)/robustness_rbc_$(batch)_$(alpha)$(beta_draw)$(rho)/chain.h5", "r") do f
                     read(f, Chains)
                 end
