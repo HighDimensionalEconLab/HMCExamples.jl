@@ -1,8 +1,8 @@
 using HDF5, MCMCChains, MCMCChainsStorage, CSV, DataFrames, StatsPlots, Measures, MAT
 
-function generate_plots(batch)
+function generate_plots(batch, path)
     println("generating plots for ", batch)
-    chain = h5open(".experiments/benchmarks_julia/rbc_$(batch)_timed/chain.h5", "r") do f
+    chain = h5open(".experiments/benchmarks_julia/rbc_$(path)/chain.h5", "r") do f
         read(f, Chains)
     end
     println("  deserialization complete")
@@ -46,14 +46,14 @@ function dynare_comparison()
     mat2 = matread(".experiments/benchmarks_dynare/dynare_chains_timed/chain_2nd_order.mat")
     data2 = [mat2["x2"] mat2["logpo2"]]
     chain_dynare = Chains(data2, ["α", "β_draw", "ρ", "lp"])
-    println(chain_dynare[["β_draw",]])
-    density_plot = density(chain_julia_small[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, 4000")
-    density_plot = density!(chain_dynare[["β_draw",]], left_margin = 15mm, label="RWMH, particle, 10000")
-    density_plot = density!(chain_julia_big[["β_draw",]], left_margin = 15mm, label="NUTS, joint, 10000", linestyle = :dash, color = :black)
+
+    density_plot = density(chain_julia_small[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, 4000", legend=true)
+    density_plot = density!(chain_dynare[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="RWMH, particle, 9000", legend=true)
+    density_plot = density!(chain_julia_big[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, 10000", linestyle = :dash, color = :black, legend=true)
     savefig(density_plot, ".figures/beta_density.png")
 end
 
-generate_plots("1_kalman")
-generate_plots("1_joint")
-generate_plots("2_joint")
+generate_plots("1_kalman", "1_kalman_timed")
+generate_plots("1_joint", "1_joint_timed")
+generate_plots("2_joint", "2_joint_timed_10000")
 dynare_comparison()

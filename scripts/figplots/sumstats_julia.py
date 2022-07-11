@@ -27,8 +27,7 @@ with open(".tables/sumstats_rbc_1_kalman.tex", "w") as f:
     kalman.to_latex(buf = f, index = False, escape = False, column_format = "c" * num, header = ["Parameters", "Pseudotrue", "Post. Mean", "Post. Std.", "ESS", "R-hat", "ESS\%", "ESS/second", "Time"], formatters = [lambda s: f"${s}$"] + [process for i in range(num - 2)] + [lambda s: f"${int(round(s))}$"])
     f.write(r"""
 {\raggedright Notes: We draw 7,150 samples in total and discard the first 650 samples. The sampling time is
-measured in seconds and excludes \texttt{Julia} compilation time. The length of the samples is chosen
-such that the total sampling time is close to the Dynare counterpart. \par}
+measured in seconds and excludes \texttt{Julia} compilation time. \par}
 \normalsize
 \end{table}""")
 
@@ -55,7 +54,7 @@ measured in seconds and excludes \texttt{Julia} compilation time. \par}
 \normalsize
 \end{table}""")
 
-joint_2 = pd.read_csv(".experiments/benchmarks_julia/rbc_2_joint_timed/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
+joint_2 = pd.read_csv(".experiments/benchmarks_julia/rbc_2_joint_timed_10000/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
 joint_2.insert(0, "Parameters", [r"\alpha", r"100\left(\beta^{-1}-1\right)", r"\rho"])
 joint_2.insert(1, "Pseudotrue", [0.3, 0.2, 0.9])
 joint_2.insert(6, "ESS\%", joint_2.loc[:, "ESS"] / num_samples_2nd_order) # num_samples
@@ -71,8 +70,7 @@ with open(".tables/sumstats_rbc_2_joint.tex", "w") as f:
 """)
     joint_2.to_latex(buf = f, index = False, escape = False, column_format = "c" * num, header = ["Parameters", "Pseudotrue", "Post. Mean", "Post. Std.", "ESS", "R-hat", "ESS\%", "ESS/second", "Time"], formatters = [lambda s: f"${s}$"] + [process for i in range(num - 2)] + [lambda s: f"${int(round(s))}$"])
     f.write(r"""
-{\raggedright Notes: We draw 5,500 samples in total and discard the first 500 samples. The sampling time is
-measured in seconds and excludes \texttt{Julia} compilation time. The length of the samples is chosen
-such that the total sampling time is close to the Dynare counterpart. \par}
+{\raggedright Notes: We draw 11,000 samples in total and discard the first 1000 samples. The sampling time is
+measured in seconds and excludes \texttt{Julia} compilation time. \par}
 \normalsize
 \end{table}""")

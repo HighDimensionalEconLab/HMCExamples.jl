@@ -26,13 +26,13 @@ From inside the Docker instance:
   
 You may wish to log the Dynare output to inspect the acceptance rates over the course of a run. To do this, type `script` before starting Matlab, which will log all outputs to a file. This file can be parsed using a script in the `figplots` folder; see the summary tables section below.
 
-For convenience, you may wish to push/pull folders in/out of the docker container (e.g. the dynare-5.1 folder to avoid recompilation). An example:
-`sudo docker cp dynare-5.1 63d13510863a:/home/matlab/Documents/MATLAB/HMCExamples.jl/scripts/dynare_replication/dynare-5.1`\
-where `63d13510863a` comes from `sudo docker ps`. You will likely also want to do this to save the Dynare results folders at the end.
+For convenience, you may wish to push/pull folders in/out of the docker container. An example:
+`sudo docker cp 63d13510863a:/home/matlab/Documents/MATLAB/HMCExamples.jl/scripts/dynare_replication/dynare_chains_timed dynare_chains_timed`\
+where `63d13510863a` comes from `sudo docker ps`. You will likely want to do this to save the Dynare results folders at the end.
 
-Note that if using a pre-existing dynare folder, you will still need to run the following lines from `install_dynare.sh`:
-- `sudo apt install wget xz-utils build-essential gfortran liboctave-dev libboost-graph-dev libgsl-dev libmatio-dev libslicot-dev libslicot-pic libsuitesparse-dev flex libfl-dev bison autoconf automake texlive texlive-publishers texlive-latex-extra texlive-fonts-extra texlive-latex-recommended texlive-science texlive-plain-generic lmodern python3-sphinx tex-gyre latexmk libjs-mathjax doxygen x13as`
-- `mkdir dynare_chains_1 dynare_chains_2 dynare_chains_timed`
+If you need to shut the machine down, run `sudo docker commit <ID> dynaredocker` where `<ID>` is replaced with the ID from `sudo docker ps`. You can then re-activate the docker container using `sudo docker run -it --rm --shm-size=512M dynaredocker -shell` later on. This is more efficient than restarting and moving the dynare-5.1 folder in/out.
+
+To move the image to another machine, run `sudo docker save <ID> > <ID>.tar` where again the `<ID>` comes from `sudo docker ps.`. The image can then be loaded elsewhere by copying the `.tar` file and opening it with `sudo docker load < <ID>.tar`.
 
 ## Julia
 
@@ -84,6 +84,9 @@ The following options are available:
 ### Julia
 - Numerical Error Presence Validation
   - `python scripts/figplots/scan_for_errors.py`
+  
+- Robustness Rhat Analysis/Validation
+  - `python scripts/figplots/scan_rhat.py`
 
 - Summary Statistics
   - `julia --project=scripts scripts/figplots/sumstats_julia.py`
@@ -95,8 +98,7 @@ The following options are available:
   - `julia --project=scripts scripts/figplots/otherplots.jl`
 
 - Robustness Plots
-  - `julia --project=scripts --threads auto scripts/figplots/robustness_julia.jl`
-  - Ideally, this command should be run on a machine with as many threads as possible due to the slow execution time of StatsPlots.
+  - `julia --project=scripts scripts/figplots/robustness_julia.jl`
 
 - Frequentist Statistics
   - First, run `julia --project=scripts scripts/figplots/frequentist_julia.jl`.

@@ -29,8 +29,10 @@ var_ylim = Dict(
 )
 
 mapping = Dict("α"=>"alpha", "β_draw"=>"beta_draw", "ρ"=>"rho")
+pseudotrues = Dict("α"=>0.3, "β_draw"=>0.2, "ρ"=>0.9)
 
-for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1", "dynare_chains_1"), (".experiments/benchmarks_dynare/dynare_chains_2", "dynare_chains_2")]
+
+for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1", "dynare_chains_1")]
     files = readdir(folder)
     durations = []
     results = []
@@ -61,6 +63,8 @@ for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1
             ylim = var_ylim[variable],
             xticks = (range(0, 1, length=4), ["0 minutes", "", "", "$fancy_time"]),
             xlabel = "Compute time", left_margin = 15mm)
+        hline!(p[j], [pseudotrues[variable]], linestyle = :dash, color = :black)
+        hline!(p1[j], [pseudotrues[variable]], linestyle = :dash, color = :black)
     end
 
     k = 0

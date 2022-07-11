@@ -1,8 +1,9 @@
 using StatsPlots
-using MCMCChains
+using HDF5, MCMCChains, MCMCChainsStorage
 using Dates
+using JSON
 using Statistics
-using Base.Threads, Base.Iterators
+using Base.Iterators
 using Measures
 
 function cummean!(p, xs, array::Vector; title = "", fancy_time = -1)
@@ -14,9 +15,9 @@ function cummean!(p, xs, array::Vector; title = "", fancy_time = -1)
         S[i] = std(skipmissing(array[1:i]))
     end
 
-    return plot!(p, xs, M, label=false, title=title, alpha=0.5, xlim=(0,1.1),
+    return plot!(p, xs, M, label=false, legend=false, title=title, alpha=0.5, xlim=(0,1.1),
                 xticks = (range(0, 1, length=4), ["0 minutes", "", "", "$fancy_time"]),
-                xlabel = "Compute time")
+                xlabel = "Compute time", left_margin = 15mm)
 end
 
 include_vars = ["α", "β_draw", "ρ"]
@@ -28,24 +29,27 @@ var_ylim = Dict(
 )
 
 mapping = Dict("α"=>"alpha", "β_draw"=>"beta_draw", "ρ"=>"rho")
+pseudotrues = Dict("α"=>0.3, "β_draw"=>0.2, "ρ"=>0.9)
 
 for (oldfoldername, batch) in [("kalman", "1_kalman"), ("1st-joint", "1_joint"), ("2nd-joint", "2_joint")]
-    folder = ".experiments/robustness_julia"
-    files = readdir(folder)
     println("generating plots")
     chains_arr = []
-    for file in files
-        if occursin(batch, file)
-            chain = h5open(".experiments/robustness_julia/$(file)/chain.h5", "r") do f
-                read(f, Chains)
+    chains_arr_durations = []
+    for (package, alpha) in [("first", "0_25"), ("second", "0_3"), ("third", "0_35"), ("fourth", "0_4")]
+        for beta_draw in ["0_1", "0_175", "0_25", "0_325"]
+            for rho in ["0_4625", "0_625", "0_7875", "0_95"]
+                chain = h5open(".experiments/robustness_julia/$(package)/robustness_rbc_$(batch)_$(alpha)$(beta_draw)$(rho)/chain.h5", "r") do f
+                    read(f, Chains)
+                end
+                push!(chains_arr, chain)
+                results = JSON.parsefile(".experiments/robustness_julia/$(package)/robustness_rbc_$(batch)_$(alpha)$(beta_draw)$(rho)/result.json")
+                push!(chains_arr_durations, results["time_elapsed"])
             end
-            push!(chains_arr, chain)
         end
     end
     println("  deserialization complete")
 
-    durations = [(chain.info.stop_time - chain.info.start_time) for chain in chains_arr] ./ 2
-
+    durations = chains_arr_durations ./ 4
     pct90 = quantile(durations, [0.75])[1]
 
     # inds = durations .<= pct90
@@ -63,7 +67,8 @@ for (oldfoldername, batch) in [("kalman", "1_kalman"), ("1st-joint", "1_joint"),
         push!(p, plot())
         push!(p1, plot())
     end
-    @threads for ((i, c), (j, variable)) in collect(product(collect(enumerate(chains_arr)), collect(enumerate(include_vars))))
+    for ((i, c), (j, variable)) in collect(product(collect(enumerate(chains_arr)), collect(enumerate(include_vars))))
+        println(i, " ", variable)
         d = range(0, adj_durations[i], length=size(c, 1))
         # plot!(p, d, c.value.data[:,1,1], alpha=0.15, legend=false, title=folder)
         cummean!(p[j], d, c[:,variable,1].data; fancy_time=fancy_time)
@@ -71,11 +76,15 @@ for (oldfoldername, batch) in [("kalman", "1_kalman"), ("1st-joint", "1_joint"),
             alpha=0.3, legend=false, xlim=(0,1.1),
             ylim = var_ylim[variable],
             xticks = (range(0, adj_durations[i], length=4), ["0 minutes", "", "", "$fancy_time"]),
-            xlabel = "Compute time")
-        savefig(p[j], ".figures/cummean_$(mapping[variable])_$(oldfoldername).png")
-        savefig(p1[j], ".figures/trace_$(mapping[variable])_$(oldfoldername).png")
+            xlabel = "Compute time", left_margin = 15mm)
+        hline!(p[j], [pseudotrues[variable]], linestyle = :dash, color = :black)
+        hline!(p1[j], [pseudotrues[variable]], linestyle = :dash, color = :black)
     end
 
+    for (k, var) in collect(enumerate(include_vars))
+        savefig(p[k], ".figures/cummean_$(mapping[var])_$(oldfoldername).png")
+        savefig(p1[k], ".figures/trace_$(mapping[var])_$(oldfoldername).png")
+    end
 
     # display(durations ./ max_time)
 end

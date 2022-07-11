@@ -1,9 +1,9 @@
 import pandas as pd
 
-num_samples_1st_order = 100000
-runtime_1st_order = 281
-num_samples_2nd_order = 10000
-runtime_2nd_order = 558
+num_samples_1st_order = 110000 - 11000
+runtime_1st_order = 315
+num_samples_2nd_order = 10000 - 1000
+runtime_2nd_order = 13127
 
 def process(n):
     if "." in str(n):
@@ -27,8 +27,7 @@ with open(".tables/sumstats_rbc_1_dynare.tex", "w") as f:
 """)
     dynare_1st_order.to_latex(buf = f, index = False, escape = False, column_format = "c" * num, header = ["Parameters", "Pseudotrue", "Post. Mean", "Post. Std.", "ESS", "R-hat", "ESS\%", "ESS/second", "Time"], formatters = [lambda s: f"${s}$"] + [process for i in range(num - 1)])
     f.write(r"""
-{\raggedright Notes: We draw 110,000 samples in total and discard the first 10000 samples. The acceptance
-rate is tuned to 30\%. The sampling time is measured in seconds and excludes model file generation and compilation. \par}
+{\raggedright Notes: We draw 110,000 samples in total and discard the first 11000 samples. The sampling time is measured in seconds and excludes model file generation and compilation. The length of the samples is chosen such that the total sampling time is close to the Julia counterpart. \par}
 \normalsize
 \end{table}""")
 
@@ -47,7 +46,6 @@ with open(".tables/sumstats_rbc_2_dynare.tex", "w") as f2:
 """)
     dynare_2nd_order.to_latex(buf = f2, index = False, escape = False, column_format = "c" * num, header = ["Parameters", "Pseudotrue", "Post. Mean", "Post. Std.", "ESS", "R-hat", "ESS\%", "ESS/second", "Time"], formatters = [lambda s: f"${s}$"] + [process for i in range(num - 1)])
     f2.write(r"""
-{\raggedright Notes: We draw 11,000 samples in total and discard the first 1000 samples. The acceptance
-rate is tuned to 30\%. The sampling time is measured in seconds and excludes model file generation and compilation. \par}
+{\raggedright Notes: We draw 10,000 samples in total and discard the first 1000 samples. The sampling time is measured in seconds and excludes model file generation and compilation. \par}
 \normalsize
 \end{table}""")

@@ -10,9 +10,10 @@ beta_list = linspace(0.1, 0.4, n_beta);
 rho_list = linspace(0.3, 0.95, n_rho);
 
 % change the mod file to make it first-order or second-order
-for i = 1:n_alpha
-    for j = 1:n_beta
-        for k = 1:n_rho
+% not using the highest extreme points
+for i = 1:4
+    for j = 1:4
+        for k = 2:5
             filename = string(i) + "_" + string(j) + "_" + string(k);
             disp(filename);
             if ~exist("dynare_chains_1/chains_" + filename + ".mat", 'file')
