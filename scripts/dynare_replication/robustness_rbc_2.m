@@ -12,7 +12,7 @@ rho_list = linspace(0.3, 0.95, n_rho);
 % change the mod file to make it first-order or second-order
 for i = 1:4
     for j = 1:4
-        for k = 1:4
+        for k = 2:5
             filename = string(i) + "_" + string(j) + "_" + string(k);
             disp(filename);
             if ~exist("dynare_chains_2/chains_" + filename + ".mat", 'file')
