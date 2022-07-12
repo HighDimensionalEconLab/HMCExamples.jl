@@ -31,8 +31,7 @@ var_ylim = Dict(
 mapping = Dict("α"=>"alpha", "β_draw"=>"beta_draw", "ρ"=>"rho")
 pseudotrues = Dict("α"=>0.3, "β_draw"=>0.2, "ρ"=>0.9)
 
-
-for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1", "dynare_chains_1")]
+for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1", "dynare_chains_1"), (".experiments/benchmarks_dynare/dynare_chains_2", "dynare_chains_2")]
     files = readdir(folder)
     durations = []
     results = []
@@ -53,6 +52,7 @@ for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1
         push!(p1, plot())
     end
 
+    # may want to use Threads.@threads in front of the for expression if multithreaded machine available
     for ((i, data), (j, variable)) in collect(product(collect(enumerate(results)), collect(enumerate(include_vars))))
         println(files[i], "  ", variable, " ", j)
         c = Chains(data, ["α", "β_draw", "ρ", "lp"])
