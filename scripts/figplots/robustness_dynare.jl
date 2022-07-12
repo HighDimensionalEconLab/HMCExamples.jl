@@ -15,7 +15,7 @@ function cummean!(p, xs, array::Vector; title = "", fancy_time = -1)
         S[i] = std(skipmissing(array[1:i]))
     end
 
-    return plot!(p, xs, M, label=false, title=title, alpha=0.5, xlim=(0,1.1),
+    return plot!(p, xs, M, label=false, legend=false, title=title, alpha=0.5, xlim=(0,1.1),
                 xticks = (range(0, 1, length=4), ["0 minutes", "", "", "$fancy_time"]),
                 xlabel = "Compute time", left_margin = 15mm)
 end
