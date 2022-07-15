@@ -49,15 +49,14 @@ for (oldfoldername, batch) in [("kalman", "1_kalman"), ("1st-joint", "1_joint"),
     end
     println("  deserialization complete")
 
-    durations = chains_arr_durations ./ 4
-    pct90 = quantile(durations, [0.75])[1]
+    durations = chains_arr_durations #./ 4
 
     # inds = durations .<= pct90
     # chains_arr = chains_arr[inds]
     # durations = durations[inds]
 
     # max_time = maximum(durations)
-    max_time = pct90
+    max_time = quantile(durations, [0.75])[1]
     adj_durations = durations ./ max_time
 
     fancy_time = round(Second(floor(max_time)), Minute)
@@ -75,7 +74,7 @@ for (oldfoldername, batch) in [("kalman", "1_kalman"), ("1st-joint", "1_joint"),
         plot!(p1[j], d, c[:,variable,1].data, 
             alpha=0.3, legend=false, xlim=(0,1.1),
             ylim = var_ylim[variable],
-            xticks = (range(0, adj_durations[i], length=4), ["0 minutes", "", "", "$fancy_time"]),
+            xticks = (range(0, 1, length=4), ["0 minutes", "", "", "$fancy_time"]),
             xlabel = "Compute time", left_margin = 15mm)
         hline!(p[j], [pseudotrues[variable]], linestyle = :dash, color = :black)
         hline!(p1[j], [pseudotrues[variable]], linestyle = :dash, color = :black)
