@@ -37,7 +37,7 @@ for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1
     results = []
     for file in files
         mat = matread(joinpath(folder, file))
-        push!(durations, mat["rt"] / 4)
+        push!(durations, mat["rt"]) # / 4
         push!(results, [mat["x2"] mat["logpo2"]])
     end
     max_time = quantile(durations, [0.75])[1]
@@ -56,7 +56,7 @@ for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1
     for ((i, data), (j, variable)) in collect(product(collect(enumerate(results)), collect(enumerate(include_vars))))
         println(files[i], "  ", variable, " ", j)
         c = Chains(data, ["α", "β_draw", "ρ", "lp"])
-        d = range(0, 1, length=size(c, 1))
+        d = range(0, adj_durations[i], length=size(c, 1))
         cummean!(p[j], d, c[:,variable,1].data; fancy_time=fancy_time)
         plot!(p1[j], d, c[:,variable,1].data,
             alpha=0.3, legend=false, xlim=(0,1.1),
