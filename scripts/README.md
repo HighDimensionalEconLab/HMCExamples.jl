@@ -48,6 +48,15 @@ Note that if installing Julia on the command line, you will need to call it as `
   - `scripts/julia_replication/tables.sh`
   - `scripts/julia_replication/robustness.sh`
 
+## FVGQ Julia
+
+1. `bash HMCExamples.jl/scripts/fvgq_replication/install_julia.sh`
+2. `cd HMCExamples.jl`
+3. Run whichever shellscript from inside the `fvgq_replication` folder you wish to run:
+  - `scripts/fvgq_replication/kalman.sh`
+  - `scripts/fvgq_replication/1_joint.sh`
+  - `scripts/fvgq_replication/2_joint.sh`
+  
 ## Uploading results to an AWS S3 bucket
 
 1. Follow the [install instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) for AWS CLI.
