@@ -41,7 +41,8 @@ Note that if installing Julia on the command line, you will need to call it as `
 1. `bash HMCExamples.jl/scripts/julia_replication/install_julia.sh`
 2. Close and reopen the terminal to allow Julia path variables to instantiate.
 3. `cd HMCExamples.jl`
-4. Run whichever shellscript from inside the `julia_replication` folder you wish to run:
+4. `script`
+5. Run whichever shellscript from inside the `julia_replication` folder you wish to run:
   - `scripts/julia_replication/f124_plots.sh`
   - `scripts/julia_replication/frequentist_kalman.sh`
   - `scripts/julia_replication/frequentist_joint_1.sh`
