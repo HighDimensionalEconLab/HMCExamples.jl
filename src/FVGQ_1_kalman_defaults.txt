@@ -37,7 +37,7 @@
 --tol_cholesky=1e9
 --perturb_covariance=1e-12
 --singular_covariance_value=1e-8
---calculate_ergodic_distribution=true
+--calculate_ergodic_distribution=false
 --use_tensorboard=false
 --num_chains=1
 --progress=true
