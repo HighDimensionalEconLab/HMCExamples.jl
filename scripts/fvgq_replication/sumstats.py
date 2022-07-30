@@ -34,7 +34,7 @@ runtime_text = "The marginal likelihood takes {0:,} seconds to run, the 1st-orde
 kalman = kalman.drop(columns = "ESSpersec")
 
 num = 13
-with open(".tables/sumstats_fvgq.tex", "w") as f:
+with open(".tables/sumstats_FVGQ.tex", "w") as f:
     f.write(r"""\begin{table}[h]
 \caption{Estimation, FVGQ model}
 \label{tab:fvgq_result}
