@@ -1,4 +1,4 @@
-using HDF5, MCMCChains, MCMCChainsStorage, CSV, DataFrames, StatsPlots, Measures
+using HDF5, MCMCChains, MCMCChainsStorage, CSV, DataFrames, StatsPlots, Measures, Dates
 
 function generate_plots(batch, include_vars)
     println("generating plots for ", batch)
@@ -23,12 +23,11 @@ function generate_plots(batch, include_vars)
     density_plot3 = density(chain[include_vars[13:end]], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm)
     savefig(density_plot3, ".figures/densityplots_3_FVGQ_$(batch).png")
 
-    """
     if batch != "1_kalman"
         # epsilons (Figure 6)
         symbol_to_int(s) = parse(Int, replace(string(s), "ϵ_draw["=>"", "]"=>""))
-        symbollist = reshape([Symbol("ϵ_draw[]") for a in 1:1392], 6, 232)
-        labels = ["d: Preference", "φ: Labor Supply", "μ: Capital Price", "A: TFP", "m: Monetary", "g: Government Spending"]
+        symbollist = reshape([Symbol("ϵ_draw[$a]") for a in 1:1392], 6, 232)
+        labels = ["ε_d: Preference", "ε_φ: Labor Supply", "ε_μ: Capital Price", "ε_A: TFP", "ε_m: Monetary", "ε_g: Government Spending"]
         plots = []
         for i in 1:6
             ϵ_chain = sort(chain[:, symbollist[i, :], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
@@ -37,15 +36,12 @@ function generate_plots(batch, include_vars)
             ϵ_std = tmp[1][:, 3]
             push!(plots, plot(ϵ_mean[2:end], ribbon=2 * ϵ_std[2:end], title = labels[i]))
         end
-        ϵ_plot = plot(plots[1], plots[2], plots[3], plots[4], plots[5], plots[6], layout = (6, 1), size = (1600, 900), left_margin = 10mm, legend = false)
+        ϵ_plot = plot(plots[1], plots[2], plots[3], plots[4], plots[5], plots[6], layout = (6, 1), size = (1600, 900), left_margin = 10mm, bottom_margin = 5mm, legend = false, xticks = ([1:24:232;], ["$(year)-01-01" for year in 1959:6:2016]))
         savefig(ϵ_plot, ".figures/epsilons_FVGQ_$(batch).png")
     end
-    """
 
     println("  plots complete")
 end
-
-    
 
 generate_plots("1_kalman", ["β_draw", "h", "κ", "χ", "γR", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"])
 generate_plots("1_joint", ["β_draw", "h", "κ", "χ", "γR", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"])
