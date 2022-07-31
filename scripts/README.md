@@ -58,7 +58,7 @@ Note that if installing Julia on the command line, you will need to call it as `
   - `scripts/fvgq_replication/kalman.sh`
   - `scripts/fvgq_replication/1_joint.sh`
   - `scripts/fvgq_replication/2_joint.sh`
-  
+
 ## Uploading results to an AWS S3 bucket
 
 1. Follow the [install instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) for AWS CLI.
@@ -92,7 +92,7 @@ The following options are available:
   - `julia --project=scripts --threads auto scripts/figplots/robustness_dynare.jl`
   - Ideally, this command should be run on a machine with as many threads as possible due to the slow execution time of StatsPlots.
 
-### Julia
+### Julia RBC
 - Numerical Error Presence Validation
   - `python scripts/figplots/scan_for_errors.py`
   
@@ -100,7 +100,7 @@ The following options are available:
   - `python scripts/figplots/scan_rhat.py`
 
 - Summary Statistics
-  - `julia --project=scripts scripts/figplots/sumstats_julia.py`
+  - `python scripts/figplots/sumstats_julia.py`
 
 - Summary Plots
   - `julia --project=scripts scripts/figplots/statplots_julia.jl`
@@ -113,4 +113,12 @@ The following options are available:
 
 - Frequentist Statistics
   - First, run `julia --project=scripts scripts/figplots/frequentist_julia.jl`.
-  - After, run `julia --project=scripts scripts/figplots/frequentist_julia.py`.
+  - After, run `python scripts/figplots/frequentist_julia.py`.
+
+### Julia FVGQ
+- Summary Statistics
+  - `python scripts/fvgq_replication/sumstats.py`
+  
+- Summary Plots
+  - `julia --project=scripts scripts/fvgq_replication/statplots.jl`
+  

@@ -1,0 +1,11 @@
+compute:
+  provider:
+    credentials: xxxx
+    region: us-east-1
+    vendor: aws
+
+  train:
+    cpus: 31
+    gpus: 0
+    instance: m5a.8xlarge
+    framework: "julia:1.7.1"

@@ -178,7 +178,7 @@ end
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
-        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
+        x0 = zeros(m.n_x) # the initial condition
         problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
         @addlogprob! solve(problem, DirectIteration()).logpdf
     end
@@ -224,7 +224,7 @@ end
         z_trend = params.Hx * sol.x + params.Hy * sol.y
         z_detrended = z .- z_trend
         # Simulate and get the likelihood.
-        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
+        x0 = zeros(m.n_x) # the initial condition
         problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
         @addlogprob! solve(problem, DirectIteration()).logpdf
     end
