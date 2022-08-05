@@ -4,7 +4,7 @@
 % Create mode file
 
 parameter_names = [{'alpha'};{'gamma'};{'psi'};{'beta_draw'};{'rho'};{'rho_u'};{'rho_v'}];
-xparam1 = [0.4;1.0;0.000742;0.25;0.4;0.4;0.4];
+xparam1 = [0.4;1.0;0.000742;4.0;0.4;0.4;0.4];
 
 save('SU03ext_mode.mat','parameter_names','xparam1')
 

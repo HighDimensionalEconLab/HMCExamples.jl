@@ -75,7 +75,7 @@ end;
 
 
 initval;
-    r     = log(beta_draw/100);
+    r     = r_w;
     d     = d_ss;
     h     = log(h_ss);
     k     = log(k_ss);
@@ -117,7 +117,7 @@ estimated_params;
 alpha, 0.4, 0.2, 0.5, normal_pdf, 0.3, 0.025;
 gamma, 1.5, 0.5, 7, beta_pdf, 2.0, 0.5, 0.5, 10.0;
 psi, 0.000742, 0.0003, 0.0015, beta_pdf, 0.0007, 0.0004, 0.0001, 0.003;
-beta_draw, gamma_pdf, 0.25, 0.1;
+beta_draw, gamma_pdf, 4, 6;
 rho, beta_pdf, 0.5, 0.2;
 rho_u, beta_pdf, 0.5, 0.2;
 rho_v, beta_pdf, 0.5, 0.2;
