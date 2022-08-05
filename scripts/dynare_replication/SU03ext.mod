@@ -115,12 +115,12 @@ stoch_simul(order=1, pruning, nograph, periods=200);
 
 estimated_params;
 alpha, 0.4, 0.2, 0.5, normal_pdf, 0.3, 0.025;
-gamma, 1.5, 0.5, 7, beta_pdf, 2.0, 0.5, 0.5, 10.0;
-psi, 0.000742, 0.0003, 0.0015, beta_pdf, 0.0007, 0.0004, 0.0001, 0.003;
+%gamma, 1.5, 0.5, 7, beta_pdf, 2.0, 0.5, 0.5, 10.0;
+%psi, 0.000742, 0.0003, 0.0015, beta_pdf, 0.0007, 0.0004, 0.0001, 0.003;
 beta_draw, gamma_pdf, 4, 6;
 rho, beta_pdf, 0.5, 0.2;
-rho_u, beta_pdf, 0.5, 0.2;
-rho_v, beta_pdf, 0.5, 0.2;
+%rho_u, beta_pdf, 0.5, 0.2;
+%rho_v, beta_pdf, 0.5, 0.2;
 end;
 
 varobs y_obs ca_obs r_obs;
@@ -128,3 +128,4 @@ varobs y_obs ca_obs r_obs;
 options_.cova_compute = 0;
 estimation(datafile = 'SGUsimorder1.csv', mode_file = 'SU03ext_mode.mat', order = 1, mh_nblocks = 1, mh_replic = 10000, mh_drop = 0.1, mh_jscale = 0.01, mode_compute = 0, mcmc_jumping_covariance = identity_matrix);
 
+%estimation(datafile = 'SGUsimorder2.csv', mode_file = 'SU03ext_mode.mat', order = 2, mh_nblocks = 1, mh_replic = 10000, mh_drop = 0.1, mh_jscale = 0.01, mode_compute = 0, mcmc_jumping_covariance = identity_matrix, number_of_particles = 20000);
