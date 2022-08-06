@@ -11,10 +11,10 @@ function sgu()
     # x and y
     @variables t::Integer, d(..), c(..), h(..), GDP(..), i(..), k(..), a(..), λ(..), tb(..),
                ca(..), riskpremium(..), r(..), Ld(..), Lr(..), Lk(..), ζ(..), μ(..)
-
+    @variables Ω_1
     x = [a, ζ, μ, Ld, Lk, Lr]
     y = [d, c, h, GDP, i, k, λ, tb, ca, riskpremium, r]
-    p = [γ, ω, ρ, σe, δ, ψ, α, ϕ, β, r_w, d_bar, ρ_u, σu, ρ_v, σv]
+    p = [γ, ω, ρ, σe, δ, ψ, α, ϕ, β, r_w, d_bar, ρ_u, σu, ρ_v, σv,  Ω_1]
 
     # Model equations
     # Rewritten from Dynare to Schmitt-Grohe and Uribe timing conventions
@@ -61,15 +61,24 @@ function sgu()
                      ζ(∞) ~ 0,
                      μ(∞) ~ 0]
     n_ϵ = 3
+    n_x = length(x)
+	n_y = length(y)
     Γ = zeros(Num, n_ϵ, n_ϵ) # make sure it is not a float64 matrix
     Γ[1, 1] = σe
     Γ[2, 2] = σu
     Γ[3, 3] = σv
-    η = zeros(length(x), n_ϵ) # η is n_x * n_ϵ matrix
+    η = zeros(n_x, n_ϵ) # η is n_x * n_ϵ matrix
     η[1, 1] = -1 # e
     η[2, 2] = -1 # u
     η[3, 3] = -1 # v
 
-    # Add some observation matrix for Q and Ω?
-    return H, (; t, x, y, p, steady_states, Γ, η), "sgu"
+    n_z = 3 # number of observables
+	Q = zeros(n_z, n_x + n_y) # the order is [y, x]
+	Q[1, 4] = 1.0 # y i.e. GDP
+    Q[2, 9] = 1.0 # ca
+    Q[3, 11] = 1.0 # r
+
+    Ω = [Ω_1, Ω_1, Ω_1]
+
+    return H, (; t, x, y, p, steady_states, Γ, η, Ω, Q), "sgu"
 end

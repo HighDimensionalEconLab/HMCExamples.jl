@@ -351,6 +351,16 @@ function H_yp_p!(ˍ₋out, ::Val{:r_w}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
     end
 end
 
+function H_yp_p!(ˍ₋out, ::Val{:Ω_1}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
+    begin
+        begin
+            @inbounds begin
+                    nothing
+                end
+        end
+    end
+end
+
 function H_yp_p!(ˍ₋out, ::Val{:σe}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
     begin
         begin
@@ -504,6 +514,16 @@ function H_y_p!(ˍ₋out, ::Val{:d_bar}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
 end
 
 function H_y_p!(ˍ₋out, ::Val{:r_w}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
+    begin
+        begin
+            @inbounds begin
+                    nothing
+                end
+        end
+    end
+end
+
+function H_y_p!(ˍ₋out, ::Val{:Ω_1}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
     begin
         begin
             @inbounds begin
@@ -679,6 +699,16 @@ function H_xp_p!(ˍ₋out, ::Val{:r_w}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
     end
 end
 
+function H_xp_p!(ˍ₋out, ::Val{:Ω_1}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
+    begin
+        begin
+            @inbounds begin
+                    nothing
+                end
+        end
+    end
+end
+
 function H_xp_p!(ˍ₋out, ::Val{:σe}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
     begin
         begin
@@ -823,6 +853,16 @@ function H_x_p!(ˍ₋out, ::Val{:d_bar}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
 end
 
 function H_x_p!(ˍ₋out, ::Val{:r_w}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
+    begin
+        begin
+            @inbounds begin
+                    nothing
+                end
+        end
+    end
+end
+
+function H_x_p!(ˍ₋out, ::Val{:Ω_1}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
     begin
         begin
             @inbounds begin
@@ -991,6 +1031,16 @@ function H_p!(ˍ₋out, ::Val{:r_w}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
         begin
             @inbounds begin
                     ˍ₋out[9] = -1
+                    nothing
+                end
+        end
+    end
+end
+
+function H_p!(ˍ₋out, ::Val{:Ω_1}, ˍ₋arg2, ˍ₋arg3, ˍ₋arg4; )
+    begin
+        begin
+            @inbounds begin
                     nothing
                 end
         end
