@@ -230,3 +230,26 @@ end
     end
     return
 end
+
+@model function sgu_kalman(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
+    α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
+    β_draw ~ Gamma(β_prior[1], β_prior[2])
+    ρ ~ Beta(ρ_prior[1], ρ_prior[2])
+    β = 1 / (β_draw / 100 + 1)
+    p_d = (; α, β, ρ)
+    (settings.print_level > 1) && @show p_d
+    T = size(z, 2)
+    sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
+    (settings.print_level > 1) && println("Perturbation generated")
+
+    if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
+        @addlogprob! -Inf
+    else
+        (settings.print_level > 1) && println("Calculating likelihood")
+        # Simulate and get the likelihood.
+        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A, 1)), (0, T), observables=z)
+        @addlogprob! solve(problem, KalmanFilter()).logpdf
+    end
+    return
+end

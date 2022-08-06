@@ -25,5 +25,6 @@ include("estimate_rbc_2_joint.jl")
 include("estimate_FVGQ_1_kalman.jl")
 include("estimate_FVGQ_1_joint.jl")
 include("estimate_FVGQ_2_joint.jl")
+include("estimate_sgu_1_kalman.jl")
 
 end # module

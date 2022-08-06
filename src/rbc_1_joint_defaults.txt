@@ -6,7 +6,7 @@
 --beta_prior=[6.25, 0.04]
 --rho_prior=[2.625, 2.625]
 --num_samples=10000
---adapts_burnin_prop=0.1
+--adapts_burnin_prop=0.2
 --target_acceptance_rate=0.65
 --max_depth=5
 --seed=-1

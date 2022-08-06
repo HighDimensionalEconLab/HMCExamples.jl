@@ -52,7 +52,7 @@ end
 function parse_commandline_rbc_1_joint(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
-    # See the appropriate _defaults.txt file for the default vvalues.
+    # See the appropriate _defaults.txt file for the default values.
     @add_arg_table! s begin
         "--data_path"
         help = "relative path to data from the root of the package"

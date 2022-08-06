@@ -1,56 +1,28 @@
 # Entry for script
-function main_FVGQ_1_kalman(args=ARGS)
-    d = parse_commandline_FVGQ_1_kalman(args)
-    return estimate_FVGQ_1_kalman((; d...)) # to named tuple
+function main_sgu_1_kalman(args=ARGS)
+    d = parse_commandline_sgu_1_kalman(args)
+    return estimate_sgu_1_kalman((; d...)) # to named tuple
 end
 
-function estimate_FVGQ_1_kalman(d)
+function estimate_sgu_1_kalman(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
 
     # load data relative to the current path
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
     z = collect(Matrix(DataFrame(CSV.File(data_path)))')
-
     # Create the perturbation and the turing models
-    m = PerturbationModel(HMCExamples.FVGQ20)
-    p_f = (ϑ=1.0, δ=d.delta, ε=d.epsilon, ϕ=d.phi, γ2=d.gamma2, Ω_ii=d.Omega_ii, α=d.alpha, γy=d.gamma_y, θp=d.theta_p)
-    c = SolverCache(m, Val(1), [:β, :h, :κ, :χ, :γR, :γΠ, :Πbar, :ρd, :ρφ, :ρg, :g_bar, :σ_A, :σ_d, :σ_φ, :σ_μ, :σ_m, :σ_g, :Λμ, :ΛA])
-    #create H prior
-    Hx = zeros(6, m.n_x)
-    Hy = zeros(6, m.n_y)
-    Hy[1, 19] = 1 # Π
-    Hy[2, 20] = 1 # R
-    Hy[3, 18] = 1 # dw, trend is μz
-    Hy[4, 18] = 1 # dy, trend is μz
-    Hy[6, 24] = 1 # μ-1
-    params = (β=Gamma_tr(d.beta_prior[1], d.beta_prior[2]),
-        h=Beta_tr(d.h_prior[1], d.h_prior[2]),
-        κ=(d.kappa_prior[1], d.kappa_prior[2], d.kappa_prior[3], d.kappa_prior[4]),
-        γΠ=(d.gamma_Pi_prior[1], d.gamma_Pi_prior[2], d.gamma_Pi_prior[3], d.gamma_Pi_prior[4]),
-        χ=Beta_tr(d.chi_prior[1], d.chi_prior[2]),
-        γR=Beta_tr(d.gamma_R_prior[1], d.gamma_R_prior[2]),
-        Πbar=Gamma_tr(d.Pi_bar_prior[1], d.Pi_bar_prior[2]),
-        ρd=Beta_tr(d.rho_d_prior[1], d.rho_d_prior[2]),
-        ρφ=Beta_tr(d.rho_psi_prior[1], d.rho_psi_prior[2]),
-        ρg=Beta_tr(d.rho_g_prior[1], d.rho_g_prior[2]),
-        g_bar=Beta_tr(d.g_bar_prior[1], d.g_bar_prior[2]),
-        σ_A=InvGamma_tr(d.sigma_A_prior[1], d.sigma_A_prior[2]),
-        σ_d=InvGamma_tr(d.sigma_d_prior[1], d.sigma_d_prior[2]),
-        σ_φ=InvGamma_tr(d.sigma_psi_prior[1], d.sigma_psi_prior[2]),
-        σ_μ=InvGamma_tr(d.sigma_mu_prior[1], d.sigma_mu_prior[2]),
-        σ_m=InvGamma_tr(d.sigma_m_prior[1], d.sigma_m_prior[2]),
-        σ_g=InvGamma_tr(d.sigma_g_prior[1], d.sigma_g_prior[2]),
-        Λμ=Gamma_tr(d.Lambda_mu_prior[1], d.Lambda_mu_prior[2]),
-        ΛA=Gamma_tr(d.Lambda_A_prior[1], d.Lambda_A_prior[2]),
-        Hx=Hx,
-        Hy=Hy)
+    m = PerturbationModel(HMCExamples.sgu)
+    p_f = (γ=d.gamma, ω=d.omega, σe=d.sigmae, δ=d.delta, ψ=d.psi,
+           ϕ=d.phi, r_w =d.r_w, d_bar=d.d_bar, ρ_u=d.rho_u,
+           σu=d.sigmau, ρ_v=d.rho_v, σv=d.sigmav, Ω_1=d.Omega_1)
+    c = SolverCache(m, Val(1), [:α, :β, :ρ])
 
-    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance, d.singular_covariance_value)
-    turing_model = FVGQ20_kalman(z, m, p_f, params, c, settings)
+    settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
+    turing_model = sgu_kalman(z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings)
 
     # Sampler
-    include_vars = ["β_draw", "h", "κ", "χ", "γR", "γΠ", "Πbar_draw", "ρd", "ρφ", "ρg", "g_bar", "σ_A", "σ_d", "σ_φ", "σ_μ", "σ_m", "σ_g", "Λμ", "ΛA"]  # variables to log
+    include_vars = ["α", "β_draw", "ρ"]  # variables to log
     logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
@@ -79,7 +51,7 @@ function estimate_FVGQ_1_kalman(d)
 
 end
 
-function parse_commandline_FVGQ_1_kalman(args)
+function parse_commandline_sgu_1_kalman(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
     # See the appropriate _defaults.txt file for the default values.
@@ -87,93 +59,52 @@ function parse_commandline_FVGQ_1_kalman(args)
         "--data_path"
         help = "relative path to data from the root of the package"
         arg_type = String
+        "--gamma"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--omega"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--sigmae"
+        help = "Value of fixed parameters"
+        arg_type = Float64
         "--delta"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--epsilon"
+        "--psi"
         help = "Value of fixed parameters"
         arg_type = Float64
         "--phi"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--gamma2"
+        "--r_w"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--Omega_ii"
+        "--d_bar"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--alpha"
+        "--rho_u"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--gamma_y"
+        "--sigmau"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--theta_p"
+        "--rho_v"
         help = "Value of fixed parameters"
         arg_type = Float64
-
-        "--kappa_prior"
+        "--sigmav"
         help = "Value of fixed parameters"
+        arg_type = Float64
+        "--Omega_1"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--alpha_prior"
+        help = "Parameters for the prior"
         arg_type = Vector{Float64}
-        "--gamma_Pi_prior"
-        help = "Value of fixed parameters"
-        arg_type = Vector{Float64}
-
         "--beta_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
-        "--h_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--chi_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--gamma_R_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--Pi_bar_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--rho_d_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--rho_psi_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--rho_g_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--g_bar_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-
-        "--sigma_A_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--sigma_d_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--sigma_psi_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--sigma_mu_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--sigma_m_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--sigma_g_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-
-        "--Lambda_mu_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--Lambda_A_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-
-
+        "--rho_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
         "--num_samples"
@@ -212,9 +143,6 @@ function parse_commandline_FVGQ_1_kalman(args)
         "--perturb_covariance"
         arg_type = Float64
         help = "Perturb diagonal of the covariance matrix before taking cholesky. Defaults to machine epsilon"
-        "--singular_covariance_value"
-        arg_type = Float64
-        help = "Value to set the covariance matrix when singular"
         "--calculate_ergodic_distribution"
         arg_type = Bool
         help = "Calculate the covariance matrix of the ergodic distribution"
@@ -242,7 +170,6 @@ function parse_commandline_FVGQ_1_kalman(args)
 
     end
 
-    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/FVGQ_1_kalman_defaults.txt", args)
+    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/sgu_1_kalman_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)
-
 end
