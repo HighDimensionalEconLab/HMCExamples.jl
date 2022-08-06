@@ -3,17 +3,17 @@ using LinearAlgebra, SymbolicUtils, LaTeXStrings
 const max_order = 2
 const n_y = 11
 const n_x = 6
-const n_p = 15
+const n_p = 16
 const n_ϵ = 3
-const n_z = 17
+const n_z = 3
 const η = [-1.0 0.0 0.0; 0.0 -1.0 0.0; 0.0 0.0 -1.0; 0.0 0.0 0.0; 0.0 0.0 0.0; 0.0 0.0 0.0]
-const Q = LinearAlgebra.UniformScaling{Bool}(true)
-const has_Ω = false
+const Q = [0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0]
+const has_Ω = true
 # Display definitions
 const x_symbols = [:a, :ζ, :μ, :Ld, :Lk, :Lr]
 const y_symbols = [:d, :c, :h, :GDP, :i, :k, :λ, :tb, :ca, :riskpremium, :r]
 const u_symbols = [:d, :c, :h, :GDP, :i, :k, :λ, :tb, :ca, :riskpremium, :r, :a, :ζ, :μ, :Ld, :Lk, :Lr]
-const p_symbols = [:γ, :ω, :ρ, :σe, :δ, :ψ, :α, :ϕ, :β, :r_w, :d_bar, :ρ_u, :σu, :ρ_v, :σv]
+const p_symbols = [:γ, :ω, :ρ, :σe, :δ, :ψ, :α, :ϕ, :β, :r_w, :d_bar, :ρ_u, :σu, :ρ_v, :σv, :Ω_1]
 const H_latex = L"\begin{equation}
 \left[
 \begin{array}{c}
