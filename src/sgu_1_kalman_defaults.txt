@@ -13,7 +13,7 @@
 --sigmav=0.1
 --Omega_1=0.00316
 --alpha_prior=[0.3, 0.025, 0.2, 0.5]
---beta_prior=[6.25, 0.04]
+--beta_prior=[-5.333, 4.0]
 --rho_prior=[2.625, 2.625]
 --num_samples=10000
 --adapts_burnin_prop=0.2
