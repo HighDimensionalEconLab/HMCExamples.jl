@@ -62,7 +62,7 @@ function sgu()
                      μ(∞) ~ 0]
     n_ϵ = 3
     n_x = length(x)
-	n_y = length(y)
+    n_y = length(y)
     Γ = zeros(Num, n_ϵ, n_ϵ) # make sure it is not a float64 matrix
     Γ[1, 1] = σe
     Γ[2, 2] = σu
@@ -74,7 +74,7 @@ function sgu()
 
     n_z = 3 # number of observables
 	Q = zeros(n_z, n_x + n_y) # the order is [y, x]
-	Q[1, 4] = 1.0 # y i.e. GDP
+    Q[1, 4] = 1.0 # y i.e. GDP
     Q[2, 9] = 1.0 # ca
     Q[3, 11] = 1.0 # r
 
