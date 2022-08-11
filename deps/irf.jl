@@ -10,7 +10,7 @@ p_d = (; ρ = 0.42, α = 0.32, β = 1.0 / (1.0 + 0.04))
 
 c = SolverCache(m, Val(1), p_d)
 sol = generate_perturbation(m, p_d, p_f; cache = c)
-ϵ0 = [1.0, 1.0, 1.0] # only 1 shock here
+ϵ0 = [1.0, 1.0, 1.0]
 T = 40
 val = irf(sol, ϵ0, T)
 
