@@ -7,12 +7,12 @@ const n_p = 16
 const n_ϵ = 3
 const n_z = 3
 const η = [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0; 0.0 0.0 0.0; 0.0 0.0 0.0]
-const Q = [0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0]
+const Q = [0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0]
 const has_Ω = true
 # Display definitions
-const x_symbols = [:a, :k, :r, :μ, :ζ]
+const x_symbols = [:a, :ζ, :μ, :k, :r]
 const y_symbols = [:d, :c, :h, :GDP, :i, :kfu, :λ, :tb, :ca, :riskpremium]
-const u_symbols = [:d, :c, :h, :GDP, :i, :kfu, :λ, :tb, :ca, :riskpremium, :a, :k, :r, :μ, :ζ]
+const u_symbols = [:d, :c, :h, :GDP, :i, :kfu, :λ, :tb, :ca, :riskpremium, :a, :ζ, :μ, :k, :r]
 const p_symbols = [:γ, :ω, :ρ, :σe, :δ, :ψ, :α, :ϕ, :β, :r_w, :d_bar, :ρ_u, :σu, :ρ_v, :σv, :Ω_1]
 const H_latex = L"\begin{equation}
 \left[
@@ -36,8 +36,7 @@ const H_latex = L"\begin{equation}
 \right]
 \end{equation}
 "
-const steady_states_latex = L"$$"
-const steady_states_iv_latex = L"\begin{align}
+const steady_states_latex = L"\begin{align}
 a\left( \infty \right) =& 0 \\
 \mathrm{kfu}\left( \infty \right) =& \log\left( \frac{\left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1}{-1 + \omega}}}{\left( \frac{r_{w} + \delta}{\alpha} \right)^{\frac{1}{1 - \alpha}}} \right) \\
 d\left( \infty \right) =& d_{bar} \\
@@ -55,6 +54,7 @@ r\left( \infty \right) =& \log\left( \frac{1 - \beta}{\beta} \right) \\
 \mu\left( \infty \right) =& 0
 \end{align}
 "
+const steady_states_iv_latex = L"$$"
 # Function definitions
 include("sgu/zero_order_ip.jl")
 include("sgu/first_order_ip.jl")
