@@ -76,14 +76,58 @@ function estimate_FVGQ_1_joint(d)
         chain = sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback, init_params=[init_params for _ in 1:d.num_chains])
         calculate_experiment_results(d, chain, logdir, callback, include_vars)
     end
+end
 
+@model function FVGQ20_joint_1(z, m, p_f, params, cache, settings)
+    T = size(z, 2)
+    # Priors
+    β_draw ~ Gamma(params.β[1], params.β[2])
+    β = 1 / (β_draw / 100 + 1)
+    h ~ Beta(params.h[1], params.h[2])
+    κ ~ truncated(Normal(params.κ[1], params.κ[2]), params.κ[3], params.κ[4])
+    χ ~ Beta(params.χ[1], params.χ[2])
+    γR ~ Beta(params.γR[1], params.γR[2])
+    γΠ ~ truncated(Normal(params.γΠ[1], params.γΠ[2]), params.γΠ[3], params.γΠ[4])
+    Πbar_draw ~ Gamma(params.Πbar[1], params.Πbar[2])
+    Πbar = Πbar_draw / 100 + 1
+    ρd ~ Beta(params.ρd[1], params.ρd[2])
+    ρφ ~ Beta(params.ρφ[1], params.ρφ[2])
+    ρg ~ Beta(params.ρg[1], params.ρg[2])
+    g_bar ~ Beta(params.g_bar[1], params.g_bar[2])
+    σ_A ~ InverseGamma(params.σ_A[1], params.σ_A[2])
+    σ_d ~ InverseGamma(params.σ_d[1], params.σ_d[2])
+    σ_φ ~ InverseGamma(params.σ_φ[1], params.σ_φ[2])
+    σ_μ ~ InverseGamma(params.σ_μ[1], params.σ_μ[2])
+    σ_m ~ InverseGamma(params.σ_m[1], params.σ_m[2])
+    σ_g ~ InverseGamma(params.σ_g[1], params.σ_g[2])
+    Λμ ~ Gamma(params.Λμ[1], params.Λμ[2])
+    ΛA ~ Gamma(params.ΛA[1], params.ΛA[2])
+    ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
+    ϵ = reshape(ϵ_draw, m.n_ϵ, T)
+    # Likelihood
+    θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
+    (settings.print_level > 1) && @show θ
+    sol = generate_perturbation(m, θ, p_f, Val(1); cache, settings)
+    (settings.print_level > 1) && println("Perturbation generated")
+    if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
+        @addlogprob! -Inf
 
+    else
+        z_trend = params.Hx * sol.x + params.Hy * sol.y
+        z_detrended = z .- z_trend
+        # Simulate and get the likelihood.
+        x0 = zeros(m.n_x) # the initial condition
+        problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
+    end
+    return
 end
 
 function parse_commandline_FVGQ_1_joint(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
-    # See the appropriate _defaults.txt file for the default vvalues.
+    # See the appropriate _defaults.txt file for the default values.
     @add_arg_table! s begin
         "--data_path"
         help = "relative path to data from the root of the package"

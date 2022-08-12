@@ -46,13 +46,39 @@ function estimate_rbc_1_joint(d)
         chain = sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback, init_params=[init_params for _ in 1:d.num_chains])
         calculate_experiment_results(d, chain, logdir, callback, include_vars)
     end
+end
 
+@model function rbc_joint_1(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
+    α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
+    β_draw ~ Gamma(β_prior[1], β_prior[2])
+    ρ ~ Beta(ρ_prior[1], ρ_prior[2])
+    β = 1 / (β_draw / 100 + 1)
+    p_d = (; α, β, ρ)
+    (settings.print_level > 1) && @show p_d
+    T = size(z, 2)
+    ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
+    ϵ = reshape(ϵ_draw, m.n_ϵ, T)
+    sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
+    (settings.print_level > 1) && println("Perturbation generated")
+
+    if !(sol.retcode == :Success)
+        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
+        @addlogprob! -Inf
+
+    else
+        (settings.print_level > 1) && println("Calculating likelihood")
+        # Simulate and get the likelihood.
+        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
+        problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
+    end
+    return
 end
 
 function parse_commandline_rbc_1_joint(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
-    # See the appropriate _defaults.txt file for the default vvalues.
+    # See the appropriate _defaults.txt file for the default values.
     @add_arg_table! s begin
         "--data_path"
         help = "relative path to data from the root of the package"

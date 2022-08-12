@@ -4,6 +4,8 @@ You may wish to use `tmux` to leave a terminal running unattended.\
 If `tmux` is not already installed, do a `sudo apt update` followed by `sudo apt install tmux`.\
 Create a new session using `tmux new-session -s ubuntu` and retrieve it using `tmux attach-session -t ubuntu`.
 
+Original Julia scripts used `--adapts_burnin_prop=0.1` instead of the current 0.2, so perfect replication requires adding this to all Julia estimation script calls (or directly setting it in the defaults).
+
 To use the following instructions, first clone the repo via `git clone https://github.com/HighDimensionalEconLab/HMCExamples.jl`.
 
 ## Dynare 

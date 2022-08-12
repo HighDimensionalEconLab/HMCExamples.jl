@@ -1,10 +1,10 @@
 # Entry for script
-function main_rbc_2_joint(args=ARGS)
-    d = parse_commandline_rbc_2_joint(args)
-    return estimate_rbc_2_joint((; d...)) # to named tuple
+function main_sgu_1_kalman(args=ARGS)
+    d = parse_commandline_sgu_1_kalman(args)
+    return estimate_sgu_1_kalman((; d...)) # to named tuple
 end
 
-function estimate_rbc_2_joint(d)
+function estimate_sgu_1_kalman(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
 
@@ -12,15 +12,14 @@ function estimate_rbc_2_joint(d)
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
     z = collect(Matrix(DataFrame(CSV.File(data_path)))')
     # Create the perturbation and the turing models
-    m = PerturbationModel(HMCExamples.rbc)
-    p_f = (δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1)
-    c = SolverCache(m, Val(2), [:α, :β, :ρ])
+    m = PerturbationModel(HMCExamples.sgu)
+    p_f = (γ=d.gamma, ω=d.omega, σe=d.sigmae, δ=d.delta, ψ=d.psi,
+           ϕ=d.phi, r_w =d.r_w, d_bar=d.d_bar, ρ_u=d.rho_u,
+           σu=d.sigmau, ρ_v=d.rho_v, σv=d.sigmav, Ω_1=d.Omega_1)
+    c = SolverCache(m, Val(1), [:α, :β, :ρ])
 
-    # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
-    turing_model = rbc_joint_2(
-        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings
-    )
+    turing_model = sgu_kalman(z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings)
 
     # Sampler
     include_vars = ["α", "β_draw", "ρ"]  # variables to log
@@ -29,7 +28,8 @@ function estimate_rbc_2_joint(d)
 
     (d.seed == -1) || Random.seed!(d.seed)
     print_info(d, num_adapts)
-    sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
+    metricT = DiagEuclideanMetric #  DiagEuclideanMetric, UnitEuclideanMetric, DenseEuclideanMetric
+    sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth, metricT)
 
     # 4 cases just to be careful with type-stability
     if (d.num_chains == 1) && (d.init_params_file == "")
@@ -49,34 +49,30 @@ function estimate_rbc_2_joint(d)
     end
 end
 
-@model function rbc_joint_2(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
-    α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
+@model function sgu_kalman(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
+    α ~ Normal(α_prior[1], α_prior[2])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
     β = 1 / (β_draw / 100 + 1)
     p_d = (; α, β, ρ)
     (settings.print_level > 1) && @show p_d
     T = size(z, 2)
-    ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
-    ϵ = reshape(ϵ_draw, m.n_ϵ, T)
-    sol = generate_perturbation(m, p_d, p_f, Val(2); cache, settings)
+    sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
-
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
-        problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
-        @addlogprob! solve(problem, DirectIteration()).logpdf
+        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A, 1)), (0, T), observables=z)
+        @addlogprob! solve(problem, KalmanFilter()).logpdf
     end
     return
 end
 
-function parse_commandline_rbc_2_joint(args)
+function parse_commandline_sgu_1_kalman(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
     # See the appropriate _defaults.txt file for the default values.
@@ -84,10 +80,40 @@ function parse_commandline_rbc_2_joint(args)
         "--data_path"
         help = "relative path to data from the root of the package"
         arg_type = String
+        "--gamma"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--omega"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--sigmae"
+        help = "Value of fixed parameters"
+        arg_type = Float64
         "--delta"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--sigma"
+        "--psi"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--phi"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--r_w"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--d_bar"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--rho_u"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--sigmau"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--rho_v"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--sigmav"
         help = "Value of fixed parameters"
         arg_type = Float64
         "--Omega_1"
@@ -165,6 +191,6 @@ function parse_commandline_rbc_2_joint(args)
 
     end
 
-    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_2_joint_defaults.txt", args)
+    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/sgu_1_kalman_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)
 end
