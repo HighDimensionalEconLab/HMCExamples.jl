@@ -15,7 +15,7 @@ function sgu()
     @variables t::Integer, d(..), c(..), h(..), GDP(..), i(..), k(..), a(..), λ(..), tb(..),
                ca(..), riskpremium(..), r(..), kfu(..), ζ(..), μ(..)
     @variables Ω_1
-    x = [a, k, r, μ, ζ]
+    x = [a, ζ, μ, k, r]
     y = [d, c, h, GDP, i, kfu, λ, tb, ca, riskpremium]
     p = [γ, ω, ρ, σe, δ, ψ, α, ϕ, β, r_w, d_bar, ρ_u, σu, ρ_v, σv, Ω_1]
     
@@ -54,7 +54,7 @@ function sgu()
     
     #Steady state values
     
-    steady_states = [a(∞) ~ 0, kfu(∞) ~ log(kstar),
+    steady_states_iv = [a(∞) ~ 0, kfu(∞) ~ log(kstar),
                      d(∞) ~ d_bar, c(∞) ~ log(cstar), h(∞) ~ log(hstar),
                      GDP(∞) ~ log(GDPstar), i(∞) ~ log(istar), k(∞) ~ log(kstar),
                      λ(∞) ~ log(λstar), tb(∞) ~ tbstar, ca(∞) ~ 0, riskpremium(∞) ~ 0,
@@ -78,9 +78,9 @@ function sgu()
 	Q = zeros(n_z, n_x + n_y) # the order is [y, x]
     Q[1, 4] = 1.0 # y i.e. GDP
     Q[2, 9] = 1.0 # ca
-    Q[3, 13] = 1.0 # r
+    Q[3, 15] = 1.0 # r
 
     Ω = [Ω_1, Ω_1, Ω_1]
 
-    return H, (; t, x, y, p, steady_states, Γ, η, Ω, Q), "sgu"
+    return H, (; t, x, y, p, steady_states_iv, Γ, η, Ω, Q), "sgu"
 end

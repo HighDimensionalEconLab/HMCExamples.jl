@@ -1,4 +1,4 @@
-using HMCExamples, DifferenceEquations, DifferentiableStateSpaceModels, Turing, Zygote
+using HMCExamples, DifferenceEquations, DifferentiableStateSpaceModels
 using DifferentiableStateSpaceModels: order_vector_by_symbols
 
 m = PerturbationModel(HMCExamples.sgu)
