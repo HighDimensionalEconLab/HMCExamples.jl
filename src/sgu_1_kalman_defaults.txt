@@ -1,15 +1,11 @@
---data_path=data/SGUsimorder1.csv
---gamma=2.0
+--data_path=data/sgu_1.csv
 --omega=1.455
 --sigmae=0.0129
 --delta=0.1
---psi=0.000742
 --phi=0.028
 --r_w=0.04
 --d_bar=0.7442
---rho_u=0.2
 --sigmau=0.003
---rho_v=0.4
 --sigmav=0.1
 --Omega_1=0.00316
 --alpha_prior=[0.3, 0.025]
