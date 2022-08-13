@@ -1,10 +1,10 @@
 # Entry for script
-function main_sgu_1_kalman(args=ARGS)
-    d = parse_commandline_sgu_1_kalman(args)
-    return estimate_sgu_1_kalman((; d...)) # to named tuple
+function main_sgu_1_joint(args=ARGS)
+    d = parse_commandline_sgu_1_joint(args)
+    return estimate_sgu_1_joint((; d...)) # to named tuple
 end
 
-function estimate_sgu_1_kalman(d)
+function estimate_sgu_1_joint(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
 
@@ -18,7 +18,9 @@ function estimate_sgu_1_kalman(d)
     c = SolverCache(m, Val(1), [:α, :γ, :ψ, :β, :ρ, :ρ_u, :ρ_v])
 
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
-    turing_model = sgu_kalman(z, m, p_f, d.alpha_prior, d.gamma_prior, d.psi_prior, d.beta_prior, d.rho_prior, d.rho_u_prior, d.rho_v_prior, c, settings)
+    turing_model = sgu_joint_1(
+        z, m, p_f, d.alpha_prior, d.gamma_prior, d.psi_prior, d.beta_prior, d.rho_prior, d.rho_u_prior, d.rho_v_prior, c, settings
+    )
 
     # Sampler
     include_vars = ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v"]  # variables to log
@@ -27,8 +29,7 @@ function estimate_sgu_1_kalman(d)
 
     (d.seed == -1) || Random.seed!(d.seed)
     print_info(d, num_adapts)
-    metricT = DiagEuclideanMetric #  DiagEuclideanMetric, UnitEuclideanMetric, DenseEuclideanMetric
-    sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth, metricT)
+    sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
 
     # 4 cases just to be careful with type-stability
     if (d.num_chains == 1) && (d.init_params_file == "")
@@ -48,7 +49,7 @@ function estimate_sgu_1_kalman(d)
     end
 end
 
-@model function sgu_kalman(z, m, p_f, α_prior, γ_prior, ψ_prior, β_prior, ρ_prior, ρ_u_prior, ρ_v_prior, cache, settings)
+@model function sgu_joint_1(z, m, p_f, α_prior, γ_prior, ψ_prior, β_prior, ρ_prior, ρ_u_prior, ρ_v_prior, cache, settings)
     α ~ Normal(α_prior[1], α_prior[2])
     γ ~ truncated(Beta(γ_prior[1], γ_prior[2]), γ_prior[3], γ_prior[4])
     ψ ~ truncated(Beta(ψ_prior[1], ψ_prior[2]), ψ_prior[3], ψ_prior[4])
@@ -60,22 +61,26 @@ end
     p_d = (; α, γ, ψ, β, ρ, ρ_u, ρ_v)
     (settings.print_level > 1) && @show p_d
     T = size(z, 2)
+    ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
+    ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
     (settings.print_level > 1) && println("Perturbation generated")
 
     if !(sol.retcode == :Success)
         (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
+
     else
         (settings.print_level > 1) && println("Calculating likelihood")
         # Simulate and get the likelihood.
-        problem = LinearStateSpaceProblem(sol, zeros(size(sol.A, 1)), (0, T), observables=z)
-        @addlogprob! solve(problem, KalmanFilter()).logpdf
+        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
+        problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
+        @addlogprob! solve(problem, DirectIteration()).logpdf
     end
     return
 end
 
-function parse_commandline_sgu_1_kalman(args)
+function parse_commandline_sgu_1_joint(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
     # See the appropriate _defaults.txt file for the default values.
@@ -191,9 +196,8 @@ function parse_commandline_sgu_1_kalman(args)
         "--sampling_heartbeat"
         arg_type = Int64
         help = "Display draws at this frequency.  No output if it is 0"
-
     end
 
-    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/sgu_1_kalman_defaults.txt", args)
+    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/sgu_1_joint_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)
 end

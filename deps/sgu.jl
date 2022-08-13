@@ -54,7 +54,7 @@ function sgu()
     
     #Steady state values
     
-    steady_states = [a(∞) ~ 0, kfu(∞) ~ log(kstar),
+    steady_states_iv = [a(∞) ~ 0, kfu(∞) ~ log(kstar),
                      d(∞) ~ d_bar, c(∞) ~ log(cstar), h(∞) ~ log(hstar),
                      GDP(∞) ~ log(GDPstar), i(∞) ~ log(istar), k(∞) ~ log(kstar),
                      λ(∞) ~ log(λstar), tb(∞) ~ tbstar, ca(∞) ~ 0, riskpremium(∞) ~ 0,
@@ -82,5 +82,5 @@ function sgu()
 
     Ω = [Ω_1, Ω_1, Ω_1]
 
-    return H, (; t, x, y, p, steady_states, Γ, η, Ω, Q), "sgu"
+    return H, (; t, x, y, p, steady_states_iv, Γ, η, Ω, Q), "sgu"
 end
