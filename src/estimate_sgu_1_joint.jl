@@ -13,8 +13,8 @@ function estimate_sgu_1_joint(d)
     z = collect(Matrix(DataFrame(CSV.File(data_path)))')
     # Create the perturbation and the turing models
     m = PerturbationModel(HMCExamples.sgu)
-    p_f = (ω=d.omega, σe=d.sigmae, δ=d.delta, ϕ=d.phi, r_w =d.r_w, d_bar=d.d_bar, 
-           σu=d.sigmau, σv=d.sigmav, Ω_1=d.Omega_1)
+    p_f = (ω=d.omega, σe=d.sigmae, δ=d.delta, ϕ=d.phi, r_w=d.r_w, d_bar=d.d_bar,
+        σu=d.sigmau, σv=d.sigmav, Ω_1=d.Omega_1)
     c = SolverCache(m, Val(1), [:α, :γ, :ψ, :β, :ρ, :ρ_u, :ρ_v])
 
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
@@ -49,6 +49,7 @@ function estimate_sgu_1_joint(d)
     end
 end
 
+
 @model function sgu_joint_1(z, m, p_f, α_prior, γ_prior, ψ_prior, β_prior, ρ_prior, ρ_u_prior, ρ_v_prior, cache, settings)
     α ~ Normal(α_prior[1], α_prior[2])
     γ ~ truncated(Normal(γ_prior[1], γ_prior[2]), γ_prior[3], γ_prior[4])
@@ -59,25 +60,19 @@ end
     ρ_v ~ Beta(ρ_v_prior[1], ρ_v_prior[2])
     β = 1 / (β_draw / 100 + 1)
     p_d = (; α, γ, ψ, β, ρ, ρ_u, ρ_v)
-    (settings.print_level > 1) && @show p_d
+
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
-    (settings.print_level > 1) && println("Perturbation generated")
+    x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
 
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
-
-    else
-        (settings.print_level > 1) && println("Calculating likelihood")
-        # Simulate and get the likelihood.
-        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
-        problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
-        @addlogprob! solve(problem, DirectIteration()).logpdf
+        return
     end
-    return
+    problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
+    @addlogprob! solve(problem, DirectIteration()).logpdf
 end
 
 function parse_commandline_sgu_1_joint(args)
