@@ -51,8 +51,8 @@ end
 
 @model function sgu_joint_1(z, m, p_f, α_prior, γ_prior, ψ_prior, β_prior, ρ_prior, ρ_u_prior, ρ_v_prior, cache, settings)
     α ~ Normal(α_prior[1], α_prior[2])
-    γ ~ truncated(Beta(γ_prior[1], γ_prior[2]), γ_prior[3], γ_prior[4])
-    ψ ~ truncated(Beta(ψ_prior[1], ψ_prior[2]), ψ_prior[3], ψ_prior[4])
+    γ ~ truncated(Normal(γ_prior[1], γ_prior[2]), γ_prior[3], γ_prior[4])
+    ψ ~ truncated(Normal(ψ_prior[1], ψ_prior[2]), ψ_prior[3], ψ_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
     ρ_u ~ Beta(ρ_u_prior[1], ρ_u_prior[2])

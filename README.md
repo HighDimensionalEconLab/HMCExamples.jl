@@ -76,7 +76,6 @@ vals = get(chain, [:α,:β_draw])
 Or to get a slice of all parameters for the last draw in the chain
 ```julia
 last_draw = chain.value[end,:,1][chain.name_map.parameters] |> Array
-end
 ```
 
 **NOTE** The h5 format may reorder the chain's variables, so you can't count on using them being in the same order.
