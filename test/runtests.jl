@@ -8,7 +8,8 @@ HMCExamples.main_rbc_1_joint(["--num_samples", "30", "--max_depth", "2", "--resu
 #HMCExamples.main_rbc_1_joint(["--num_samples", "30", "--max_depth", "2", "--results_path", "./.results/rbc_1_joint_test_discard", "--overwrite_results", "true", "--discard_initial", "10","--init_params_file", ""])
 #HMCExamples.main_rbc_1_joint(["--num_samples", "30", "--max_depth", "2", "--results_path", "./.results/rbc_1_joint_test_use_burnin", "--overwrite_results", "true", "--init_params_file", "data/rbc_1_joint_burnin.csv"])
 
-HMCExamples.main_rbc_2_joint(["--num_samples", "30", "--max_depth", "2", "--results_path", "./.results/rbc_2_joint_test", "--overwrite_results", "true", "--init_params_file", "data/rbc_2_joint_burnin_ergodic.csv"])
+#HMCExamples.main_rbc_2_joint(["--num_samples", "30", "--max_depth", "2", "--results_path", "./.results/rbc_2_joint_test", "--overwrite_results", "true", "--init_params_file", "data/rbc_2_joint_burnin_ergodic.csv"])
+HMCExamples.parse_commandline_rbc_2_joint(ARGS)
 
 # #Need to call with the -O1 compilation is working with PackageCompiler at this point
 HMCExamples.parse_commandline_FVGQ_1_kalman(ARGS)
