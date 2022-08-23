@@ -1,4 +1,4 @@
-using HMCExamples, DifferenceEquations, DifferentiableStateSpaceModels
+using HMCExamples, DifferenceEquations, DifferentiableStateSpaceModels, Plots
 using DifferentiableStateSpaceModels: order_vector_by_symbols
 
 m = PerturbationModel(HMCExamples.sgu)
@@ -10,14 +10,22 @@ p_d = (; ρ = 0.42, α = 0.32, β = 1.0 / (1.0 + 0.04))
 
 c = SolverCache(m, Val(1), p_d)
 sol = generate_perturbation(m, p_d, p_f; cache = c)
-ϵ0 = [1.0, 1.0, 1.0]
 T = 40
-val = irf(sol, ϵ0, T)
+ϵ01 = [1.0, 0.0, 0.0]
+ϵ02 = [0.0, 1.0, 0.0]
+ϵ03 = [0.0, 0.0, 1.0]
+val1 = irf(sol, ϵ01, T) #e
+val2 = irf(sol, ϵ02, T) #u
+val3 = irf(sol, ϵ03, T) #v
 
-println(val.z)
+println(val1.z)
+println(val2.z)
+println(val3.z)
 
-# using RecursiveArrayTools
-# plot(VectorOfArray(val.z)')
+ using RecursiveArrayTools
+ plot(VectorOfArray(val1.z)') #e
+ plot(VectorOfArray(val2.z)') #u
+ plot(VectorOfArray(val3.z)') #v
 # this does not work here because HMCExamples needs to reference the branch but Plots is not in the manifest
 
 # H-checking code:
