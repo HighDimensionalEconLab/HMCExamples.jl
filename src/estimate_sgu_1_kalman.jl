@@ -13,16 +13,15 @@ function estimate_sgu_1_kalman(d)
     z = collect(Matrix(DataFrame(CSV.File(data_path)))')
     # Create the perturbation and the turing models
     m = PerturbationModel(HMCExamples.sgu)
-    p_f = (γ=d.gamma, ω=d.omega, σe=d.sigmae, δ=d.delta, ψ=d.psi,
-           ϕ=d.phi, r_w =d.r_w, d_bar=d.d_bar, ρ_u=d.rho_u,
-           σu=d.sigmau, ρ_v=d.rho_v, σv=d.sigmav, Ω_1=d.Omega_1)
-    c = SolverCache(m, Val(1), [:α, :β, :ρ])
+    p_f = (ω=d.omega, σe=d.sigmae, δ=d.delta, ϕ=d.phi, r_w =d.r_w, d_bar=d.d_bar, 
+           σu=d.sigmau, σv=d.sigmav, Ω_1=d.Omega_1)
+    c = SolverCache(m, Val(1), [:α, :γ, :ψ, :β, :ρ, :ρ_u, :ρ_v])
 
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
-    turing_model = sgu_kalman(z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings)
+    turing_model = sgu_kalman(z, m, p_f, d.alpha_prior, d.gamma_prior, d.psi_prior, d.beta_prior, d.rho_prior, d.rho_u_prior, d.rho_v_prior, c, settings)
 
     # Sampler
-    include_vars = ["α", "β_draw", "ρ"]  # variables to log
+    include_vars = ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v"]  # variables to log
     logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
@@ -49,12 +48,16 @@ function estimate_sgu_1_kalman(d)
     end
 end
 
-@model function sgu_kalman(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
+@model function sgu_kalman(z, m, p_f, α_prior, γ_prior, ψ_prior, β_prior, ρ_prior, ρ_u_prior, ρ_v_prior, cache, settings)
     α ~ Normal(α_prior[1], α_prior[2])
+    γ ~ truncated(Beta(γ_prior[1], γ_prior[2]), γ_prior[3], γ_prior[4])
+    ψ ~ truncated(Beta(ψ_prior[1], ψ_prior[2]), ψ_prior[3], ψ_prior[4])
     β_draw ~ Gamma(β_prior[1], β_prior[2])
     ρ ~ Beta(ρ_prior[1], ρ_prior[2])
+    ρ_u ~ Beta(ρ_u_prior[1], ρ_u_prior[2])
+    ρ_v ~ Beta(ρ_v_prior[1], ρ_v_prior[2])
     β = 1 / (β_draw / 100 + 1)
-    p_d = (; α, β, ρ)
+    p_d = (; α, γ, ψ, β, ρ, ρ_u, ρ_v)
     (settings.print_level > 1) && @show p_d
     T = size(z, 2)
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
@@ -80,9 +83,6 @@ function parse_commandline_sgu_1_kalman(args)
         "--data_path"
         help = "relative path to data from the root of the package"
         arg_type = String
-        "--gamma"
-        help = "Value of fixed parameters"
-        arg_type = Float64
         "--omega"
         help = "Value of fixed parameters"
         arg_type = Float64
@@ -90,9 +90,6 @@ function parse_commandline_sgu_1_kalman(args)
         help = "Value of fixed parameters"
         arg_type = Float64
         "--delta"
-        help = "Value of fixed parameters"
-        arg_type = Float64
-        "--psi"
         help = "Value of fixed parameters"
         arg_type = Float64
         "--phi"
@@ -104,13 +101,7 @@ function parse_commandline_sgu_1_kalman(args)
         "--d_bar"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--rho_u"
-        help = "Value of fixed parameters"
-        arg_type = Float64
         "--sigmau"
-        help = "Value of fixed parameters"
-        arg_type = Float64
-        "--rho_v"
         help = "Value of fixed parameters"
         arg_type = Float64
         "--sigmav"
