@@ -1,8 +1,8 @@
 using DifferentiableStateSpaceModels, HMCExamples, Symbolics
 overwrite_model_cache = true
 model_cache_location = joinpath(pkgdir(HMCExamples),"src/generated_models")
-if false
-include(joinpath(pkgdir(HMCExamples),"deps/rbc.jl"))
+
+#= include(joinpath(pkgdir(HMCExamples),"deps/rbc.jl"))
 # Save off the rbc_observables_benchmark example
 H, mod_vals, _ = rbc()
 model_name = "rbc"

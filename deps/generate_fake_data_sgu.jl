@@ -1,5 +1,4 @@
-using HMCExamples, DifferentiableStateSpaceModels, DifferenceEquations, CSV, DataFrames, Random, RecursiveArrayTools
-using Turing
+using HMCExamples, DifferentiableStateSpaceModels, DifferenceEquations, CSV, DataFrames, Random, RecursiveArrayTools, Distributions
 
 Random.seed!(0) # fix a seed for reproducibility
 

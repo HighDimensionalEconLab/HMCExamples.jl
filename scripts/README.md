@@ -123,4 +123,10 @@ The following options are available:
   
 - Summary Plots
   - `julia --project=scripts scripts/fvgq_replication/statplots.jl`
+
+### Julia SGU
+- Summary Statistics
+  - `python scripts/sgu_replication/sumstats_julia.py`
   
+- Summary Plots
+  - `julia --project=scripts scripts/sgu_replication/statplots.jl`
