@@ -3,6 +3,8 @@
 ## Installation
 Do `julia --project -e "using Pkg; Pkg.instantiate()"`
 
+As of 8/24/2022 it is necessary to ensure `] add https://github.com/devmotion/TerminalLoggers.jl#dw/compat` if you create a new manifest in order to fix progress logging.
+
 ## CLI Usage
 To use with default options, and specifying a directory
 ```bash

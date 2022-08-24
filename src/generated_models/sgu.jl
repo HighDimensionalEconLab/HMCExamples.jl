@@ -1,18 +1,18 @@
 module sgu
 using LinearAlgebra, SymbolicUtils, LaTeXStrings
 const max_order = 1
-const n_y = 10
-const n_x = 5
+const n_y = 8
+const n_x = 7
 const n_p = 16
 const n_ϵ = 3
 const n_z = 3
-const η = [0.0 0.0 0.0; 0.0 0.0 0.0; 1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
-const Q = [0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0]
+const η = [0.0 0.0 0.0; 0.0 0.0 0.0; 0.0 0.0 0.0; 0.0 0.0 0.0; 1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0]
+const Q = [0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0]
 const has_Ω = true
 # Display definitions
-const x_symbols = [:k, :r, :a, :ζ, :μ]
-const y_symbols = [:d, :c, :h, :GDP, :i, :kfu, :λ, :tb, :ca, :riskpremium]
-const u_symbols = [:d, :c, :h, :GDP, :i, :kfu, :λ, :tb, :ca, :riskpremium, :k, :r, :a, :ζ, :μ]
+const x_symbols = [:d, :k, :r, :riskpremium, :a, :ζ, :μ]
+const y_symbols = [:c, :h, :GDP, :i, :kfu, :λ, :tb, :ca]
+const u_symbols = [:c, :h, :GDP, :i, :kfu, :λ, :tb, :ca, :d, :k, :r, :riskpremium, :a, :ζ, :μ]
 const p_symbols = [:γ, :ω, :ρ, :σe, :δ, :ψ, :α, :ϕ, :β, :r_w, :d_bar, :ρ_u, :σu, :ρ_v, :σv, :Ω_1]
 const H_latex = L"\begin{equation}
 \left[
@@ -29,7 +29,7 @@ const H_latex = L"\begin{equation}
 -1 + \frac{\frac{1}{2} \left(  - e^{k\left( t \right)} + e^{k\left( 1 + t \right)} \right)^{2} \phi + e^{c\left( t \right)} + e^{i\left( t \right)}}{e^{\mathrm{GDP}\left( t \right)}} + \mathrm{tb}\left( t \right) \\
 \frac{ - d\left( 1 + t \right) + d\left( t \right)}{e^{\mathrm{GDP}\left( t \right)}} + \mathrm{ca}\left( t \right) \\
  - k\left( 1 + t \right) + \mathrm{kfu}\left( t \right) \\
- - 0.1 \rho a\left( t \right) + a\left( 1 + t \right) \\
+ - \rho a\left( t \right) + a\left( 1 + t \right) \\
  - \rho_{u} \zeta\left( t \right) + \zeta\left( 1 + t \right) \\
  - \rho_{v} \mu\left( t \right) + \mu\left( 1 + t \right) \\
 \end{array}
