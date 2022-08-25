@@ -6,13 +6,16 @@ m = PerturbationModel(HMCExamples.sgu)
 p_d = (; γ = 2.0, ω = 1.455, ρ = 0.42, σe = 0.0129, δ = 0.1, ψ = 0.000742, α = 0.32,
        ϕ = 0.028, β = 1.0 / (1.0 + 0.04), r_w = 0.04, d_bar = 0.7442, ρ_u = 0.2,
        σu = 0.003, ρ_v = 0.4, σv = 0.1, Ω_1 = 0.00316)
-p_f = nothing
+p_f = (;Ω_1 = 0.00316) # p_d vs. p_f irrelevant here.  Just moved one out for easier use of check_steady_state
 T = 200
 
 settings = PerturbationSolverSettings(; print_level=1, perturb_covariance = 1e-12)
 mod_perturb = generate_perturbation(m, p_d, p_f;settings)
+m = PerturbationModel(HMCExamples.sgu)
+verify_steady_state(m, p_d, p_f)
 
 # Save for Kalman for dynare comparision, random initial condition from parameters
+T = 200
 x0 = rand(MvNormal(mod_perturb.x_ergodic_var))
 prob = LinearStateSpaceProblem(mod_perturb, x0, (0, T))
 sol = solve(prob, DirectIteration())

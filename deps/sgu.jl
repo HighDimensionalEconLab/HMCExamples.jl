@@ -84,5 +84,5 @@ function sgu()
 
 
     return H, (; t, x, y, p, steady_states, Γ, η, Ω, Q, 
-        max_order = 1, simplify_Ψ  = false, simplify = false, simplify_p = false), "sgu"
+        simplify_Ψ  = false, simplify = false, simplify_p = false), "sgu"
 end

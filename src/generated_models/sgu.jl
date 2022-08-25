@@ -36,8 +36,7 @@ const H_latex = L"\begin{equation}
 \right]
 \end{equation}
 "
-const steady_states_latex = L"$$"
-const steady_states_iv_latex = L"\begin{align}
+const steady_states_latex = L"\begin{align}
 a\left( \infty \right) =& 0 \\
 \mathrm{kfu}\left( \infty \right) =& \log\left( \frac{\left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1}{-1 + \omega}}}{\left( \frac{r_{w} + \delta}{\alpha} \right)^{\frac{1}{1 - \alpha}}} \right) \\
 d\left( \infty \right) =& d_{bar} \\
@@ -47,7 +46,7 @@ h\left( \infty \right) =& \log\left( \left( \left( \frac{\alpha}{r_{w} + \delta}
 i\left( \infty \right) =& \log\left( \frac{\left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1}{-1 + \omega}} \delta}{\left( \frac{r_{w} + \delta}{\alpha} \right)^{\frac{1}{1 - \alpha}}} \right) \\
 k\left( \infty \right) =& \log\left( \frac{\left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1}{-1 + \omega}}}{\left( \frac{r_{w} + \delta}{\alpha} \right)^{\frac{1}{1 - \alpha}}} \right) \\
 \lambda\left( \infty \right) =& \log\left( \left( \left( \frac{\left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1}{-1 + \omega}}}{\left( \frac{r_{w} + \delta}{\alpha} \right)^{\frac{1}{1 - \alpha}}} \right)^{\alpha} \left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1 - \alpha}{-1 + \omega}} + \frac{ - \left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{\omega}{-1 + \omega}}}{\omega} + \frac{ - \left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1}{-1 + \omega}} \delta}{\left( \frac{r_{w} + \delta}{\alpha} \right)^{\frac{1}{1 - \alpha}}} - d_{bar} r_{w} \right)^{ - \gamma} \right) \\
-\mathrm{tb}\left( \infty \right) =& d_{bar} r_{w} \\
+\mathrm{tb}\left( \infty \right) =& 1 + \frac{d_{bar} r_{w} - \left( \frac{\left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1}{-1 + \omega}}}{\left( \frac{r_{w} + \delta}{\alpha} \right)^{\frac{1}{1 - \alpha}}} \right)^{\alpha} \left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1 - \alpha}{-1 + \omega}}}{\left( \frac{\left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1}{-1 + \omega}}}{\left( \frac{r_{w} + \delta}{\alpha} \right)^{\frac{1}{1 - \alpha}}} \right)^{\alpha} \left( \left( \frac{\alpha}{r_{w} + \delta} \right)^{\frac{\alpha}{1 - \alpha}} \left( 1 - \alpha \right) \right)^{\frac{1 - \alpha}{-1 + \omega}}} \\
 \mathrm{ca}\left( \infty \right) =& 0 \\
 \mathrm{riskpremium}\left( \infty \right) =& 0 \\
 r\left( \infty \right) =& \log\left( \frac{1 - \beta}{\beta} \right) \\
@@ -55,6 +54,7 @@ r\left( \infty \right) =& \log\left( \frac{1 - \beta}{\beta} \right) \\
 \mu\left( \infty \right) =& 0
 \end{align}
 "
+const steady_states_iv_latex = L"$$"
 # Function definitions
 include("sgu/zero_order_ip.jl")
 include("sgu/first_order_ip.jl")
