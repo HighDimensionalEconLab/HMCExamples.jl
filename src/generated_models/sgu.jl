@@ -1,6 +1,6 @@
 module sgu
 using LinearAlgebra, SymbolicUtils, LaTeXStrings
-const max_order = 1
+const max_order = 2
 const n_y = 8
 const n_x = 7
 const n_p = 16
@@ -58,4 +58,5 @@ r\left( \infty \right) =& \log\left( \frac{1 - \beta}{\beta} \right) \\
 # Function definitions
 include("sgu/zero_order_ip.jl")
 include("sgu/first_order_ip.jl")
+include("sgu/second_order_ip.jl")
 end
