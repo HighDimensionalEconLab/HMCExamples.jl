@@ -33,4 +33,4 @@
 --save_jls=false
 --init_params_file=data/sgu_1_kalman_burnin.csv
 --discard_initial=-1
---sampling_heartbeat=0
+--sampling_heartbeat=1000

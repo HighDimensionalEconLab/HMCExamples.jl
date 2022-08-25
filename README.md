@@ -35,11 +35,11 @@ julia --threads auto -e 'using Pkg; Pkg.add(\"PackageCompiler\")'
 julia --project --threads auto -O1 ./deps/create_sysimage.jl
 ```
 
-Grab coffee.  This will take at least 10 minutes to run.
+Grab coffee.  This will take at least 15-30 minutes to run.  It will help startup latency (maybe 2-3 minutes less to start sampling), but not as much as you would hope.  Zygote.jl is not amenable to caching compilation.
 
-After: when you use vscode it will load the custom sysimage as long as you have the `Julia: Use custom sysimage` option enabled (which it should be default?)
+After: when you use vscode it will also load this custom sysimage as long as you have the `Julia: Use custom sysimage` option enabled.
 
-On the commandline you will need to manually provide it.  For example, 
+On the commandline you will need to manually provide it manually.  For example, 
 ```bash
 julia --project --sysimage JuliaSysimage.dll --threads auto -O1 bin/fit_rbc_1_kalman.jl --results_path ./.results/rbc_1_kalman --overwrite_results true --num_samples 1000
 ```
