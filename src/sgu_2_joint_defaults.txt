@@ -1,4 +1,4 @@
---data_path=data/sgu_2.csv
+--data_path=data/sgu_2_fixed.csv
 --omega=1.455
 --sigmae=0.0129
 --delta=0.1
@@ -25,12 +25,12 @@
 --epsilon_BK=1e-6
 --tol_cholesky=1e9
 --perturb_covariance=1e-12
---calculate_ergodic_distribution=true
+--calculate_ergodic_distribution=false
 --use_tensorboard=false
 --num_chains=1
 --progress=true
 --save_hd5=true
 --save_jls=false
---init_params_file=
+--init_params_file=data/sgu_2_joint_burnin.csv
 --discard_initial=-1
 --sampling_heartbeat=0
