@@ -44,10 +44,10 @@ function sgu()
     istar = δ * kstar
     GDPstar = (kstar^α) * (hstar^(1 - α))
     cstar = GDPstar - istar - r_w * d_bar
-    tbstar = GDPstar - cstar - istar
+    tbstar = 1 - ((cstar + istar) / GDPstar)
     λstar = (cstar - ((hstar^ω) / ω))^(-γ)
     #Steady state values
-    steady_states_iv = [a(∞) ~ 0, kfu(∞) ~ log(kstar),
+    steady_states = [a(∞) ~ 0, kfu(∞) ~ log(kstar),
                      d(∞) ~ d_bar, c(∞) ~ log(cstar), h(∞) ~ log(hstar),
                      GDP(∞) ~ log(GDPstar), i(∞) ~ log(istar), k(∞) ~ log(kstar),
                      λ(∞) ~ log(λstar), tb(∞) ~ tbstar, ca(∞) ~ 0, riskpremium(∞) ~ 0,
@@ -66,6 +66,6 @@ function sgu()
 
     Ω = [Ω_1, Ω_1, Ω_1]
 
-    return H, (; t, x, y, p, steady_states_iv, Γ, η, Ω, Q), "sgu"
+    return H, (; t, x, y, p, steady_states, Γ, η, Ω, Q), "sgu"
 end
 
