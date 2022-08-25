@@ -32,22 +32,14 @@ function estimate_sgu_2_joint(d)
     print_info(d, num_adapts)
     sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
 
-    # 4 cases just to be careful with type-stability
-    if (d.num_chains == 1) && (d.init_params_file == "")
-        chain = sample(turing_model, sampler, d.num_samples; d.progress, save_state=true, d.discard_initial, callback)
-        calculate_experiment_results(d, chain, logdir, callback, include_vars)
-    elseif (d.num_chains == 1) && (d.init_params_file != "")
-        init_params = readdlm(joinpath(pkgdir(HMCExamples), d.init_params_file), ',', Float64, '\n')[:, 1]
-        chain = sample(turing_model, sampler, d.num_samples; d.progress, save_state=true, d.discard_initial, callback, init_params)
-        calculate_experiment_results(d, chain, logdir, callback, include_vars)
-    elseif (d.num_chains > 1) && (d.init_params_file == "")
-        chain = sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback)
-        calculate_experiment_results(d, chain, logdir, callback, include_vars)
-    elseif (d.num_chains > 1) && (d.init_params_file != "")
-        init_params = readdlm(joinpath(pkgdir(HMCExamples), d.init_params_file), ',', Float64, '\n')[:, 1]
-        chain = sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback, init_params=[init_params for _ in 1:d.num_chains])
-        calculate_experiment_results(d, chain, logdir, callback, include_vars)
-    end
+    # Not typesafe, but hopefully that isn't important here.
+    init_params = (d.init_params_file == "") ? nothing : readdlm(joinpath(pkgdir(HMCExamples), d.init_params_file), ',', Float64, '\n')[:, 1]
+
+    chain = (d.num_chains == 1) ? sample(turing_model, sampler, d.num_samples; d.progress,save_state=true, d.discard_initial, callback,
+                                init_params) :
+                                sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback,
+                                init_params = isnothing(init_params) ? nothing : [init_params for _ in 1:d.num_chains])
+    calculate_experiment_results(d, chain, logdir, callback, include_vars)
 end
 
 @model function sgu_joint_2(z, m, p_f, α_prior, γ_prior, ψ_prior, β_prior, ρ_prior, ρ_u_prior, ρ_v_prior, cache, settings)
@@ -60,25 +52,19 @@ end
     ρ_v ~ Beta(ρ_v_prior[1], ρ_v_prior[2])
     β = 1 / (β_draw / 100 + 1)
     p_d = (; α, γ, ψ, β, ρ, ρ_u, ρ_v)
-    (settings.print_level > 1) && @show p_d
+    
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     sol = generate_perturbation(m, p_d, p_f, Val(2); cache, settings)
-    (settings.print_level > 1) && println("Perturbation generated")
+    x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
 
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
-
-    else
-        (settings.print_level > 1) && println("Calculating likelihood")
-        # Simulate and get the likelihood.
-        x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
-        problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
-        @addlogprob! solve(problem, DirectIteration()).logpdf
+        return
     end
-    return
+    problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
+    @addlogprob! solve(problem, DirectIteration()).logpdf
 end
 
 function parse_commandline_sgu_2_joint(args)
