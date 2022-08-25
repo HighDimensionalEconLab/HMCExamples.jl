@@ -11,17 +11,27 @@ T = 200
 
 settings = PerturbationSolverSettings(; print_level=1, perturb_covariance = 1e-12)
 mod_perturb = generate_perturbation(m, p_d, p_f;settings)
+
+# Save for Kalman for dynare comparision, random initial condition from parameters
 x0 = rand(MvNormal(mod_perturb.x_ergodic_var))
 prob = LinearStateSpaceProblem(mod_perturb, x0, (0, T))
 sol = solve(prob, DirectIteration())
 z_vec = VectorOfArray(sol.z)
 CSV.write(joinpath(pkgdir(HMCExamples), "data/sgu_1.csv"), DataFrame(y_obs=z_vec[1, :], ca_obs=z_vec[2, :], r_obs=z_vec[3, :]))
+
+# Save for joint comparision, start at non-stochastic steady state
+x0 = zeros(m.n_x)
+prob = LinearStateSpaceProblem(mod_perturb, x0, (0, T))
+sol = solve(prob, DirectIteration())
+z_vec = VectorOfArray(sol.z)
+CSV.write(joinpath(pkgdir(HMCExamples), "data/sgu_1_fixed.csv"), DataFrame(y_obs=z_vec[1, :], ca_obs=z_vec[2, :], r_obs=z_vec[3, :]))
 CSV.write(joinpath(pkgdir(HMCExamples), "data/sgu_1_joint_shocks.csv"), DataFrame(epsilon_e=vec(sol.W[1, :]), epsilon_u=vec(sol.W[2, :]), epsilon_v=vec(sol.W[3, :])))
 
+
 mod_perturb_2 = generate_perturbation(m, p_d, p_f, Val(2);settings)
-x0_2 = rand(MvNormal(mod_perturb_2.x_ergodic_var))
+x0_2 = zeros(m.n_x)
 prob_2 = QuadraticStateSpaceProblem(mod_perturb_2, x0_2, (0, T))
 sol_2 = solve(prob_2, DirectIteration())
 z_vec_2 = VectorOfArray(sol_2.z)
-CSV.write(joinpath(pkgdir(HMCExamples), "data/sgu_2.csv"), DataFrame(y_obs=z_vec_2[1, :], ca_obs=z_vec_2[2, :], r_obs=z_vec_2[3, :]))
+CSV.write(joinpath(pkgdir(HMCExamples), "data/sgu_2_fixed.csv"), DataFrame(y_obs=z_vec_2[1, :], ca_obs=z_vec_2[2, :], r_obs=z_vec_2[3, :]))
 CSV.write(joinpath(pkgdir(HMCExamples), "data/sgu_2_joint_shocks.csv"), DataFrame(epsilon_e=vec(sol_2.W[1, :]), epsilon_u=vec(sol_2.W[2, :]), epsilon_v=vec(sol_2.W[3, :])))
