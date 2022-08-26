@@ -42,11 +42,13 @@ To move the image to another machine, run `sudo docker save <ID> > <ID>.tar` whe
 
 Note that if installing Julia on the command line, you will need to call it as `~/julia-1.7.1/bin/julia --project <scriptname>` i.e. specifying the full path of the Julia executable.
 
-1. `bash HMCExamples.jl/scripts/julia_replication/install_julia.sh`
-2. Close and reopen the terminal to allow Julia path variables to instantiate.
-3. `cd HMCExamples.jl`
-4. `script`
-5. Run whichever shellscript from inside the `julia_replication` folder you wish to run:
+1. `tmux new-session -s ubuntu` (do `tmux attach-session -t ubuntu` if it responds with session already exists)
+2. `bash HMCExamples.jl/scripts/julia_replication/install_julia.sh`
+3. `exit`
+4. `tmux new-session -s ubuntu`
+5. `cd HMCExamples.jl`
+6. `script`
+7. Run whichever shellscript from inside the `julia_replication` folder you wish to run:
   - `scripts/julia_replication/f124_plots.sh`
   - `scripts/julia_replication/frequentist_kalman.sh`
   - `scripts/julia_replication/frequentist_joint_1.sh`
@@ -56,18 +58,26 @@ Note that if installing Julia on the command line, you will need to call it as `
 
 ## FVGQ Julia
 
-1. `bash HMCExamples.jl/scripts/fvgq_replication/install_julia.sh`
-2. `cd HMCExamples.jl`
-3. Run whichever shellscript from inside the `fvgq_replication` folder you wish to run:
+1. `tmux new-session -s ubuntu` (do `tmux attach-session -t ubuntu` if it responds with session already exists)
+2. `bash HMCExamples.jl/scripts/fvgq_replication/install_julia.sh`
+3. `exit`
+4. `tmux new-session -s ubuntu`
+5. `cd HMCExamples.jl`
+6. `script`
+7. Run whichever shellscript from inside the `fvgq_replication` folder you wish to run:
   - `scripts/fvgq_replication/kalman.sh`
   - `scripts/fvgq_replication/1_joint.sh`
   - `scripts/fvgq_replication/2_joint.sh`
   
 ## SGU Julia
 
-1. `bash HMCExamples.jl/scripts/sgu_replication/install_julia.sh`
-2. `cd HMCExamples.jl`
-3. `bash scripts/sgu_replication/run.sh`
+1. `tmux new-session -s ubuntu` (do `tmux attach-session -t ubuntu` if it responds with session already exists)
+2. `bash HMCExamples.jl/scripts/sgu_replication/install_julia.sh`
+3. `exit`
+4. `tmux new-session -s ubuntu`
+5. `cd HMCExamples.jl`
+6. `script`
+7. `bash scripts/sgu_replication/run.sh`
 
 ## Uploading results to an AWS S3 bucket
 
