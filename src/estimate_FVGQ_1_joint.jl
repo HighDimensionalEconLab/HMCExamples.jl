@@ -71,8 +71,6 @@ function estimate_FVGQ_1_joint(d)
 end
 
 @model function FVGQ20_joint_1(z, m, p_f, params, cache, settings)
-    T = size(z, 2)
-    # Priors
     β_draw ~ Gamma(params.β[1], params.β[2])
     β = 1 / (β_draw / 100 + 1)
     h ~ Beta(params.h[1], params.h[2])
@@ -94,26 +92,22 @@ end
     σ_g ~ InverseGamma(params.σ_g[1], params.σ_g[2])
     Λμ ~ Gamma(params.Λμ[1], params.Λμ[2])
     ΛA ~ Gamma(params.ΛA[1], params.ΛA[2])
+    θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
+    
+    T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
-    # Likelihood
-    θ = (; β, h, κ, χ, γR, γΠ, Πbar, ρd, ρφ, ρg, g_bar, σ_A, σ_d, σ_φ, σ_μ, σ_m, σ_g, Λμ, ΛA)
-    (settings.print_level > 1) && @show θ
     sol = generate_perturbation(m, θ, p_f, Val(1); cache, settings)
-    (settings.print_level > 1) && println("Perturbation generated")
+    x0 = zeros(m.n_x) # the initial condition
+    
     if !(sol.retcode == :Success)
-        (settings.print_level > 0) && println("Perturbation failed $(sol.retcode)")
         @addlogprob! -Inf
-
-    else
-        z_trend = params.Hx * sol.x + params.Hy * sol.y
-        z_detrended = z .- z_trend
-        # Simulate and get the likelihood.
-        x0 = zeros(m.n_x) # the initial condition
-        problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
-        @addlogprob! solve(problem, DirectIteration()).logpdf
+        return
     end
-    return
+    z_trend = params.Hx * sol.x + params.Hy * sol.y
+    z_detrended = z .- z_trend
+    problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
+    @addlogprob! solve(problem, DirectIteration()).logpdf
 end
 
 function parse_commandline_FVGQ_1_joint(args)
