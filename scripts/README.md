@@ -56,6 +56,8 @@ Note that if installing Julia on the command line, you will need to call it as `
   - `scripts/julia_replication/tables.sh`
   - `scripts/julia_replication/robustness.sh`
 
+Note that the call to `script` generates a logfile called `typescript` in the `HMCExamples.jl` folder which you can use to query script errors in the event of an unexpected shutdown, or if the terminal overflows.
+
 ## FVGQ Julia
 
 1. `tmux new-session -s ubuntu` (do `tmux attach-session -t ubuntu` if it responds with session already exists)
