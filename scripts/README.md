@@ -60,6 +60,12 @@ Note that if installing Julia on the command line, you will need to call it as `
   - `scripts/fvgq_replication/kalman.sh`
   - `scripts/fvgq_replication/1_joint.sh`
   - `scripts/fvgq_replication/2_joint.sh`
+  
+## SGU Julia
+
+1. `bash HMCExamples.jl/scripts/sgu_replication/install_julia.sh`
+2. `cd HMCExamples.jl`
+3. `bash scripts/sgu_replication/run.sh`
 
 ## Uploading results to an AWS S3 bucket
 
