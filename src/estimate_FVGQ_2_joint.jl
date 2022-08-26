@@ -97,12 +97,12 @@ end
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     sol = generate_perturbation(m, θ, p_f, Val(2); cache, settings)
-    x0 = zeros(m.n_x) # the initial condition
     
     if !(sol.retcode == :Success)
         @addlogprob! -Inf
         return
     end
+    x0 = zeros(m.n_x) # the initial condition
     z_trend = params.Hx * sol.x + params.Hy * sol.y
     z_detrended = z .- z_trend  
     problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z_detrended, noise=ϵ)
