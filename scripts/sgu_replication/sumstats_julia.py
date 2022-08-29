@@ -47,6 +47,6 @@ with open(".tables/sumstats_sgu.tex", "w") as f:
     res.insert(3, r"& Kalman & Joint 1st & Joint 2nd & Kalman & Joint 1st & Joint 2nd & Kalman & Joint 1st & Joint 2nd & Kalman & Joint 1st & Joint 2nd \\")
     f.write("\n".join(res) + "\n")                
     f.write(r"""
-{\raggedright Notes: We draw 6,000 samples in total and discard the first 1000 samples for each estimation. RUNTIME\par}
+{\raggedright Notes: We draw 6,500 samples in total and discard the first 1,500 samples for each estimation. RUNTIME\par}
 \normalsize
 \end{table}""".replace("RUNTIME", runtime_text))
