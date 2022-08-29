@@ -128,6 +128,6 @@ end;
 varobs y_obs ca_obs r_obs;
 
 options_.cova_compute = 0;
-%estimation(datafile = 'SGUsimorder1.csv', mode_file = 'SU03ext_mode.mat', order = 1, mh_nblocks = 1, mh_replic = 2000000, mh_drop = 0.1, mh_jscale = 0.1, mode_compute = 0, mcmc_jumping_covariance = identity_matrix);
+%estimation(datafile = '../../data/SGUsimorder1.csv', mode_file = 'SU03ext_mode.mat', order = 1, mh_nblocks = 1, mh_replic = 2000000, mh_drop = 0.1, mh_jscale = 0.01, mode_compute = 0, mcmc_jumping_covariance = identity_matrix);
 
-estimation(datafile = 'SGUsimorder2omega1e3.csv', mode_file = 'SU03ext_mode.mat', order = 2, mh_nblocks = 1, mh_replic = 100000, mh_drop = 0.1, mh_jscale = 0.01, mode_compute = 0, mcmc_jumping_covariance = identity_matrix, number_of_particles = 60000, nonlinear_filter_initialization=3);
+estimation(datafile = '../../data/SGUsimorder2.csv', mode_file = 'SU03ext_mode.mat', order = 2, mh_nblocks = 1, mh_replic = 100000, mh_drop = 0.1, mh_jscale = 0.01, mode_compute = 0, mcmc_jumping_covariance = identity_matrix, number_of_particles = 60000, nonlinear_filter_initialization=3);
