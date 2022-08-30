@@ -1,29 +1,62 @@
-using HDF5, MCMCChains, MCMCChainsStorage, CSV, DataFrames, StatsPlots, Measures, Dates
+using HDF5, MCMCChains, MCMCChainsStorage, CSV, DataFrames, StatsPlots, Measures, Dates, MAT
 
-function generate_plots(batch, include_vars)
-    println("generating plots for ", batch)
-    chain = h5open(".experiments/sgu/sgu_$(batch)/chain.h5", "r") do f
+function generate_plots()
+    println("generating plots")
+    include_vars = ["α", "β_draw", "γ", "ρ", "ρ_u", "ρ_v", "ψ"]
+    pseudotrues = [0.32 4 2.0 0.42 0.2 0.4 0.000742]
+    chain_marginal = h5open(".experiments/sgu/sgu_1_kalman/chain.h5", "r") do f
         read(f, Chains)
     end
+    chain_joint_1 = h5open(".experiments/sgu/sgu_1_joint/chain.h5", "r") do f
+        read(f, Chains)
+    end
+    chain_joint_2 = h5open(".experiments/sgu/sgu_2_joint/chain.h5", "r") do f
+        read(f, Chains)
+    end
+
+    include_vars_dynare = ["α", "β_draw", "γ", "ρ", "ρ_u", "ρ_v", "ψ", "lp"]
+    order_dynare = (x, y)->findfirst(i->i==string(x), include_vars_dynare) < findfirst(i->i==string(y), include_vars_dynare)
+
+    mat1 = matread(".experiments/sgu/chain_1st_order.mat")
+    data1 = [mat1["x2"] mat1["logpo2"]]
+    chain_dynare_1_ = sort(Chains(data1, ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v", "lp"]), lt = order_dynare)
+
+    mat2 = matread(".experiments/sgu/chain_2nd_order.mat")
+    data2 = [mat2["x2"] mat2["logpo2"]]
+    chain_dynare_2_ = sort(Chains(data2, ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v", "lp"]), lt = order_dynare)
     println("  deserialization complete")
 
-    # trace plots (Figures 1, 2, 4)
-    trace_plot = traceplot(chain[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm)
-    savefig(trace_plot, ".figures/plot_sgu_$(batch).png")
+    # trace plots
+    trace_plot = traceplot(chain_marginal[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "Marginal")
+    traceplot!(trace_plot, chain_joint_1[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "1st-Order Joint")
+    traceplot!(trace_plot, chain_joint_2[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "2nd-Order Joint", legend = true)
+    hline!(trace_plot, pseudotrues, linestyle = :dash, color = :black, label = "")
+    savefig(trace_plot, ".figures/plot_sgu.png")
+    trace_plot_1 = traceplot(chain_dynare_1[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm)
+    hline!(trace_plot_1, pseudotrues, linestyle = :dash, color = :black, label = "")
+    savefig(trace_plot_1, ".figures/plot_sgu_1_dynare.png")
+    trace_plot_2 = traceplot(chain_dynare_2[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm)
+    hline!(trace_plot_2, pseudotrues, linestyle = :dash, color = :black, label = "")
+    savefig(trace_plot_2, ".figures/plot_sgu_2_dynare.png")
 
-    # density (Figures 1, 2, 4)
-    density_plot = density(chain[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm)
-    savefig(density_plot, ".figures/densityplots_sgu_$(batch).png")
+    # density
+    density_plot = density(chain_marginal[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, Marginal")
+    density!(density_plot, chain_joint_1[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, 1st-Order Joint")
+    density!(density_plot, chain_joint_2[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, 2nd-Order Joint", legend = true)
+    density!(density_plot, chain_dynare_1[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "RWMH, 1st-Order", legend = true)
+    density!(density_plot, chain_dynare_2[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "RWMH, 2nd-Order", legend = true)
+    vline!(density_plot, pseudotrues, linestyle = :dash, color = :black, label = "")
+    savefig(density_plot, ".figures/densityplots_sgu.png")
 
-    if batch != "1_kalman"
-        # epsilons (Figure 6)
+    for (batch, shocks, chain) in [("1_joint", "data/sgu_1_fixed_high_shocks.csv", chain_joint_1), ("2_joint", "data/sgu_2_fixed_high_shocks.csv", chain_joint_2)]
+        # epsilons
         symbol_to_int(s) = parse(Int, replace(string(s), "ϵ_draw["=>"", "]"=>""))
         symbollist = reshape([Symbol("ϵ_draw[$a]") for a in 1:600], 3, 200)
         labels = ["σ_e", "σ_u", "σ_v"]
         plots = []
 
         # Import the true shock values
-        ϵ_true = Matrix(DataFrame(CSV.File("data/rbc_$(batch)_shocks.csv")))
+        ϵ_true = Matrix(DataFrame(CSV.File(shocks)))
 
         for i in 1:3
             ϵ_chain = sort(chain[:, symbollist[i, :], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
@@ -33,8 +66,7 @@ function generate_plots(batch, include_vars)
             
             # Plot and save
             ϵ_plot = plot(ϵ_mean[2:end], ribbon=2 * ϵ_std[2:end], title = labels[i])
-            # may need to double-check the dimensions here
-            ϵ_plot = plot!(ϵ_true[i, :], label="True values")
+            ϵ_plot = plot!(ϵ_true[:, i], label="True values")
             push!(plots, ϵ_plot)
         end
         ϵ_plot = plot(plots[1], plots[2], plots[3], layout = (6, 1), size = (1600, 900), left_margin = 10mm, bottom_margin = 5mm, legend = false)
@@ -44,6 +76,4 @@ function generate_plots(batch, include_vars)
     println("  plots complete")
 end
 
-generate_plots("1_kalman", ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v"])
-generate_plots("1_joint", ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v"])
-generate_plots("2_joint", ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v"])
+generate_plots()

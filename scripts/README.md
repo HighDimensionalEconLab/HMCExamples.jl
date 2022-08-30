@@ -6,7 +6,7 @@ Create a new session using `tmux new-session -s ubuntu` and retrieve it using `t
 
 If using a sysimage, run `sudo apt update` followed by `sudo apt install g++`.
 
-Original Julia scripts used `--adapts_burnin_prop=0.1` instead of the current 0.2, so perfect replication requires adding this to all Julia estimation script calls (or directly setting it in the defaults).
+Original RBC Julia scripts used `--adapts_burnin_prop=0.1` instead of the current 0.2, so perfect replication requires adding this to all Julia estimation script calls (or directly setting it in the defaults).
 
 To use the following instructions, first clone the repo via `git clone https://github.com/HighDimensionalEconLab/HMCExamples.jl`.
 
@@ -17,7 +17,7 @@ To use the following instructions, first clone the repo via `git clone https://g
 
 From inside the Docker instance:
 1. `sudo apt update`
-2. `sudo apt install -y git`
+2. `sudo apt install -y git nano`
 3. `git clone https://github.com/HighDimensionalEconLab/HMCExamples.jl`
 4. `cd HMCExamples.jl/scripts/dynare_replication`
 5. `bash install_dynare.sh`
@@ -27,6 +27,7 @@ From inside the Docker instance:
   - `robustness_rbc_2.m`
   - `table_rbc_1.m`
   - `table_rbc_2.m` 
+  - `table_sgu.m` (you will need to edit this and the `SU03ext.mod` file while inside the container to select an order level; you can use e.g. `nano SU03ext.mod` to edit files, then `ctrl+x` followed by `y` followed by `enter` to save and close them)
   
 You may wish to log the Dynare output to inspect the acceptance rates over the course of a run. To do this, type `script` before starting Matlab, which will log all outputs to a file. This file can be parsed using a script in the `figplots` folder; see the summary tables section below.
 
@@ -101,7 +102,7 @@ Run `mkdir .tables .results .figures` to prevent filepath errors when running th
 
 The following options are available:
 
-### Dynare
+### Dynare RBC
 - Dynare Log Parser
   - Use this to read the Dynare logs if you saved it to a file earlier.
   - `python scripts/figplots/parse_dynare_log.py`
@@ -113,6 +114,12 @@ The following options are available:
 - Robustness Plots
   - `julia --project=scripts --threads auto scripts/figplots/robustness_dynare.jl`
   - Ideally, this command should be run on a machine with as many threads as possible due to the slow execution time of StatsPlots.
+  
+### Dynare SGU
+- Summary Statistics
+  - First, pull the Matlab chain files into Julia by running `julia --project=scripts scripts/sgu_replication/dynare_to_julia.jl`.
+  - Next, parse the results into tables using `python scripts/sgu_replication/sumstats_dynare.py`.
+- Plots are available under the Julia SGU section.
 
 ### Julia RBC
 - Numerical Error Presence Validation

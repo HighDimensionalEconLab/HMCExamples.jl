@@ -32,3 +32,6 @@ robust/
 .ipynb_checkpoints
 **/.DS_Store
 **/.ipynb_checkpoints
+.tables/*
+.figures/*
+.experiments/*
