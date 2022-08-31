@@ -70,7 +70,6 @@ function generate_plots()
     hline!(trace_plot, pseudotrues_2, linestyle = :dash, color = :black, label = "", size = (600, 1000))
     savefig(trace_plot, ".figures/traceplots_sgu_2_dynare_2.png")
 
-    #=
     # density
     density_plot = density(chain_marginal[include_vars_1], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, kalman")
     density!(density_plot, chain_joint_1[include_vars_1], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, joint")
@@ -117,7 +116,7 @@ function generate_plots()
         end
         ϵ_plot = plot(plots[1], plots[2], plots[3], layout = (6, 1), size = (1600, 900), left_margin = 10mm, bottom_margin = 5mm, legend = false)
         savefig(ϵ_plot, ".figures/epsilons_sgu_$(batch).png")
-    end =#
+    end
     
     println("  plots complete")
 end
