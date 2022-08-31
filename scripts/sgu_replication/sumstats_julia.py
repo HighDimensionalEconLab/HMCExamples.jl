@@ -27,7 +27,7 @@ kalman.insert(3, "StdDev_joint_2", joint_2.loc[:, "StdDev"])
 kalman.insert(3, "StdDev_joint_1", joint_1.loc[:, "StdDev"])
 kalman.insert(2, "Mean_joint_2", joint_2.loc[:, "Mean"])
 kalman.insert(2, "Mean_joint_1", joint_1.loc[:, "Mean"])
-kalman.insert(1, "Pseudotrue", [0.32, 2.0, "{7.42^{_{\cdot 10^{-4}}}}", 4, 0.42, 0.2, 0.4])
+kalman.insert(1, "Pseudotrue", ["0.32", "2.0", "{7.42^{_{\cdot 10^{-4}}}}", "4", "0.42", "0.2", "0.4"])
 
 kalman_runtime = int(round((kalman.loc[:, "ESS"] / kalman.loc[:, "ESSpersec"])[0]))
 joint_1_runtime = int(round((joint_1.loc[:, "ESS"] / joint_1.loc[:, "ESSpersec"])[0]))
