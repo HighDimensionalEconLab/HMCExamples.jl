@@ -19,11 +19,11 @@ function generate_plots()
 
     mat1 = matread(".experiments/sgu/chain_1st_order.mat")
     data1 = [mat1["x2"] mat1["logpo2"]]
-    chain_dynare_1_ = sort(Chains(data1, ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v", "lp"]), lt = order_dynare)
+    chain_dynare_1 = sort(Chains(data1, ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v", "lp"]), lt = order_dynare)
 
     mat2 = matread(".experiments/sgu/chain_2nd_order.mat")
     data2 = [mat2["x2"] mat2["logpo2"]]
-    chain_dynare_2_ = sort(Chains(data2, ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v", "lp"]), lt = order_dynare)
+    chain_dynare_2 = sort(Chains(data2, ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v", "lp"]), lt = order_dynare)
     println("  deserialization complete")
 
     # trace plots
@@ -40,11 +40,11 @@ function generate_plots()
     savefig(trace_plot_2, ".figures/plot_sgu_2_dynare.png")
 
     # density
-    density_plot = density(chain_marginal[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, Marginal")
-    density!(density_plot, chain_joint_1[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, 1st-Order Joint")
-    density!(density_plot, chain_joint_2[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, 2nd-Order Joint", legend = true)
-    density!(density_plot, chain_dynare_1[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "RWMH, 1st-Order", legend = true)
-    density!(density_plot, chain_dynare_2[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "RWMH, 2nd-Order", legend = true)
+    density_plot = density(chain_marginal[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS K")
+    density!(density_plot, chain_joint_1[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS 1")
+    density!(density_plot, chain_joint_2[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS 2")
+    density!(density_plot, chain_dynare_1[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "RWMH 1")
+    density!(density_plot, chain_dynare_2[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "RWMH 2", legend = :outertopright)
     vline!(density_plot, pseudotrues, linestyle = :dash, color = :black, label = "")
     savefig(density_plot, ".figures/densityplots_sgu.png")
 
