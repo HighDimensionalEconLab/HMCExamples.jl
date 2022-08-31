@@ -22,7 +22,7 @@ base.insert(5, "Rhat_2", base_2.loc[:, "Rhat"])
 base.insert(4, "ESS_2", base_2.loc[:, "ESS"])
 base.insert(3, "StdDev_2", base_2.loc[:, "StdDev"])
 base.insert(2, "Mean_2", base_2.loc[:, "Mean"])
-base.insert(1, "Pseudotrue", [0.32, 2.0, "{7.42^{_{\cdot 10^{-4}}}}", 4, 0.42, 0.2, 0.4])
+base.insert(1, "Pseudotrue", ["0.32", "2.0", "{7.42^{_{\cdot 10^{-4}}}}", "4", "0.42", "0.2", "0.4"])
 
 runtime_text = "The 1st-order takes {0:,} seconds to run and the 2nd-order with particle filter, using 60,000 particles, takes {1:,} seconds.".format(runtime_1st_order, runtime_2nd_order)
 
