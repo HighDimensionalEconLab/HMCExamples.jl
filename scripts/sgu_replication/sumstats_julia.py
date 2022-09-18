@@ -15,9 +15,9 @@ def process(n):
     return f"${n}$"
 
 kalman = pd.read_csv(".experiments/sgu/sgu_1_kalman/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
-kalman.insert(0, "Parameters", [r"\alpha", r"\gamma", r"\psi", r"100\left(\beta^{-1}-1\right)}", r"\rho", r"\rho_u", r"\rho_v"])
+kalman.insert(0, "Parameters", [r"\alpha", r"\gamma", r"\psi", r"\beta_{draw}", r"\rho", r"\rho_u", r"\rho_v"])
 kalman.insert(1, "Pseudotrue", ["0.32", "2.0", "7.42 \cdot 10^{-4}", "4", "0.42", "0.2", "0.4"])
-kalman.insert(6, "ESS\%", kalman.loc[:, "ESS"] / num_samples_kalman) # num_samples
+kalman.insert(6, "ESS\%", 100 * kalman.loc[:, "ESS"] / num_samples_kalman) # num_samples
 kalman.insert(8, "Time", kalman.loc[:, "ESS"] / kalman.loc[:, "ESSpersec"])
 num = 9
 with open(".tables/sumstats_sgu_1_kalman.tex", "w") as f:
@@ -37,9 +37,9 @@ measured in seconds and the acceptance rate is automatically tuned to 65\%. \par
 
 
 joint_1 = pd.read_csv(".experiments/sgu/sgu_1_joint/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
-joint_1.insert(0, "Parameters", [r"\alpha", r"\gamma", r"\psi", r"100{\left(\frac{1}{\beta}{-1}\right)}", r"\rho", r"\rho_u", r"\rho_v"])
+joint_1.insert(0, "Parameters", [r"\alpha", r"\gamma", r"\psi", r"\beta_{draw}", r"\rho", r"\rho_u", r"\rho_v"])
 joint_1.insert(1, "Pseudotrue", ["0.32", "2.0", "{7.42^{_{\cdot 10^{-4}}}}", "4", "0.42", "0.2", "0.4"])
-joint_1.insert(6, "ESS\%", joint_1.loc[:, "ESS"] / num_samples_1st_order) # num_samples
+joint_1.insert(6, "ESS\%", 100 * joint_1.loc[:, "ESS"] / num_samples_1st_order) # num_samples
 joint_1.insert(8, "Time", joint_1.loc[:, "ESS"] / joint_1.loc[:, "ESSpersec"])
 
 num = 9
@@ -58,9 +58,9 @@ measured in seconds and the acceptance rate is automatically tuned to 90\%. \par
 \end{table}""")
 
 joint_2 = pd.read_csv(".experiments/sgu/sgu_2_joint/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
-joint_2.insert(0, "Parameters", [r"\alpha", r"\gamma", r"\psi", r"100{\left(\frac{1}{\beta}{-1}\right)}", r"\rho", r"\rho_u", r"\rho_v"])
+joint_2.insert(0, "Parameters", [r"\alpha", r"\gamma", r"\psi", r"\beta_{draw}", r"\rho", r"\rho_u", r"\rho_v"])
 joint_2.insert(1, "Pseudotrue", ["0.32", "2.0", "{7.42^{_{\cdot 10^{-4}}}}", "4", "0.42", "0.2", "0.4"])
-joint_2.insert(6, "ESS\%", joint_2.loc[:, "ESS"] / num_samples_2nd_order) # num_samples
+joint_2.insert(6, "ESS\%", 100 * joint_2.loc[:, "ESS"] / num_samples_2nd_order) # num_samples
 joint_2.insert(8, "Time", joint_2.loc[:, "ESS"] / joint_2.loc[:, "ESSpersec"])
 
 num = 9

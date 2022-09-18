@@ -16,7 +16,7 @@ def process(n):
     return f"${n}$"
 
 dynare_1st_order = pd.read_csv(".results/dynare_1st_order/sumstats.csv").drop(columns = "Parameter")
-dynare_1st_order.insert(0, "Parameters", [r"\alpha", r"\gamma", r"\psi", r"100{\left(\frac{1}{\beta}{-1}\right)}", r"\rho", r"\rho_u", r"\rho_v"])
+dynare_1st_order.insert(0, "Parameters", [r"\alpha", r"\gamma", r"\psi", r"\beta_{draw}", r"\rho", r"\rho_u", r"\rho_v"])
 dynare_1st_order.insert(1, "Pseudotrue", ["0.32", "2.0", "{7.42^{_{\cdot 10^{-4}}}}", "4", "0.42", "0.2", "0.4"])
 dynare_1st_order.insert(6, "ESS\%", dynare_1st_order.loc[:, "ESS"] / num_samples_1st_order) # num_samples
 dynare_1st_order.insert(8, "Time", [runtime_1st_order] * 7) # runtime rounded to nearest second
@@ -35,7 +35,7 @@ with open(".tables/sumstats_sgu_1_dynare.tex", "w") as f:
 \end{table}""")
 
 dynare_2nd_order = pd.read_csv(".results/dynare_2nd_order/sumstats.csv").drop(columns = "Parameter")
-dynare_2nd_order.insert(0, "Parameters", [r"\alpha", r"\gamma", r"\psi", r"100{\left(\frac{1}{\beta}{-1}\right)}", r"\rho", r"\rho_u", r"\rho_v"])
+dynare_2nd_order.insert(0, "Parameters", [r"\alpha", r"\gamma", r"\psi", r"\beta_{draw}", r"\rho", r"\rho_u", r"\rho_v"])
 dynare_2nd_order.insert(1, "Pseudotrue", ["0.32", "2.0", "{7.42^{_{\cdot 10^{-4}}}}", "4", "0.42", "0.2", "0.4"])
 dynare_2nd_order.insert(6, "ESS\%", dynare_2nd_order.loc[:, "ESS"] / num_samples_2nd_order) # num_samples
 dynare_2nd_order.insert(8, "Time", [runtime_2nd_order] * 7) # runtime rounded to nearest second

@@ -12,7 +12,7 @@ def process(n):
     return f"${n}$"
 
 kalman = pd.read_csv(".experiments/FVGQ_fixed_x0/FVGQ_1_kalman/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
-kalman.insert(0, "Parameters", [r"100\left(1/\beta-1\right)", r"h", r"\kappa", r"\chi", r"\gamma_{R}", r"\gamma_{\Pi}", r"100\left(\bar{\Pi}-1\right)", r"\rho_{d}", r"\rho_{\varphi}", r"\rho_{g}", r"\bar{g}", r"\sigma_{A}", r"\sigma_{d}", r"\sigma_{\phi}", r"\sigma_{\mu}", r"\sigma_{m}", r"\sigma_{g}", r"\Lambda_{\mu}", r"\Lambda_{A}"])
+kalman.insert(0, "Parameters", [r"\beta_{draw}", r"h", r"\kappa", r"\chi", r"\gamma_{R}", r"\gamma_{\Pi}", r"100\left(\bar{\Pi}-1\right)", r"\rho_{d}", r"\rho_{\varphi}", r"\rho_{g}", r"\bar{g}", r"\sigma_{A}", r"\sigma_{d}", r"\sigma_{\phi}", r"\sigma_{\mu}", r"\sigma_{m}", r"\sigma_{g}", r"\Lambda_{\mu}", r"\Lambda_{A}"])
 
 joint_1 = pd.read_csv(".experiments/FVGQ_fixed_x0/FVGQ_1_joint/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
 joint_2 = pd.read_csv(".experiments/FVGQ_fixed_x0/FVGQ_2_joint/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")

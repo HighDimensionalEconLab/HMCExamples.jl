@@ -12,9 +12,9 @@ def process(n):
     return f"${n}$"
 
 kalman = pd.read_csv(".experiments/benchmarks_julia/rbc_1_kalman_timed/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
-kalman.insert(0, "Parameters", [r"\alpha", r"100\left(\beta^{-1}-1\right)", r"\rho"])
+kalman.insert(0, "Parameters", [r"\alpha", r"\beta_{draw}", r"\rho"])
 kalman.insert(1, "Pseudotrue", [0.3, 0.2, 0.9])
-kalman.insert(6, "ESS\%", kalman.loc[:, "ESS"] / num_samples_kalman) # num_samples
+kalman.insert(6, "ESS\%",100 * kalman.loc[:, "ESS"] / num_samples_kalman) # num_samples
 kalman.insert(8, "Time", kalman.loc[:, "ESS"] / kalman.loc[:, "ESSpersec"])
 num = 9
 with open(".tables/sumstats_rbc_1_kalman.tex", "w") as f:
@@ -34,9 +34,9 @@ measured in seconds and excludes \texttt{Julia} compilation time. \par}
 
 
 joint_1 = pd.read_csv(".experiments/benchmarks_julia/rbc_1_joint_timed/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
-joint_1.insert(0, "Parameters", [r"\alpha", r"100\left(\beta^{-1}-1\right)", r"\rho"])
+joint_1.insert(0, "Parameters", [r"\alpha", r"\beta_{draw}", r"\rho"])
 joint_1.insert(1, "Pseudotrue", [0.3, 0.2, 0.9])
-joint_1.insert(6, "ESS\%", joint_1.loc[:, "ESS"] / num_samples_1st_order) # num_samples
+joint_1.insert(6, "ESS\%", 100 * joint_1.loc[:, "ESS"] / num_samples_1st_order) # num_samples
 joint_1.insert(8, "Time", joint_1.loc[:, "ESS"] / joint_1.loc[:, "ESSpersec"])
 
 num = 9
@@ -55,9 +55,9 @@ measured in seconds and excludes \texttt{Julia} compilation time. \par}
 \end{table}""")
 
 joint_2 = pd.read_csv(".experiments/benchmarks_julia/rbc_2_joint_timed_10000/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
-joint_2.insert(0, "Parameters", [r"\alpha", r"100\left(\beta^{-1}-1\right)", r"\rho"])
+joint_2.insert(0, "Parameters", [r"\alpha", r"\beta_{draw}", r"\rho"])
 joint_2.insert(1, "Pseudotrue", [0.3, 0.2, 0.9])
-joint_2.insert(6, "ESS\%", joint_2.loc[:, "ESS"] / num_samples_2nd_order) # num_samples
+joint_2.insert(6, "ESS\%", 100 * joint_2.loc[:, "ESS"] / num_samples_2nd_order) # num_samples
 joint_2.insert(8, "Time", joint_2.loc[:, "ESS"] / joint_2.loc[:, "ESSpersec"])
 
 num = 9
