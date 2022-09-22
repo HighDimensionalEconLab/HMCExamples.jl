@@ -42,7 +42,7 @@ with open(".tables/sumstats_rbc_2_dynare.tex", "w") as f2:
 \caption{RWMH with Marginal Likelihood on Particle Filter, RBC Model, Second-order}
 \label{tab:rbc_RWMH_particle}
 \centering
-\scriptsizes
+\scriptsize
 """)
     dynare_2nd_order.to_latex(buf = f2, index = False, escape = False, column_format = "c" * num, header = ["Parameters", "Pseudotrue", "Post. Mean", "Post. Std.", "ESS", "R-hat", "ESS\%", "ESS/second", "Time"], formatters = [lambda s: f"${s}$"] + [process for i in range(num - 1)])
     f2.write(r"""
