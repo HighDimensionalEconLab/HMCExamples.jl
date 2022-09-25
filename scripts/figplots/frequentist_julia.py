@@ -57,7 +57,7 @@ joint_1_list.insert(7, r'\midrule')
 joint_1 = "\n".join(joint_1_list)
 with open(".tables/freqstats_rbc_1_joint.tex", "w") as f:
     f.write(r"""\begin{table}[h]
-\caption{Frequentist Statistics -- 1st-order Joint}
+\caption{Frequentist Statistics -- First-order Joint}
 \label{tab:freqstats_joint_1}
 \centering
 
@@ -85,7 +85,7 @@ joint_2_list.insert(7, r'\midrule')
 joint_2 = "\n".join(joint_2_list)
 with open(".tables/freqstats_rbc_2_joint.tex", "w") as f:
     f.write(r"""\begin{table}
-\caption{Frequentist Statistics -- 2nd-order Joint}
+\caption{Frequentist Statistics -- Second-order Joint}
 \label{tab:freqstats_joint_2}
 \centering
 
@@ -144,7 +144,7 @@ joint_1_list.insert(7, r'\midrule')
 joint_1 = "\n".join(joint_1_list)
 with open(".tables/freqstats_rbc_1_joint_drop57.tex", "w") as f:
     f.write(r"""\begin{table}[h]
-\caption{Frequentist Statistics -- 1st-order Joint}
+\caption{Frequentist Statistics -- First-order Joint}
 \label{tab:freqstats_joint_1}
 \centering
 
@@ -172,7 +172,7 @@ joint_2_list.insert(7, r'\midrule')
 joint_2 = "\n".join(joint_2_list)
 with open(".tables/freqstats_rbc_2_joint_drop57.tex", "w") as f:
     f.write(r"""\begin{table}
-\caption{Frequentist Statistics -- 2nd-order Joint}
+\caption{Frequentist Statistics -- Second-order Joint}
 \label{tab:freqstats_joint_2}
 \centering
 

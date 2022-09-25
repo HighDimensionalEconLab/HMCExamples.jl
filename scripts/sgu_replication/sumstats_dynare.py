@@ -45,7 +45,7 @@ with open(".tables/sumstats_sgu_2_dynare.tex", "w") as f2:
 \caption{RWMH with Marginal Likelihood on Particle Filter, SGU Model, Second-order}
 \label{tab:sgu_RWMH_particle}
 \centering
-\scriptsizes
+\scriptsize
 """)
     dynare_2nd_order.to_latex(buf = f2, index = False, escape = False, column_format = "c" * num, header = ["Parameters", "Pseudotrue", "Post. Mean", "Post. Std.", "ESS", "R-hat", "ESS\%", "ESS/second", "Time"], formatters = [lambda s: f"${s}$"]*2 + [process for i in range(num - 2)])
     f2.write(r"""
