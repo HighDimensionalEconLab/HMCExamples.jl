@@ -55,7 +55,7 @@ end
         @addlogprob! -Inf
         return
     end
-    x_iv = sol.x_ergodic_var * x0 #scale initial condition to ergodic variance
+    x_iv = sol.x_ergodic_var * x0 # scale initial condition to ergodic variance
     problem = LinearStateSpaceProblem(sol, x_iv, (0, T), observables=z, noise=ϵ)
     @addlogprob! solve(problem, DirectIteration()).logpdf
 end
