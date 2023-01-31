@@ -10,6 +10,7 @@ import ArgParse.parse_item
 
 # auto-generated code from /deps/generate_models.jl
 include("generated_models/rbc.jl")
+include("generated_models/rbc_student_t.jl")
 include("generated_models/FVGQ20.jl")
 include("generated_models/sgu.jl")
 
@@ -21,6 +22,7 @@ include("experiment_results.jl")
 include("estimate_rbc_1_kalman.jl")
 include("estimate_rbc_1_joint.jl")
 include("estimate_rbc_2_joint.jl")
+include("estimate_rbc_student_t_1_joint.jl")
 include("estimate_FVGQ_1_kalman.jl")
 include("estimate_FVGQ_1_joint.jl")
 include("estimate_FVGQ_2_joint.jl")
