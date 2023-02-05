@@ -3,7 +3,7 @@ using Turing
 
 Random.seed!(0) # fix a seed for reproducibility
 
-m = PerturbationModel(HMCExamples.rbc_student_t)
+m = PerturbationModel(HMCExamples.rbc_simple)
 p_d = (; α=0.5, β=0.95, ρ=0.2, δ=0.02, σ=0.01, Ω_1=0.01)
 p_f = nothing
 T = 200

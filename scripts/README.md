@@ -157,3 +157,17 @@ The following options are available:
   
 - Summary Plots
   - `julia --project=scripts scripts/sgu_replication/statplots.jl`
+
+### Julia RBC with Student's T Shocks
+- Summary Statistics
+  - `python scripts/rbc_student_t_replication/sumstats_julia.py`
+  
+- Summary Plots
+  - `julia --project=scripts scripts/rbc_student_t_replication/statplots.jl`
+
+### Julia RBC with Stochastic Volatility
+- Summary Statistics
+  - `python scripts/rbc_volatility_replication/sumstats_julia.py`
+  
+- Summary Plots
+  - `julia --project=scripts scripts/rbc_volatility_replication/statplots.jl`
