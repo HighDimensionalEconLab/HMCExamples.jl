@@ -18,7 +18,7 @@ function estimate_rbc_volatility_1_joint(d)
 
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
     turing_model = rbc_volatility_joint_1(
-        z, m, p_f, d.alpha_prior, d.beta_prior, d,ρ_σ_prior, d.μ_σ_prior, d.σ_σ_prior, c, settings
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_sigma_prior, d.mu_sigma_prior, d.sigma_sigma_prior, c, settings
     )
 
     # Sampler
@@ -60,12 +60,12 @@ end
         @addlogprob! -Inf
         return
     end
-    @addlogprob! (sol.A, sol.B, sol.C, sol.D, x0, p_f[:Ω_1], μ_σ, ρ_σ, σ_σ, z, ϵ, volshocks)
+    @addlogprob! rbc_volatility_likelihood(sol.A, sol.B, sol.C, sol.D, x0, p_f[:Ω_1], μ_σ, ρ_σ, σ_σ, z, ϵ, volshocks)
 end
 
 function rbc_volatility_likelihood(A, B, C, D, x0, Ω_1, μ_σ, ρ_σ, σ_σ, observables, noise, volshocks)
     # Likelihood evaluation function using `Zygote.Buffer()` to create internal arrays that don't interfere with gradients.
-    T = size(observables,2)
+    T = size(observables, 2)
     u = Zygote.Buffer([zero(x0) for _ in 1:T])  # Fix type: Array of vector of vectors?
     vol = Zygote.Buffer([zeros(1) for _ in 1:T])  # Fix type: Array of vector of vectors?
     u[1] = x0 

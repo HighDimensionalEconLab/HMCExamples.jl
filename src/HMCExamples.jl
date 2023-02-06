@@ -10,7 +10,7 @@ import ArgParse.parse_item
 
 # auto-generated code from /deps/generate_models.jl
 include("generated_models/rbc.jl")
-#include("generated_models/rbc_simple.jl")
+include("generated_models/rbc_simple.jl")
 include("generated_models/FVGQ20.jl")
 include("generated_models/sgu.jl")
 

@@ -1,8 +1,7 @@
-using HMCExamples, DifferentiableStateSpaceModels, DifferenceEquations, CSV, DataFrames, Random, RecursiveArrayTools
+using HMCExamples, DifferentiableStateSpaceModels, DifferenceEquations, CSV, DataFrames, Random, RecursiveArrayTools, LinearAlgebra
 using Turing
 
 Random.seed!(0) # fix a seed for reproducibility
-
 m = PerturbationModel(HMCExamples.rbc_simple)
 p_d = (; α=0.5, β=0.95, ρ=0.2, δ=0.02, σ=0.01, Ω_1=0.01)
 p_f = nothing
@@ -13,17 +12,16 @@ T = 200
 σ_σ = 0.1  # Volatility of volatility
 
 mod_perturb = generate_perturbation(m, p_d, p_f)
-shockdist = MvNormal(mod_perturb.x_ergodic_var)
-x0 = rand(shockdist)
-noise = Matrix(rand(shockdist, T)')
+x0 = rand(MvNormal(mod_perturb.x_ergodic_var))
+noise = Matrix(rand(MvNormal(mod_perturb.n_ϵ, 1.0), T))
 volshocks = Matrix(rand(MvNormal(T, 1.0))')
 obsshocks = reshape(rand(MvNormal(T*mod_perturb.n_z, p_d[:Ω_1])), mod_perturb.n_z, T)
 
 # Extract solution matrices
-A = sol.A
-B = sol.B
-C = sol.C
-D = sol.D
+A = mod_perturb.A
+B = mod_perturb.B
+C = mod_perturb.C
+D = mod_perturb.D
 
 # Initialize
 u = [zero(x0) for _ in 1:T]
@@ -48,7 +46,7 @@ end
 
 z_vec = VectorOfArray(z)
 W_vec = vec(noise)
-vol_vec = vec(vol)
+vol_vec = VectorOfArray(vol)
 CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_volatility_1.csv"), DataFrame(c_obs=z_vec[1, :], k_obs=z_vec[2, :]))
 CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_volatility_1_joint_shocks.csv"), DataFrame(epsilon=W_vec))
-CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_volatility_1_joint_volshocks.csv"), DataFrame(epsilon=vol_vec))
+CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_volatility_1_joint_volshocks.csv"), DataFrame(epsilon=vol_vec[1, :]))
