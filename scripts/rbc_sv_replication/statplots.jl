@@ -21,13 +21,6 @@ function generate_plots()
     savefig(density_plot, ".figures/densityplots_rbc_sv.png")
     
     for (batch, chain) in [("2_joint", chain_joint_1)]
-
-        """
-
-        TODO: check if initial condition for epsilons are aligned correctly: [1:end] vs [2:end]
-
-        """
-
         # epsilons
         symbol_to_int(s) = parse(Int, replace(string(s), "ϵ_draw["=>"", "]"=>""))
         ϵ_chain = sort(chain[:, [Symbol("ϵ_draw[$a]") for a in 1:201], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
@@ -36,11 +29,11 @@ function generate_plots()
         ϵ_std = tmp[1][:, 3]
 
         # Import the true shock values
-        ϵ_true = vec(Matrix(DataFrame(CSV.File("data/rbc_sv_$(batch)_shocks.csv"))))
+        ϵ_true = Matrix(DataFrame(CSV.File("data/rbc_sv_$(batch)_shocks.csv")))'
 
         # Plot and save
         ϵ_plot = plot(ϵ_mean[2:end], ribbon=2 * ϵ_std[2:end], label="Posterior mean")
-        ϵ_plot = plot!(ϵ_true, label="True values")
+        ϵ_plot = plot!(ϵ_true[1, :], label="True values")
         savefig(ϵ_plot, ".figures/epsilons_rbc_sv_$(batch).png")
 
         ϵ_chain = sort(chain[:, [Symbol("ϵ_draw[$a]") for a in 202:402], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
@@ -48,13 +41,10 @@ function generate_plots()
         ϵ_mean = tmp[1][:, 2]
         ϵ_std = tmp[1][:, 3]
 
-        # Import the true shock values
-        ϵ_true = vec(Matrix(DataFrame(CSV.File("data/rbc_sv_$(batch)_shocks.csv"))))
-
         # Plot and save
         ϵ_plot = plot(ϵ_mean[2:end], ribbon=2 * ϵ_std[2:end], label="Posterior mean")
-        ϵ_plot = plot!(ϵ_true, label="True values")
-        savefig(ϵ_plot, ".figures/epsilons_rbc_sv_$(batch).png")
+        ϵ_plot = plot!(ϵ_true[2, :], label="True values")
+        savefig(ϵ_plot, ".figures/volshocks_rbc_sv_$(batch).png")
     end
     
     println("  plots complete")
