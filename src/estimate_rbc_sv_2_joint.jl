@@ -13,17 +13,17 @@ function estimate_rbc_sv_2_joint(d)
     z = collect(Matrix(DataFrame(CSV.File(data_path)))')
     # Create the perturbation and the turing models
     m = PerturbationModel(HMCExamples.rbc_sv)
-    p_f = (ρ=d.rho, δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1, ρ_σ=d.rho_sigma, μ_σ=d.mu_sigma, σ_σ=d.sigma_sigma)
-    c = SolverCache(m, Val(2), [:α, :β])
+    p_f = (δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1, ρ_σ=d.rho_sigma, μ_σ=d.mu_sigma, σ_σ=d.sigma_sigma)
+    c = SolverCache(m, Val(2), [:α, :β, :ρ])
 
     # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
     turing_model = rbc_sv_joint_2(
-        z, m, p_f, d.alpha_prior, d.beta_prior, c, settings
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings
     )
 
     # Sampler
-    include_vars = ["α", "β"]  # variables to log
+    include_vars = ["α", "β_draw", "ρ"]  # variables to log
     logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
@@ -41,21 +41,24 @@ function estimate_rbc_sv_2_joint(d)
     calculate_experiment_results(d, chain, logdir, callback, include_vars)
 end
 
-@model function rbc_sv_joint_2(z, m, p_f, α_prior, β_prior, cache, settings)
-    α ~ Uniform(α_prior[1], α_prior[2])
-    β ~ Uniform(β_prior[1], β_prior[2])
-    p_d = (; α, β)
+@model function rbc_sv_joint_2(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
+    α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
+    β_draw ~ Gamma(β_prior[1], β_prior[2])
+    ρ ~ Beta(ρ_prior[1], ρ_prior[2])
+    β = 1 / (β_draw / 100 + 1)
+    p_d = (; α, β, ρ)
 
     T = size(z, 2)
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     sol = generate_perturbation(m, p_d, p_f, Val(2); cache, settings)
+    x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
 
     if !(sol.retcode == :Success)
         @addlogprob! -Inf
         return
     end
-    problem = QuadraticStateSpaceProblem(sol, zeros(m.n_x), (0, T), observables=z, noise=ϵ)
+    problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
     @addlogprob! solve(problem, DirectIteration()).logpdf
 end
 
@@ -67,9 +70,6 @@ function parse_commandline_rbc_sv_2_joint(args)
         "--data_path"
         help = "relative path to data from the root of the package"
         arg_type = String
-        "--rho"
-        help = "Value of fixed parameters"
-        arg_type = Float64
         "--delta"
         help = "Value of fixed parameters"
         arg_type = Float64
@@ -79,6 +79,15 @@ function parse_commandline_rbc_sv_2_joint(args)
         "--Omega_1"
         help = "Value of fixed parameters"
         arg_type = Float64
+        "--alpha_prior"
+        help = "Parameters for the prior"
+        arg_type = Vector{Float64}
+        "--beta_prior"
+        help = "Parameters for the prior"
+        arg_type = Vector{Float64}
+        "--rho_prior"
+        help = "Parameters for the prior"
+        arg_type = Vector{Float64}
         "--rho_sigma"
         help = "Value of fixed parameters"
         arg_type = Float64
@@ -88,12 +97,6 @@ function parse_commandline_rbc_sv_2_joint(args)
         "--sigma_sigma"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--alpha_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
-        "--beta_prior"
-        help = "Parameters for the prior"
-        arg_type = Vector{Float64}
         "--num_samples"
         help = "samples to draw in chain"
         arg_type = Int64

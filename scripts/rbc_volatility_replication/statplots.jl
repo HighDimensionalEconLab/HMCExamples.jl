@@ -23,7 +23,7 @@ function generate_plots()
     for (batch, chain) in [("1_joint", chain_joint_1)]
         # epsilons
         symbol_to_int(s) = parse(Int, replace(string(s), "ϵ_draw["=>"", "]"=>""))
-        ϵ_chain = sort(chain[:, [Symbol("ϵ_draw[$a]") for a in 1:201], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
+        ϵ_chain = sort(chain[:, [Symbol("ϵ_draw[$a]") for a in 1:200], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
         tmp = describe(ϵ_chain)
         ϵ_mean = tmp[1][:, 2]
         ϵ_std = tmp[1][:, 3]
@@ -38,7 +38,7 @@ function generate_plots()
 
         # volshocks
         vsymbol_to_int(s) = parse(Int, replace(string(s), "vs_draw["=>"", "]"=>""))
-        vs_chain = sort(chain[:, [Symbol("vs_draw[$a]") for a in 1:201], 1], lt = (x,y) -> vsymbol_to_int(x) < vsymbol_to_int(y))
+        vs_chain = sort(chain[:, [Symbol("vs_draw[$a]") for a in 1:200], 1], lt = (x,y) -> vsymbol_to_int(x) < vsymbol_to_int(y))
         vtmp = describe(vs_chain)
         vs_mean = vtmp[1][:, 2]
         vs_std = vtmp[1][:, 3]
