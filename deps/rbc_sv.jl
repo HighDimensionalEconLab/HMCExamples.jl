@@ -38,7 +38,7 @@ function rbc_sv()
     n_z = 2 # number of observables
 	Q = zeros(n_z, n_x + n_y) # the order is [y, x]
 	Q[1, 1] = 1.0 # c
-	Q[2, 4] = 1.0 # k
+	Q[2, 4] = 1.0 # i
 
 	Ω = [Ω_1, Ω_1]
 	
