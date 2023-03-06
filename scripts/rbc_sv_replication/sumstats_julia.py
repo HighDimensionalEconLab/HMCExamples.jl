@@ -13,8 +13,8 @@ def process(n):
     return f"${n}$"
 
 joint_2 = pd.read_csv(".experiments/rbc_sv/rbc_sv_2_joint/sumstats.csv").drop(columns = "Parameter").drop(columns = "Num_error")
-joint_2.insert(0, "Parameters", [r"\alpha", r"\beta"])
-joint_2.insert(1, "Pseudotrue", ["0.5", "0.95"])
+joint_2.insert(0, "Parameters", [r"\alpha", r"\beta_{draw}", r"\rho"])
+joint_2.insert(1, "Pseudotrue", ["0.3", "0.2", "0.9"])
 joint_2.insert(6, "ESS\%", 100 * joint_2.loc[:, "ESS"] / num_samples_1st_order) # num_samples
 joint_2.insert(8, "Time", joint_2.loc[:, "ESS"] / joint_2.loc[:, "ESSpersec"])
 

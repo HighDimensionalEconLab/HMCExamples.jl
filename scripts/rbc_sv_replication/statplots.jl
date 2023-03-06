@@ -2,8 +2,8 @@ using HDF5, MCMCChains, MCMCChainsStorage, CSV, DataFrames, StatsPlots, Measures
 
 function generate_plots()
     println("generating plots")
-    include_vars = ["α", "β"]
-    pseudotrues = [0.5 0.95]
+    include_vars = ["α", "β_draw", "ρ"]
+    pseudotrues = [0.3 0.2 0.9]
     chain_joint_1 = h5open(".experiments/rbc_sv/rbc_sv_2_joint/chain.h5", "r") do f
         read(f, Chains)
     end

@@ -1,18 +1,18 @@
 module rbc_sv
 using LinearAlgebra, SymbolicUtils, LaTeXStrings
 const max_order = 2
-const n_y = 3
+const n_y = 4
 const n_x = 4
 const n_p = 9
 const n_ϵ = 2
 const n_z = 2
 const η = [0.0 0.0; 0.0 0.0; 0.0 -1.0; -1.0 0.0]
-const Q = [1.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 1.0 0.0 0.0 0.0]
+const Q = [1.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0; 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0]
 const has_Ω = true
 # Display definitions
 const x_symbols = [:k, :zlag, :ν, :ζ]
-const y_symbols = [:c, :q, :z]
-const u_symbols = [:c, :q, :z, :k, :zlag, :ν, :ζ]
+const y_symbols = [:c, :q, :z, :i]
+const u_symbols = [:c, :q, :z, :i, :k, :zlag, :ν, :ζ]
 const p_symbols = [:α, :β, :ρ, :δ, :σ, :Ω_1, :ρ_σ, :μ_σ, :σ_σ]
 const H_latex = L"\begin{equation}
 \left[
@@ -24,6 +24,7 @@ const H_latex = L"\begin{equation}
  - \mu_{\sigma} \left( 1 - \rho_{\sigma} \right) - \rho_{\sigma} \nu\left( t \right) + \nu\left( 1 + t \right) \\
 \zeta\left( 1 + t \right) \\
  - z\left( t \right) + \mathrm{zlag}\left( 1 + t \right) \\
+ - k\left( 1 + t \right) + \left( 1 - \delta \right) k\left( t \right) + i\left( t \right) \\
 \end{array}
 \right]
 \end{equation}
@@ -35,7 +36,8 @@ k\left( \infty \right) =& \left( \frac{-1 + \delta + \frac{1}{\beta}}{\alpha} \r
 \zeta\left( \infty \right) =& 0 \\
 c\left( \infty \right) =& \left( \frac{-1 + \delta + \frac{1}{\beta}}{\alpha} \right)^{\frac{\alpha}{-1 + \alpha}} - \left( \frac{-1 + \delta + \frac{1}{\beta}}{\alpha} \right)^{\frac{1}{-1 + \alpha}} \delta \\
 q\left( \infty \right) =& \left( \frac{-1 + \delta + \frac{1}{\beta}}{\alpha} \right)^{\frac{\alpha}{-1 + \alpha}} \\
-z\left( \infty \right) =& 0
+z\left( \infty \right) =& 0 \\
+i\left( \infty \right) =& \left( \frac{-1 + \delta + \frac{1}{\beta}}{\alpha} \right)^{\frac{1}{-1 + \alpha}} \delta
 \end{align}
 "
 const steady_states_iv_latex = L"$$"
