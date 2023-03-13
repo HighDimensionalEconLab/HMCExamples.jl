@@ -1,10 +1,10 @@
 # Entry for script
-function main_rbc_student_t_1_joint(args=ARGS)
-    d = parse_commandline_rbc_student_t_1_joint(args)
-    return estimate_rbc_student_t_1_joint((; d...)) # to named tuple
+function main_rbc_volatility_1_joint(args=ARGS)
+    d = parse_commandline_rbc_volatility_1_joint(args)
+    return estimate_rbc_volatility_1_joint((; d...)) # to named tuple
 end
 
-function estimate_rbc_student_t_1_joint(d)
+function estimate_rbc_volatility_1_joint(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
 
@@ -17,8 +17,8 @@ function estimate_rbc_student_t_1_joint(d)
     c = SolverCache(m, Val(1), [:α, :β])
 
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
-    turing_model = rbc_student_t_joint_1(
-        z, m, p_f, d.dof, d.alpha_prior, d.beta_prior, c, settings
+    turing_model = rbc_volatility_joint_1(
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_sigma_prior, d.mu_sigma_prior, d.sigma_sigma_prior, c, settings
     )
 
     # Sampler
@@ -40,27 +40,45 @@ function estimate_rbc_student_t_1_joint(d)
     calculate_experiment_results(d, chain, logdir, callback, include_vars)
 end
 
-@model function rbc_student_t_joint_1(z, m, p_f, dof, α_prior, β_prior, cache, settings)
+@model function rbc_volatility_joint_1(z, m, p_f, α_prior, β_prior, ρ_σ_prior, μ_σ_prior, σ_σ_prior, cache, settings)
     α ~ Uniform(α_prior[1], α_prior[2])
     β ~ Uniform(β_prior[1], β_prior[2])
+    ρ_σ ~ Beta(ρ_σ_prior[1], ρ_σ_prior[2])
+    μ_σ ~ Normal(μ_σ_prior[1], μ_σ_prior[2])
+    σ_σ ~ Uniform(σ_σ_prior[1], σ_σ_prior[2])
     p_d = (; α, β)
 
     T = size(z, 2)
-    ϵ_draw ~ filldist(TDist(dof), m.n_ϵ * T)
+    ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
+    vs_draw ~ MvNormal(T, 1.0)
+    volshocks = reshape(vs_draw, 1, T)  
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
-    x0 ~ filldist(TDist(dof), m.n_x) # draw the initial condition
+    x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
 
     if !(sol.retcode == :Success)
         @addlogprob! -Inf
         return
     end
-    x_iv = sol.x_ergodic_var * x0 # scale initial condition to ergodic variance
-    problem = LinearStateSpaceProblem(sol, x_iv, (0, T), observables=z, noise=ϵ)
-    @addlogprob! solve(problem, DirectIteration()).logpdf
+    @addlogprob! rbc_volatility_likelihood(sol.A, sol.B, sol.C, sol.D, x0, p_f[:Ω_1], μ_σ, ρ_σ, σ_σ, z, ϵ, volshocks)
 end
 
-function parse_commandline_rbc_student_t_1_joint(args)
+function rbc_volatility_likelihood(A, B, C, D, x0, Ω_1, μ_σ, ρ_σ, σ_σ, observables, noise, volshocks)
+    # Likelihood evaluation function using `Zygote.Buffer()` to create internal arrays that don't interfere with gradients.
+    T = size(observables, 2)
+    u = Zygote.Buffer([zero(x0) for _ in 1:T])  # Fix type: Array of vector of vectors?
+    vol = Zygote.Buffer([zeros(1) for _ in 1:T])  # Fix type: Array of vector of vectors?
+    u[1] = x0 
+    vol[1] = [μ_σ]  # Start at mean: could make random but won't for now
+    for t in 2:T
+        vol[t] = ρ_σ * vol[t-1] .+ (1 - ρ_σ) * μ_σ .+ σ_σ * volshocks[t - 1]
+        u[t] = A * u[t - 1] .+ exp.(vol[t]) .* (B * noise[t - 1])[:]
+    end
+    loglik = sum([logpdf(MvNormal(Diagonal(Ω_1 * ones(size(C, 1)))), observables[t] .- C * u[t]) for t in 1:T])
+    return loglik
+end
+
+function parse_commandline_rbc_volatility_1_joint(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
     # See the appropriate _defaults.txt file for the default values.
@@ -80,13 +98,19 @@ function parse_commandline_rbc_student_t_1_joint(args)
         "--Omega_1"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--dof"
-        help = "Value of fixed parameters"
-        arg_type = Float64
         "--alpha_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
         "--beta_prior"
+        help = "Parameters for the prior"
+        arg_type = Vector{Float64}
+        "--rho_sigma_prior"
+        help = "Parameters for the prior"
+        arg_type = Vector{Float64}
+        "--mu_sigma_prior"
+        help = "Parameters for the prior"
+        arg_type = Vector{Float64}
+        "--sigma_sigma_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
         "--num_samples"
@@ -151,6 +175,6 @@ function parse_commandline_rbc_student_t_1_joint(args)
         help = "Display draws at this frequency.  No output if it is 0"
     end
 
-    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_student_t_1_joint_defaults.txt", args)
+    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_volatility_1_joint_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)
 end

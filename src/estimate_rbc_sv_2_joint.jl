@@ -1,10 +1,10 @@
 # Entry for script
-function main_rbc_student_t_1_joint(args=ARGS)
-    d = parse_commandline_rbc_student_t_1_joint(args)
-    return estimate_rbc_student_t_1_joint((; d...)) # to named tuple
+function main_rbc_sv_2_joint(args=ARGS)
+    d = parse_commandline_rbc_sv_2_joint(args)
+    return estimate_rbc_sv_2_joint((; d...)) # to named tuple
 end
 
-function estimate_rbc_student_t_1_joint(d)
+function estimate_rbc_sv_2_joint(d)
     # Or move these into main package when loading?
     Turing.setadbackend(:zygote)
 
@@ -12,17 +12,18 @@ function estimate_rbc_student_t_1_joint(d)
     data_path = joinpath(pkgdir(HMCExamples), d.data_path)
     z = collect(Matrix(DataFrame(CSV.File(data_path)))')
     # Create the perturbation and the turing models
-    m = PerturbationModel(HMCExamples.rbc_simple)
-    p_f = (ρ=d.rho, δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1)
-    c = SolverCache(m, Val(1), [:α, :β])
+    m = PerturbationModel(HMCExamples.rbc_sv)
+    p_f = (δ=d.delta, σ=d.sigma, Ω_1=d.Omega_1, ρ_σ=d.rho_sigma, μ_σ=d.mu_sigma, σ_σ=d.sigma_sigma)
+    c = SolverCache(m, Val(2), [:α, :β, :ρ])
 
+    # Second-order is using pruned system. We should set x0 to be a vector of 2 * m.n_x elements.
     settings = PerturbationSolverSettings(; print_level=d.print_level, ϵ_BK=d.epsilon_BK, d.tol_cholesky, d.calculate_ergodic_distribution, d.perturb_covariance)
-    turing_model = rbc_student_t_joint_1(
-        z, m, p_f, d.dof, d.alpha_prior, d.beta_prior, c, settings
+    turing_model = rbc_sv_joint_2(
+        z, m, p_f, d.alpha_prior, d.beta_prior, d.rho_prior, c, settings
     )
 
     # Sampler
-    include_vars = ["α", "β"]  # variables to log
+    include_vars = ["α", "β_draw", "ρ"]  # variables to log
     logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
@@ -40,27 +41,28 @@ function estimate_rbc_student_t_1_joint(d)
     calculate_experiment_results(d, chain, logdir, callback, include_vars)
 end
 
-@model function rbc_student_t_joint_1(z, m, p_f, dof, α_prior, β_prior, cache, settings)
-    α ~ Uniform(α_prior[1], α_prior[2])
-    β ~ Uniform(β_prior[1], β_prior[2])
-    p_d = (; α, β)
+@model function rbc_sv_joint_2(z, m, p_f, α_prior, β_prior, ρ_prior, cache, settings)
+    α ~ truncated(Normal(α_prior[1], α_prior[2]), α_prior[3], α_prior[4])
+    β_draw ~ Gamma(β_prior[1], β_prior[2])
+    ρ ~ Beta(ρ_prior[1], ρ_prior[2])
+    β = 1 / (β_draw / 100 + 1)
+    p_d = (; α, β, ρ)
 
     T = size(z, 2)
-    ϵ_draw ~ filldist(TDist(dof), m.n_ϵ * T)
+    ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
-    sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
-    x0 ~ filldist(TDist(dof), m.n_x) # draw the initial condition
+    sol = generate_perturbation(m, p_d, p_f, Val(2); cache, settings)
+    x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
 
     if !(sol.retcode == :Success)
         @addlogprob! -Inf
         return
     end
-    x_iv = sol.x_ergodic_var * x0 # scale initial condition to ergodic variance
-    problem = LinearStateSpaceProblem(sol, x_iv, (0, T), observables=z, noise=ϵ)
+    problem = QuadraticStateSpaceProblem(sol, x0, (0, T), observables=z, noise=ϵ)
     @addlogprob! solve(problem, DirectIteration()).logpdf
 end
 
-function parse_commandline_rbc_student_t_1_joint(args)
+function parse_commandline_rbc_sv_2_joint(args)
     s = ArgParseSettings(; fromfile_prefix_chars=['@'])
 
     # See the appropriate _defaults.txt file for the default values.
@@ -68,9 +70,6 @@ function parse_commandline_rbc_student_t_1_joint(args)
         "--data_path"
         help = "relative path to data from the root of the package"
         arg_type = String
-        "--rho"
-        help = "Value of fixed parameters"
-        arg_type = Float64
         "--delta"
         help = "Value of fixed parameters"
         arg_type = Float64
@@ -80,15 +79,24 @@ function parse_commandline_rbc_student_t_1_joint(args)
         "--Omega_1"
         help = "Value of fixed parameters"
         arg_type = Float64
-        "--dof"
-        help = "Value of fixed parameters"
-        arg_type = Float64
         "--alpha_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
         "--beta_prior"
         help = "Parameters for the prior"
         arg_type = Vector{Float64}
+        "--rho_prior"
+        help = "Parameters for the prior"
+        arg_type = Vector{Float64}
+        "--rho_sigma"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--mu_sigma"
+        help = "Value of fixed parameters"
+        arg_type = Float64
+        "--sigma_sigma"
+        help = "Value of fixed parameters"
+        arg_type = Float64
         "--num_samples"
         help = "samples to draw in chain"
         arg_type = Int64
@@ -149,8 +157,9 @@ function parse_commandline_rbc_student_t_1_joint(args)
         "--sampling_heartbeat"
         arg_type = Int64
         help = "Display draws at this frequency.  No output if it is 0"
+
     end
 
-    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_student_t_1_joint_defaults.txt", args)
+    args_with_default = vcat("@$(pkgdir(HMCExamples))/src/rbc_sv_2_joint_defaults.txt", args)
     return parse_args(args_with_default, s; as_symbols=true)
 end

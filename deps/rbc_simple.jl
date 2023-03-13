@@ -1,4 +1,4 @@
-function rbc_student_t()
+function rbc_simple()
 	∞ = Inf
     @variables α, β, ρ, δ, σ
     @variables t::Integer, k(..), z(..), c(..), q(..)
@@ -30,6 +30,6 @@ function rbc_student_t()
 
 	Ω = [Ω_1, Ω_1]
 	
-	return H, (; t, x, y, p, steady_states, Γ, η, Ω, Q), "rbc_student_t"
+	return H, (; t, x, y, p, steady_states, Γ, η, Ω, Q), "rbc_simple"
 end
     

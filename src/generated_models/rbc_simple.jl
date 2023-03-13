@@ -1,4 +1,4 @@
-module rbc_student_t
+module rbc_simple
 using LinearAlgebra, SymbolicUtils, LaTeXStrings
 const max_order = 2
 const n_y = 2
@@ -34,7 +34,7 @@ q\left( \infty \right) =& \left( \frac{-1 + \delta + \frac{1}{\beta}}{\alpha} \r
 "
 const steady_states_iv_latex = L"$$"
 # Function definitions
-include("rbc_student_t/zero_order_ip.jl")
-include("rbc_student_t/first_order_ip.jl")
-include("rbc_student_t/second_order_ip.jl")
+include("rbc_simple/zero_order_ip.jl")
+include("rbc_simple/first_order_ip.jl")
+include("rbc_simple/second_order_ip.jl")
 end
