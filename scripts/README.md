@@ -82,12 +82,23 @@ Note that the call to `script` generates a logfile called `typescript` in the `H
 6. `script`
 7. `bash scripts/sgu_replication/run.sh`
 
+## RBC SV Julia
+
+1. `tmux new-session -s ubuntu` (do `tmux attach-session -t ubuntu` if it responds with session already exists)
+2. `bash HMCExamples.jl/scripts/rbc_sv_replication/install_julia.sh`
+3. `exit`
+4. `tmux new-session -s ubuntu`
+5. `cd HMCExamples.jl`
+6. `script`
+7. `bash scripts/rbc_sv_replication/run.sh`
+
 ## Uploading results to an AWS S3 bucket
 
-1. Follow the [install instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) for AWS CLI.
-2. `aws configure`
-3. Access the `~/.aws/credentials` file and ensure the profile (the `[name]` at the top), key ID, key and region are correct.
-4. Upload folders through e.g. `aws s3 cp s3://the_store_path_name/experiments ./experiments --recursive --profile the_profile_name`.
+1. `sudo apt install unzip`
+2. Follow the [install instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) for AWS CLI.
+3. `aws configure`
+4. Access the `~/.aws/credentials` file and ensure the profile (the `[name]` at the top), key ID, key and region are correct.
+5. Upload folders through e.g. `aws s3 cp s3://the_store_path_name/experiments ./experiments --recursive --profile the_profile_name`.
 
 ## Producing summary tables and plots
 
