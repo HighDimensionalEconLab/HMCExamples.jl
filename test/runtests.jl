@@ -25,3 +25,5 @@ HMCExamples.parse_commandline_sgu_2_joint(ARGS)
 HMCExamples.main_sgu_1_kalman(["--num_samples", "30", "--max_depth", "2", "--results_path", "./.results/sgu_1_kalman_test", "--overwrite_results", "true"])
 HMCExamples.main_sgu_1_joint(["--num_samples", "30", "--max_depth", "2", "--results_path", "./.results/sgu_1_joint_test", "--overwrite_results", "true"])
 # HMCExamples.main_sgu_2_joint(["--num_samples", "30", "--max_depth", "2", "--results_path", "./.results/sgu_2_joint_test", "--overwrite_results", "true", "--init_params_file", "data/sgu_2_joint_burnin.csv"])
+
+HMCExamples.parse_commandline_rbc_sv_2_joint(ARGS)

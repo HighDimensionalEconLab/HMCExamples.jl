@@ -4,7 +4,7 @@ using Turing
 Random.seed!(0) # fix a seed for reproducibility
 
 m = PerturbationModel(HMCExamples.rbc_sv)
-p_d = (; α=0.3, β=0.998, ρ=0.9, δ=0.025, σ=0.01, Ω_1=0.00316, ρ_σ=0.5, μ_σ=1.0, σ_σ=0.1)
+p_d = (; α=0.3, β=0.998, ρ=0.9, δ=0.025, σ=0.01, Ω_1=0.01, ρ_σ=0.5, μ_σ=1.0, σ_σ=0.1)
 p_f = nothing
 T = 200
 

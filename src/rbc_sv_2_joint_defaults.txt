@@ -1,7 +1,7 @@
 --data_path=data/rbc_sv_2.csv
 --delta=0.025
 --sigma=0.01
---Omega_1=0.00316
+--Omega_1=0.01
 --alpha_prior=[0.3, 0.025, 0.2, 0.5]
 --beta_prior=[6.25, 0.04]
 --rho_prior=[2.625, 2.625]
@@ -17,7 +17,7 @@
 --print_level=0
 --epsilon_BK=1e-6
 --tol_cholesky=1e9
---perturb_covariance=0
+--perturb_covariance=1e-12
 --calculate_ergodic_distribution=true
 --use_tensorboard=false
 --num_chains=1
