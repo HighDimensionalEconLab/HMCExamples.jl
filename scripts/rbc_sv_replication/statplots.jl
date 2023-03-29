@@ -44,7 +44,7 @@ function generate_plots()
         vol_mean = vol_stats[1][:, 2]
         vol_std = vol_stats[1][:, 3]
         
-        p_data = get_params(chain_joint_1[include_vars])
+        p_data = get_params(chain[include_vars])
         num_samples = size(chain)[1]
         save_zlag = zeros(num_samples, T+1)
         save_ν = zeros(num_samples, T+1)
