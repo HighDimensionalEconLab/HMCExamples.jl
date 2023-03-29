@@ -53,7 +53,7 @@ function generate_plots()
             p_d = (; α=p_data.α[i], β=1 / (p_data.β_draw[i] / 100 + 1), ρ=p_data.ρ[i], δ=0.025, σ=0.01, Ω_1=0.01, ρ_σ=0.5, μ_σ=1.0, σ_σ=0.1)
             mod_perturb = generate_perturbation(m, p_d, p_f, Val(2))
             x0 = rand(MvNormal(mod_perturb.x_ergodic_var))
-            prob = QuadraticStateSpaceProblem(mod_perturb, x0, (0, T), noise=vcat(ϵ_data[i:i, 2:end], vol_data[i:i, 2:end]), observables_noise = nothing)
+            prob = QuadraticStateSpaceProblem(mod_perturb, x0, (0, T); noise=vcat(ϵ_data[i:i, 2:end], vol_data[i:i, 2:end]), observables_noise = nothing)
             sol = solve(prob, DirectIteration())
             u_vec = VectorOfArray(sol.u)
             save_zlag[i, :] = u_vec[2, :]
