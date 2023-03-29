@@ -13,6 +13,8 @@ x0 = rand(MvNormal(mod_perturb.x_ergodic_var))
 prob = QuadraticStateSpaceProblem(mod_perturb, x0, (0, T))
 sol = solve(prob, DirectIteration())
 z_vec = VectorOfArray(sol.z)
+u_vec = VectorOfArray(sol.u)
 W_vec = sol.W
 CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_sv_2.csv"), DataFrame(c_obs=z_vec[1, :], i_obs=z_vec[2, :]))
+CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_sv_2_joint_latents.csv"), DataFrame(zlag_obs=u_vec[2, :], ν_obs=u_vec[3, :]))
 CSV.write(joinpath(pkgdir(HMCExamples), "data/rbc_sv_2_joint_shocks.csv"), DataFrame(epsilon=W_vec[1, :], volshocks = W_vec[2, :]))
