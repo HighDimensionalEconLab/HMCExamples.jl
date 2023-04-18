@@ -1,6 +1,6 @@
 name = "HMCExamples"
 uuid = "04c4e5f0-d543-11eb-2b99-3f716ccaf3f5"
-authors = ["Jesse Perla <jesseperla@gmail.com> and contributors"]
+authors = ["Various contributors"]
 version = "0.1.0"
 
 [deps]
@@ -32,6 +32,6 @@ Turing = "fce5fe82-541a-59a6-adf8-730c64b5f9a0"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
-DifferenceEquations = "0.5"
-DifferentiableStateSpaceModels = "0.5.2"
-julia = "1.7"
+DifferenceEquations = "0.5.2"
+DifferentiableStateSpaceModels = "0.5.3"
+julia = "1.8"
