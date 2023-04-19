@@ -35,3 +35,6 @@ robust/
 .tables/*
 .figures/*
 .experiments/*
+JuliaSysimage.so
+
+.replication_results

@@ -1,4 +1,4 @@
---data_path=data/sgu_1_fixed_low.csv
+--data_path=data/sgu_1_fixed_high.csv
 --omega=1.455
 --sigmae=0.0129
 --delta=0.1
@@ -7,7 +7,7 @@
 --d_bar=0.7442
 --sigmau=0.003
 --sigmav=0.1
---Omega_1=0.00316
+--Omega_1=0.0316
 --alpha_prior=[0.3, 0.025]
 --gamma_prior=[2.0, 0.5, 0.5, 7]
 --psi_prior=[0.0007, 0.0004, 0.0003, 0.0015]
