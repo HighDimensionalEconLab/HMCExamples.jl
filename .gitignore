@@ -38,3 +38,4 @@ robust/
 JuliaSysimage.so
 
 .replication_results
+data/rbc_frequentist
