@@ -27,6 +27,9 @@ print_header() {
 
 
 # ChatGPT generated utility to run sampler for a particular script/etc.  Modify defaults above as required, or at the call site
+JULIA_ARGS="--sysimage JuliaSysimage.so --threads auto -O1"
+BASELINE_SAMPLING_HEARTBEAT="1000"
+
 run_sampler() {
   local seed="$1"
   local num_samples="$2"
@@ -34,10 +37,10 @@ run_sampler() {
   local results_name="$4"
   local data_name="${5:-}" # optional
   local init_params_name="${6:-}" # optional
-  local num_chains="${7:-1}"  # default to 1 chain, optional argument
+  local num_chains="${7:-}"  # default to 1 chain, optional argument
   local additional_script_args="${8:-}"  # additional Julia script arguments, optional
 
-  print_header "Running $script_name with $num_samples samples"
+  print_header "Running $script_name with $num_samples samples and seed = $seed"
 
   local data_args=""
   if [ -n "$data_name" ]; then
@@ -50,7 +53,7 @@ run_sampler() {
   fi
 
   local chains_and_heartbeat_args=""
-  if (( num_chains > 1 )); then
+  if [ -n "$num_chains" ]; then
     chains_and_heartbeat_args="--num_chains $num_chains --sampling_heartbeat $BASELINE_SAMPLING_HEARTBEAT"
   fi
 
