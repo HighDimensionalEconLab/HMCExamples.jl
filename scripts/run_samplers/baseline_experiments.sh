@@ -8,7 +8,7 @@ RESULTS_PATH=".replication_results"
 DATA_PATH="data"
 BASELINE_SEED="1"
 
-# length of samples in these cases roughly chosen to align runtime with Dynare code
+# length of samples in the RBC cases roughly chosen to align runtime with Dynare code
 RBC_KALMAN_TIMED_SAMPLES="10" # "6500"
 RBC_JOINT_1_TIMED_SAMPLES="10" # "4000"
 RBC_JOINT_2_TIMED_SAMPLES="10" # "4000"
