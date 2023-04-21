@@ -27,8 +27,16 @@ print_header() {
 
 
 # ChatGPT generated utility to run sampler for a particular script/etc.  Modify defaults above as required, or at the call site
-JULIA_ARGS="--sysimage JuliaSysimage.so --threads auto -O1"
+JULIA_ARGS="--threads auto"
 BASELINE_SAMPLING_HEARTBEAT="1000"
+
+# Detect the operating system and check for the corresponding sysimage file
+os_name=$(uname)
+if [[ "$os_name" == "Linux" ]] && [ -e "JuliaSysimage.so" ]; then
+  JULIA_ARGS="--sysimage JuliaSysimage.so $JULIA_ARGS"
+elif [[ "$os_name" == "MINGW"* ]] && [ -e "JuliaSysimage.dll" ]; then
+  JULIA_ARGS="--sysimage JuliaSysimage.dll $JULIA_ARGS"
+fi
 
 run_sampler() {
   local seed="$1"

@@ -1,5 +1,3 @@
-# Note that this generates a large number of files for the frequentist experiments, and should not save them to a folder outside of the .githignore
-
 using HMCExamples, DifferentiableStateSpaceModels, DifferenceEquations, CSV, DataFrames, Random, RecursiveArrayTools, Distributions
 
 function simulate_rbc_frequentist_data()
