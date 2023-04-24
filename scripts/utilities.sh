@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ChatGPT4 generated
+# All functions ChatGPT4 generated
 print_header() {
   local header_text="$1"
   local print_separator="${2:-true}"
@@ -23,6 +23,48 @@ print_header() {
 
   # Reset text attributes
   tput sgr0
+}
+
+# install julia if not already installed
+
+install_juliaup_if_required() {
+  # Check if juliaup is installed
+  if command -v juliaup &> /dev/null; then
+    echo "juliaup already installed."
+    return 0
+  fi
+
+  # Check if Julia is installed without juliaup
+  if command -v julia &> /dev/null; then
+    echo "Julia is installed without juliaup. For maximum reproducibility, please use juliaup."
+    echo "For more information, visit: https://github.com/JuliaLang/juliaup"
+    return 1
+  fi
+
+  os_name=$(uname)
+
+  if [[ "$os_name" == "Linux" ]]; then
+    # Install Julia with juliaup for Linux
+    sudo curl -fsSL https://install.julialang.org | sh -s -- --yes
+
+    # Reload the .bashrc file to update the paths
+    source ~/.bashrc
+
+  elif [[ "$os_name" == "MINGW"* ]]; then
+    # Check if winget is installed
+    if ! command -v winget &> /dev/null; then
+      echo "winget not found. Please install winget and try again."
+      echo "For more information, visit: https://github.com/JuliaLang/juliaup"
+      return 1
+    fi
+
+    # Install Julia using winget for Windows (using Git Bash)
+    winget install julia -s msstore
+
+  else
+    echo "Unsupported operating system. Please install Julia manually."
+    return 1
+  fi
 }
 
 
@@ -67,4 +109,3 @@ run_sampler() {
 
   julia --project $JULIA_ARGS bin/$script_name --results_path $results_name --overwrite_results true $data_args --num_samples $num_samples $chains_and_heartbeat_args --seed $seed $init_params_args $additional_script_args
 }
-

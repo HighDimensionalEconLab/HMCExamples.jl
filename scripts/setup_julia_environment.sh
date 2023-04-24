@@ -7,10 +7,14 @@
 
 source ./scripts/utilities.sh # includes print_header, etc.
 
-# Install julia with juliaup
-sudo curl -fsSL https://install.julialang.org | sh -s -- --yes
+# The utilities checks for julia and installs an OS appropriate juliaup if required
+install_juliaup_if_required
 
-source ~/.bashrc  # I think required to reload after Juila installation for paths to be correct
+if [ $? -ne 0 ]; then
+  echo "An error occurred while installing or checking for the Juliaup installation."
+  exit 1
+fi
+
 
 # Optionally: to make this maximally replicable you can set the julia version here:
 juliaup add 1.8.5

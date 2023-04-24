@@ -1,8 +1,8 @@
 # Replication Procedure
 
-This process describes the entire replication process for linux or WSL (Windows Subsystem for Linux).  While most individual runs are fast, the paper has a large number of robustness checks and the full execution could take up to a week if done serially.
+This process describes the entire replication process for linux, WSL (Windows Subsystem for Linux), or on Windows with Git Bash.  While most individual runs are fast, the paper has a large number of robustness checks and the full execution could take up to a week if done serially.
 ## Setup Environment
-Install conda and essential linux packages yourself directly, or else use the following script to do it automatically on Linux or Windows WSL:
+Install conda and if using linux then install the Linux packages yourself directly, or else use the following script to do it automatically on Linux or Windows WSL:
 ```bash
 bash scripts/setup_linux_environment.sh
 ```
