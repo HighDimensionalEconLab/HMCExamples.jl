@@ -1,4 +1,45 @@
-# Replication Procedure (Standalone Ubuntu Linux or Ubuntu on Windows)
+# Replication Procedure
+
+This process describes the entire replication process for linux, WSL (Windows Subsystem for Linux), or on Windows with Git Bash.  While most individual runs are fast, the paper has a large number of robustness checks and the full execution could take up to a week if done serially.
+## Setup Environment
+Install conda and if using linux then install the Linux packages yourself directly, or else use the following script to do it automatically on Linux or Windows WSL:
+```bash
+bash scripts/setup_linux_environment.sh
+```
+
+After the Linux package installation, you will need to setup Julia and compile required packages.  Do this by running the following script (staying at the top level of the repo):
+
+```bash
+bash scripts/setup_julia_environment.sh
+```
+
+That process will do a package compilation and take 10-20 minutes depending on your operating system.
+
+If you wish to use tmux to connect to a remote server, then create a new session using `tmux new-session -s ubuntu` and retrieve it using `tmux attach-session -t ubuntu`.   See https://www.julia-vscode.org/docs/stable/userguide/remote/ for use within VSCode
+
+## Simulate data
+
+TODO
+
+## Run Samplers
+
+**WARNING**: This will do some very long runs and likely take hours or days to complete if you run these serially. See above for using tmux for a remote machine.
+
+To run the samplers, you can execute:
+
+```bash
+bash scripts/run_samplers/baseline_experiments.sh
+```
+
+A few notes:
+  - 
+  - This uses the  `scripts/utilities.sh` file has some BASH functions to enable easy execution of the samplers with various permutations on the arguments.
+  - To only execute a subset of the runs, you can comment out lines in the `baseline_experiments.sh` file.
+  - If you want to change the location of the data or the output, you can edit the `$RESULTS_PATH` and `$DATA_PATH` variables in the `baseline_experiments.sh` file.
+
+
+
+#  OLD, REPLACE WHEN COMPLETE Replication Procedure (Standalone Ubuntu Linux or Ubuntu on Windows)
 
 You may wish to use `tmux` to leave a terminal running unattended.\
 If `tmux` is not already installed, do a `sudo apt update` followed by `sudo apt install tmux`.\

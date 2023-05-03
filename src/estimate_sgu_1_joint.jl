@@ -57,7 +57,7 @@ end
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
-    x0 = zeros(m.n_x) # fixed at non-stationary steady state
+    x0 = zeros(m.n_x) # start at non-stochastic steady state
 
     if !(sol.retcode == :Success)
         @addlogprob! -Inf

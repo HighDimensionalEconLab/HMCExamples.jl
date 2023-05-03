@@ -51,7 +51,7 @@ end
     ϵ_draw ~ MvNormal(m.n_ϵ * T, 1.0)
     ϵ = reshape(ϵ_draw, m.n_ϵ, T)
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
-    x0 ~ MvNormal(sol.x_ergodic_var) # draw the initial condition
+    x0 = zeros(m.n_x) # start at non-stochastic steady state
 
     if !(sol.retcode == :Success)
         @addlogprob! -Inf
