@@ -26,20 +26,20 @@ SGU_SAMPLES="10" # "5000" # baseline
 
 # # RBC examples
 # run_sampler $BASELINE_SEED $RBC_KALMAN_SAMPLES "fit_rbc_1_kalman.jl" "${RESULTS_PATH}/rbc_1_kalman" "" "${DATA_PATH}/rbc_1_kalman_burnin_dynare.csv"
-# run_sampler $BASELINE_SEED $RBC_JOINT_1_SAMPLES "fit_rbc_1_joint.jl" "${RESULTS_PATH}/rbc_1_joint" "" "${DATA_PATH}/rbc_1_joint_burnin_ergodic.csv"
-# run_sampler $BASELINE_SEED $RBC_JOINT_2_SAMPLES "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint" "" "${DATA_PATH}/rbc_2_joint_burnin_ergodic.csv"
-# # run_sampler $BASELINE_SEED $RBC_JOINT_2_SAMPLES_LONG "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint_long" "" "${DATA_PATH}/rbc_2_joint_burnin_ergodic.csv"
+run_sampler $BASELINE_SEED $RBC_JOINT_1_SAMPLES "fit_rbc_1_joint.jl" "${RESULTS_PATH}/rbc_1_joint" "" "${DATA_PATH}/rbc_1_joint_burnin_ergodic.csv"
+run_sampler $BASELINE_SEED $RBC_JOINT_2_SAMPLES "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint" "" "${DATA_PATH}/rbc_2_joint_burnin_ergodic.csv"
+# run_sampler $BASELINE_SEED $RBC_JOINT_2_SAMPLES_LONG "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint_long" "" "${DATA_PATH}/rbc_2_joint_burnin_ergodic.csv"
 
-# # RBC with bigger T a few different ways
+# RBC with bigger T a few different ways
 # run_sampler $BASELINE_SEED $RBC_KALMAN_SAMPLES "fit_rbc_1_kalman.jl" "${RESULTS_PATH}/rbc_1_kalman_500" "${DATA_PATH}/rbc_1_500.csv" "${DATA_PATH}/rbc_1_kalman_burnin_dynare.csv"
-# run_sampler $BASELINE_SEED $RBC_JOINT_1_SAMPLES "fit_rbc_1_joint.jl" "${RESULTS_PATH}/rbc_1_joint_500" "${DATA_PATH}/rbc_1_500.csv" "${DATA_PATH}/rbc_1_joint_burnin_500.csv"
-# run_sampler $BASELINE_SEED $RBC_JOINT_2_SAMPLES "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint_500" "${DATA_PATH}/rbc_2_500.csv" "${DATA_PATH}/rbc_2_joint_burnin_500.csv"
+run_sampler $BASELINE_SEED $RBC_JOINT_1_SAMPLES "fit_rbc_1_joint.jl" "${RESULTS_PATH}/rbc_1_joint_500" "${DATA_PATH}/rbc_1_500.csv" "${DATA_PATH}/rbc_1_joint_burnin_500.csv"
+run_sampler $BASELINE_SEED $RBC_JOINT_2_SAMPLES "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint_500" "${DATA_PATH}/rbc_2_500.csv" "${DATA_PATH}/rbc_2_joint_burnin_500.csv"
 # run_sampler $BASELINE_SEED $RBC_KALMAN_LONG_SAMPLES "fit_rbc_1_kalman.jl" "${RESULTS_PATH}/rbc_1_kalman_500_long" "${DATA_PATH}/rbc_1_500.csv" "${DATA_PATH}/rbc_1_kalman_burnin_dynare.csv"
-run_sampler $BASELINE_SEED $RBC_JOINT_1_LONG_SAMPLES "fit_rbc_1_joint.jl" "${RESULTS_PATH}/rbc_1_joint_500_long" "${DATA_PATH}/rbc_1_500.csv" "${DATA_PATH}/rbc_1_joint_burnin_500.csv"
-run_sampler $BASELINE_SEED $RBC_JOINT_2_LONG_SAMPLES "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint_500_long" "${DATA_PATH}/rbc_2_500.csv" "${DATA_PATH}/rbc_2_joint_burnin_500.csv"
-run_sampler $BASELINE_SEED $RBC_KALMAN_SAMPLES "fit_rbc_1_kalman.jl" "${RESULTS_PATH}/rbc_1_kalman_500_multichains" "${DATA_PATH}/rbc_1_500.csv" "${DATA_PATH}/rbc_1_kalman_burnin_dynare.csv" $RBC_CHAINS_LONG
-run_sampler $BASELINE_SEED $RBC_JOINT_1_SAMPLES "fit_rbc_1_joint.jl" "${RESULTS_PATH}/rbc_1_joint_500_multichains" "${DATA_PATH}/rbc_1_500.csv" "${DATA_PATH}/rbc_1_joint_burnin_500.csv" $RBC_CHAINS_LONG
-run_sampler $BASELINE_SEED $RBC_JOINT_2_SAMPLES "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint_500_multichains" "${DATA_PATH}/rbc_2_500.csv" "${DATA_PATH}/rbc_2_joint_burnin_500.csv" $RBC_CHAINS_LONG
+# run_sampler $BASELINE_SEED $RBC_JOINT_1_LONG_SAMPLES "fit_rbc_1_joint.jl" "${RESULTS_PATH}/rbc_1_joint_500_long" "${DATA_PATH}/rbc_1_500.csv" "${DATA_PATH}/rbc_1_joint_burnin_500.csv"
+# run_sampler $BASELINE_SEED $RBC_JOINT_2_LONG_SAMPLES "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint_500_long" "${DATA_PATH}/rbc_2_500.csv" "${DATA_PATH}/rbc_2_joint_burnin_500.csv"
+# run_sampler $BASELINE_SEED $RBC_KALMAN_SAMPLES "fit_rbc_1_kalman.jl" "${RESULTS_PATH}/rbc_1_kalman_500_multichains" "${DATA_PATH}/rbc_1_500.csv" "${DATA_PATH}/rbc_1_kalman_burnin_dynare.csv" $RBC_CHAINS_LONG
+# run_sampler $BASELINE_SEED $RBC_JOINT_1_SAMPLES "fit_rbc_1_joint.jl" "${RESULTS_PATH}/rbc_1_joint_500_multichains" "${DATA_PATH}/rbc_1_500.csv" "${DATA_PATH}/rbc_1_joint_burnin_500.csv" $RBC_CHAINS_LONG
+# run_sampler $BASELINE_SEED $RBC_JOINT_2_SAMPLES "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint_500_multichains" "${DATA_PATH}/rbc_2_500.csv" "${DATA_PATH}/rbc_2_joint_burnin_500.csv" $RBC_CHAINS_LONG
 
 # # RBC with Multiple Chains for the density plots
 # run_sampler $BASELINE_SEED $RBC_SAMPLES "fit_rbc_1_kalman.jl" "${RESULTS_PATH}/rbc_1_kalman_multiple_chains" "" "${DATA_PATH}/rbc_1_kalman_burnin_dynare.csv" $RBC_MULTIPLE_CHAINS
