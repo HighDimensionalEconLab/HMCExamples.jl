@@ -47,12 +47,13 @@ end
     
     T = size(z, 2)
     sol = generate_perturbation(m, p_d, p_f, Val(1); cache, settings)
+    x0 = zeros(m.n_x) # start at non-stochastic steady state
 
     if !(sol.retcode == :Success)
         @addlogprob! -Inf
         return
     end
-    problem = LinearStateSpaceProblem(sol, zeros(size(sol.A, 1)), (0, T), observables=z)
+    problem = LinearStateSpaceProblem(sol, x0, (0, T), observables=z)
     @addlogprob! solve(problem, KalmanFilter()).logpdf
 end
 
