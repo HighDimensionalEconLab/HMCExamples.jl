@@ -7,7 +7,7 @@ Install conda and if using linux then install the Linux packages yourself direct
 bash scripts/setup_linux_environment.sh
 ```
 
-After the Linux package installation, you will need to setup Julia and compile required packages.  Do this by running the following script (staying at the top level of the repo):
+You will need to setup Julia and compile required packages.  On all platofrms, you should be able to do this by running the following script (staying at the top level of the repo):
 
 ```bash
 bash scripts/setup_julia_environment.sh

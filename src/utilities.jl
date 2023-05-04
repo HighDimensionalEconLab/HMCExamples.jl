@@ -1,6 +1,6 @@
 
 function ArgParse.parse_item(::Type{Vector{Float64}}, x::AbstractString)
-    return parse.(Float64, split(strip(x, [' ', '\"', ']', '[']), ','))
+    return (length(x) > 0) ? parse.(Float64, split(strip(x, [' ', '\"', ']', '[']), ',')) : Vector{Float64}()
 end
 
 function Beta_tr(mu, sd)

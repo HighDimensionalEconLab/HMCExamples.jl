@@ -5,21 +5,7 @@ function print_info(d, num_adapts)
     @info "Generating $(d.num_samples) samples with $(num_adapts) adapts across $(d.num_chains) chains$(discard_text)$(init_params_text)$(seed_text)"
 end
 
-function prepare_output_directory(use_tensorboard, d, include_vars)
-    @assert d.use_tensorboard == false # will add support later
-
-    # Later for supporting tensorboard:
-    #name = "$(d.num_samples)-seed$(d.seed)" # or something along those lines.
-
-    #callback = nothing ? use_tensorboard == false: TensorBoardCallback(d.results_path; name, include=include_vars) # later support tensorboard callbacks
-    #If using tensorboard callback, the `logdir` will need to be the `.logdir` AFTER the samppler.  It will not be the `--results_path` directly
-
-    # If the d.results_dir is a valid directory and does not exist, then create it
-    # If the d.results_dir is a valid directory and not empty then check if we want to overwrite.
-    # otherwise fail
-
-    # Fail if path exists and 
-
+function prepare_output_directory(d, include_vars)
     if isdir(d.results_path) && !d.overwrite_results
         error("Directory $(d.results_path) already exists, and overwrite_results = false")
     end
@@ -45,23 +31,6 @@ end
 function calculate_num_error_prop(chain)
     num_error = get(chain, :numerical_error)
     return 100 * sum(num_error.numerical_error.data) / length(num_error.numerical_error.data)
-end
-
-
-function log_summary_statistics!(callback::Nothing, param_names, param_ess, param_rhat)
-    return nothing
-    # noop if nothing, later add in suppport for tensorbard callbacks
-    # for (i, name) = enumerate(param_names)
-    #     TensorBoardLogger.log_value(
-    #         callback.logger,
-    #         "$(name)_ess_per_sec",
-    #         param_ess[i],
-    #     )
-    #     TensorBoardLogger.log_value(
-    #         callback.logger,
-    #         "$(name)_rhat",
-    #         param_rhat[i],
-    #     )
 end
 
 # Save depends on the type of mass matrix
@@ -139,9 +108,6 @@ function calculate_experiment_results(d, chain, logdir, callback, include_vars)
         end
     end
 
-    # Log the ESS/sec and rhat.  Nice to show as summary results from tensorboard
-    # a noop if callback = nothing
-    #log_summary_statistics!(callback, param_names, param_ess, param_rhat)
 
     # Make a succinct results JSON
     parameters = JSON.parsefile(joinpath(logdir, "parameters.json"))

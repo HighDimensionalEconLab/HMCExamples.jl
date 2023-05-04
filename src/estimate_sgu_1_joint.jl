@@ -24,7 +24,7 @@ function estimate_sgu_1_joint(d)
 
     # Sampler
     include_vars = ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v"]  # variables to log
-    logdir, callback = prepare_output_directory(d.use_tensorboard, d, include_vars)
+    logdir, callback = prepare_output_directory(d, include_vars)
     num_adapts = convert(Int64, floor(d.num_samples * d.adapts_burnin_prop))
 
     (d.seed == -1) || Random.seed!(d.seed)
@@ -32,7 +32,7 @@ function estimate_sgu_1_joint(d)
     sampler = NUTS(num_adapts, d.target_acceptance_rate; max_depth=d.max_depth)
 
     # Not typesafe, but hopefully that isn't important here.
-    init_params = (d.init_params_file == "") ? nothing : readdlm(joinpath(pkgdir(HMCExamples), d.init_params_file), ',', Float64, '\n')[:, 1]
+    init_params = (d.init_params_file == "") ? nothing : [d.override_init_params; readdlm(joinpath(pkgdir(HMCExamples), d.init_params_file), ',', Float64, '\n')[1 + length(d.override_init_params):end, 1]]
 
     chain = (d.num_chains == 1) ? sample(turing_model, sampler, d.num_samples; d.progress,save_state=true, d.discard_initial, callback,
                                 init_params) :
@@ -162,9 +162,6 @@ function parse_commandline_sgu_1_joint(args)
         "--calculate_ergodic_distribution"
         arg_type = Bool
         help = "Calculate the covariance matrix of the ergodic distribution"
-        "--use_tensorboard"
-        arg_type = Bool
-        help = "Log to tensorboard"
         "--progress"
         arg_type = Bool
         help = "Show progress"
@@ -177,6 +174,9 @@ function parse_commandline_sgu_1_joint(args)
         "--init_params_file"
         arg_type = String
         help = "Use file for initializing the chain. Ignores other initial conditions"
+        "--override_init_params"
+        arg_type = Vector{Float64}
+        help = "Override the first elements of init_params_file if provided"  
         "--discard_initial"
         arg_type = Int64
         help = "Number of draws to discard for warmup"
