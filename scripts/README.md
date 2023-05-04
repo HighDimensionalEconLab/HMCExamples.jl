@@ -39,6 +39,8 @@ A few notes:
 
 
 
+The other scripts in the `scripts/run_samplers` folder are slower because they do a large number of variations for frequentist comparisons and checks on robustness of convergence.  You may want to run them in parallel as some may take days to run.
+
 #  OLD, REPLACE WHEN COMPLETE Replication Procedure (Standalone Ubuntu Linux or Ubuntu on Windows)
 
 You may wish to use `tmux` to leave a terminal running unattended.\
