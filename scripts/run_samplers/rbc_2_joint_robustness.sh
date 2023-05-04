@@ -7,7 +7,7 @@ source ./scripts/utilities.sh # includes print_header, run_sampler, etc.
 RESULTS_PATH=".replication_results"
 DATA_PATH="data"
 BASELINE_SEED="1"
-RBC_2_JOINT_SAMPLES="10" #"4000"
+NUM_SAMPLES="10" #"4000"
 
 # Define arrays for the values of ALPHA, BETA_DRAW, and RHO
 ALPHA_VALUES=(0.25 0.3 0.35 0.4)
@@ -19,7 +19,7 @@ for ALPHA in "${ALPHA_VALUES[@]}"; do
   for BETA_DRAW in "${BETA_DRAW_VALUES[@]}"; do
     for RHO in "${RHO_VALUES[@]}"; do
       # Execute the run_sampler function with the current values of ALPHA, BETA_DRAW, and RHO
-      run_sampler $BASELINE_SEED $RBC_2_JOINT_SAMPLES "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint_robustness_${ALPHA//./_}_${BETA_DRAW//./_}_${RHO//./_}" "" "${DATA_PATH}/rbc_2_joint_burnin_ergodic.csv" "" "--override_init_params [${ALPHA},${BETA_DRAW},${RHO}]"
+      run_sampler $BASELINE_SEED $NUM_SAMPLES "fit_rbc_2_joint.jl" "${RESULTS_PATH}/rbc_2_joint_robustness_${ALPHA//./_}_${BETA_DRAW//./_}_${RHO//./_}" "" "${DATA_PATH}/rbc_2_joint_burnin_ergodic.csv" "" "--override_init_params [${ALPHA},${BETA_DRAW},${RHO}]"
     done
   done
 done
