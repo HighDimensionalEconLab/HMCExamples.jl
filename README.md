@@ -51,14 +51,6 @@ using Serialization, HMCExamples, DelimitedFiles, MCMCChains
 chain = open(deserialize, joinpath(pkgdir(HMCExamples), ".results/rbc_1_joint/chain.jls"))
 ```
 
-To load the generated HDF5 file, which should be portable between OS and over time
-```julia
-using HDF5, HMCExamples, MCMCChains, MCMCChainsStorage
-chain = h5open(joinpath(pkgdir(HMCExamples), ".results/rbc_1_joint/chain.h5"), "r") do f
-  read(f, Chains)
-end
-```
-
 ## Accessing Chains
 To extract the entire chain for some parameters
 ```
@@ -69,5 +61,3 @@ Or to get a slice of all parameters for the last draw in the chain
 ```julia
 last_draw = chain.value[end,:,1][chain.name_map.parameters] |> Array
 ```
-
-**NOTE** The h5 format may reorder the chain's variables, so you can't count on using them being in the same order.

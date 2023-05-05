@@ -12,7 +12,11 @@ function prepare_output_directory(d, include_vars)
 
     # delete directory if it exists. No failure if directory doesn't exist.
     @info "Saving results to $(d.results_path) and removing contents if non-empty"
-    rm(d.results_path, force=true, recursive=true)
+    try
+        rm(d.results_path, force=true, recursive=true)
+    catch (e)
+        @info "Could not remove $(d.results_path), continuing"
+    end
     mkpath(d.results_path)
 
 
@@ -53,14 +57,6 @@ function calculate_experiment_results(d, chain, logdir, callback, include_vars)
     if d.save_jls
         @info "Storing Chain at $(joinpath(logdir, "chain.jls"))"
         serialize(joinpath(logdir, "chain.jls"), chain) # Basic Julia serialization.  Not portable beetween versions/machines
-    end
-
-    # Use HDF5 with MCMCChainsStorage
-    if d.save_hd5
-        @info "Storing Chain at $(joinpath(logdir, "chain.h5"))"
-        h5open(joinpath(logdir, "chain.h5"), "w") do f
-            write(f, chain)
-        end
     end
 
     last_draw = chain.value[end, :, 1][chain.name_map.parameters] |> Array

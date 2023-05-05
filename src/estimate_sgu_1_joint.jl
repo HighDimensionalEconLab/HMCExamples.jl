@@ -168,9 +168,6 @@ function parse_commandline_sgu_1_joint(args)
         "--save_jls"
         arg_type = Bool
         help = "Save the jls serialization (not portable)"
-        "--save_hd5"
-        arg_type = Bool
-        help = "Save the hd5 serialization"
         "--init_params_file"
         arg_type = String
         help = "Use file for initializing the chain. Ignores other initial conditions"
