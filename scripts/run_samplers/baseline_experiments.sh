@@ -10,18 +10,18 @@ INIT_PARAMS_PATH="data/init_params"
 BASELINE_SEED="1"
 
 # length of samples in the RBC cases roughly chosen to align runtime with Dynare code
-RBC_1_KALMAN_SAMPLES="10" #"6500"
-RBC_1_JOINT_SAMPLES="10" #"4000"
-RBC_2_JOINT_SAMPLES="10" #"4000"
-RBC_2_JOINT_SAMPLES_LONG="10" # "10000"
+RBC_1_KALMAN_SAMPLES="6500"
+RBC_1_JOINT_SAMPLES="4000"
+RBC_2_JOINT_SAMPLES="4000"
+RBC_2_JOINT_SAMPLES_LONG="10000"
 
-RBC_MULTIPLE_CHAINS_SAMPLES="10" # "5000" # baseline
-RBC_MULTIPLE_CHAINS="2" # "10" number of chains for density plots, etc.
+RBC_MULTIPLE_CHAINS_SAMPLES="5000" # baseline
+RBC_MULTIPLE_CHAINS="10" # number of chains for density plots, etc.
 
-SGU_SAMPLES="10" # "5000"
+SGU_SAMPLES="5000"
 
-RBC_SV_2_JOINT_SAMPLES="10" # "50000"
-RBC_SV_2_JOINT_CHAINS="2" # "4"
+RBC_SV_2_JOINT_SAMPLES="50000"
+RBC_SV_2_JOINT_CHAINS="4"
 
 # # RBC examples
 run_sampler $BASELINE_SEED $RBC_1_KALMAN_SAMPLES "fit_rbc_1_kalman.jl" "${RESULTS_PATH}/rbc_1_kalman_200" "${DATA_PATH}/rbc_1_200.csv" "${INIT_PARAMS_PATH}/rbc_1_kalman_init_params_200.csv"

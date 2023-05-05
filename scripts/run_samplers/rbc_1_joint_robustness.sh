@@ -7,6 +7,7 @@ source ./scripts/utilities.sh # includes print_header, run_sampler, etc.
 export OPENBLAS_NUM_THREADS=1 # removes parallel openblas so these can be executed in parallel more easily
 RESULTS_PATH=".replication_results"
 DATA_PATH="data"
+INIT_PARAMS_PATH="data/init_params"
 BASELINE_SEED="1"
 NUM_SAMPLES="10" #"4000"
 
