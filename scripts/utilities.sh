@@ -69,7 +69,7 @@ install_juliaup_if_required() {
 
 
 # ChatGPT generated utility to run sampler for a particular script/etc.  Modify defaults above as required, or at the call site
-JULIA_ARGS="--threads auto"
+JULIA_ARGS="--threads auto -O1"
 BASELINE_SAMPLING_HEARTBEAT="1000"
 
 # Detect the operating system and check for the corresponding sysimage file

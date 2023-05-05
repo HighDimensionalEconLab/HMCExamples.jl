@@ -1,4 +1,4 @@
---data_path=data/sgu_1_draw_low.csv
+--data_path=data/sgu_1_200.csv
 --omega=1.455
 --sigmae=0.0129
 --delta=0.1
@@ -25,7 +25,7 @@
 --epsilon_BK=1e-6
 --tol_cholesky=1e9
 --perturb_covariance=1e-12
---calculate_ergodic_distribution=false
+--calculate_ergodic_distribution=true
 --num_chains=1
 --progress=true
 --save_jls=true
