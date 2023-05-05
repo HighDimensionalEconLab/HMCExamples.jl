@@ -28,8 +28,7 @@
 --calculate_ergodic_distribution=false
 --num_chains=1
 --progress=true
---save_hd5=true
---save_jls=false
+--save_jls=true
 --init_params_file=
 --override_init_params=
 --discard_initial=-1
