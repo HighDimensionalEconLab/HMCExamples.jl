@@ -13,22 +13,21 @@ function simulate_rbc_frequentist_data()
 
     # Calculate perturbation
     m = PerturbationModel(HMCExamples.rbc)
-    m_2 = PerturbationModel(HMCExamples.rbc)
     mod_perturb = generate_perturbation(m, p_d, p_f)
-    mod_perturb_2 = generate_perturbation(m_2, p_d, p_f, Val(2))
+    mod_perturb_2 = generate_perturbation(m, p_d, p_f, Val(2))
 
     # Simulate data
     for T in T_values
         for counter in 1:num_seeds
             Random.seed!(counter) # fix a seed for reproducibility
 
-            x0 = rand(MvNormal(mod_perturb.x_ergodic_var))
+            x0 = zeros(m.n_x)
             prob = LinearStateSpaceProblem(mod_perturb, x0, (0, T))
             sol = solve(prob, DirectIteration())
             z_vec = VectorOfArray(sol.z)
             CSV.write(joinpath(data_path, "rbc_1_seed_$(counter)_$(T).csv"), DataFrame(c_obs=z_vec[1, :], i_obs=z_vec[2, :]))
 
-            x0_2 = rand(MvNormal(mod_perturb_2.x_ergodic_var))
+            x0_2 = zeros(m.n_x)
             prob_2 = QuadraticStateSpaceProblem(mod_perturb_2, x0_2, (0, T))
             sol_2 = solve(prob_2, DirectIteration())
             z_vec_2 = VectorOfArray(sol_2.z)
