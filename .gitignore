@@ -26,7 +26,6 @@ LocalPreferences.toml
 .results/*
 test/.results/*
 JuliaSysimage.dll
-grid_artifacts
 results/*
 robust/
 .ipynb_checkpoints
@@ -38,4 +37,3 @@ robust/
 JuliaSysimage.so
 
 .replication_results
-data/rbc_frequentist

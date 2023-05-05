@@ -15,15 +15,35 @@ bash scripts/setup_julia_environment.sh
 
 That process will do a package compilation and take 10-20 minutes depending on your operating system.
 
-If you wish to use tmux to connect to a remote server, then create a new session using `tmux new-session -s ubuntu` and retrieve it using `tmux attach-session -t ubuntu`.   See https://www.julia-vscode.org/docs/stable/userguide/remote/ for use within VSCode
+## Create a Sysimage
 
-## Simulate data
+While not strictly required, it is highly recommended to create a sysimage to speed up the sampling process. Execute the following in a commandline within the main directory
 
-TODO
+```bash
+julia --threads auto -e 'using Pkg; Pkg.add(\"PackageCompiler\")'
+julia --project --threads auto ./deps/create_sysimage.jl
+```
+
+That process will take at least 20 minutes to fully compile.
+
+## Simulate data (Optional)
+
+The files are already generated in the `/data` directory.  To regenerate the simulated data you can run
+
+```bash
+julia --sysimage JuliaSysimage.dll --project deps/generate_simulated_data_rbc.jl
+julia --sysimage JuliaSysimage.dll --project deps/generate_simulated_data_rbc_sv.jl
+julia --sysimage JuliaSysimage.dll --project deps/generate_simulated_data_rbc_frequentist.jl
+julia --sysimage JuliaSysimage.dll --project deps/generate_simulated_data_sgu.jl
+```
+
+where you can replace the `.dll` with `.so` on linux or macos.
+
+If you change the pseudo-true values in that file, you can also change the initial conditions for the samplers in the `data/init_params` directory.  However, while useful for clean comparisons to dynare performance, they are not especially important in general.
 
 ## Run Samplers
 
-**WARNING**: This will do some very long runs and likely take hours or days to complete if you run these serially. See above for using tmux for a remote machine.
+**WARNING**: This will do some very long runs and likely take hours or days to complete if you run these serially.
 
 To run the samplers, you can execute:
 
@@ -38,20 +58,8 @@ A few notes:
   - If you want to change the location of the data or the output, you can edit the `$RESULTS_PATH` and `$DATA_PATH` variables in the `baseline_experiments.sh` file.
 
 
-
 The other scripts in the `scripts/run_samplers` folder are slower because they do a large number of variations for frequentist comparisons and checks on robustness of convergence.  You may want to run them in parallel as some may take days to run.
 
-#  OLD, REPLACE WHEN COMPLETE Replication Procedure (Standalone Ubuntu Linux or Ubuntu on Windows)
-
-You may wish to use `tmux` to leave a terminal running unattended.\
-If `tmux` is not already installed, do a `sudo apt update` followed by `sudo apt install tmux`.\
-Create a new session using `tmux new-session -s ubuntu` and retrieve it using `tmux attach-session -t ubuntu`.
-
-If using a sysimage, run `sudo apt update` followed by `sudo apt install g++`.
-
-Original RBC Julia scripts used `--adapts_burnin_prop=0.1` instead of the current 0.2, so perfect replication requires adding this to all Julia estimation script calls (or directly setting it in the defaults).
-
-To use the following instructions, first clone the repo via `git clone https://github.com/HighDimensionalEconLab/HMCExamples.jl`.
 
 ## Dynare 
 
