@@ -45,21 +45,27 @@ If you change the pseudo-true values in that file, you can also change the initi
 
 **WARNING**: This will do some very long runs and likely take hours or days to complete if you run these serially.
 
-To run the samplers, you can execute:
+To run the primary experiments, execute:
 
 ```bash
 bash scripts/run_samplers/baseline_experiments.sh
 ```
 
+The other scripts are left separate to make running them in parallel easier.  These run hundreds of examples and may take **days to run**
+
+```bash
+bash scripts/run_samplers/rbc_1_joint_frequentist.sh
+bash scripts/run_samplers/rbc_1_kalman_frequentist.sh
+bash scripts/run_samplers/rbc_2_joint_frequentist.sh
+bash scripts/run_samplers/rbc_1_joint_robustness.sh
+bash scripts/run_samplers/rbc_1_kalman_robustness.sh
+bash scripts/run_samplers/rbc_2_joint_robustness.sh
+```
 A few notes:
   - 
   - This uses the  `scripts/utilities.sh` file has some BASH functions to enable easy execution of the samplers with various permutations on the arguments.
   - To only execute a subset of the runs, you can comment out lines in the `baseline_experiments.sh` file.
   - If you want to change the location of the data or the output, you can edit the `$RESULTS_PATH` and `$DATA_PATH` variables in the `baseline_experiments.sh` file.
-
-
-The other scripts in the `scripts/run_samplers` folder are slower because they do a large number of variations for frequentist comparisons and checks on robustness of convergence.  You may want to run them in parallel as some may take days to run.
-
 
 ## Dynare 
 

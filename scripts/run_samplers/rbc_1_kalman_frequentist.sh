@@ -5,7 +5,7 @@ source ./scripts/utilities.sh # includes print_header, run_sampler, etc.
 
 # General variables for arguments and paths used in the run_sampler utility function defined in utilities.sh
 export OPENBLAS_NUM_THREADS=1 # removes parallel openblas so these can be executed in parallel more easily
-RESULTS_PATH=".replication_results"
+RESULTS_PATH=".replication_results/frequentist"
 DATA_PATH="data"
 INIT_PARAMS_PATH="data/init_params"
 BASELINE_SEED="1"
