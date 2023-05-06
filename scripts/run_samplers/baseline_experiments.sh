@@ -23,6 +23,8 @@ SGU_SAMPLES="5000"
 RBC_SV_2_JOINT_SAMPLES="50000"
 RBC_SV_2_JOINT_CHAINS="4"
 
+start_time=$(date +%s)
+
 # # RBC examples
 run_sampler $BASELINE_SEED $RBC_1_KALMAN_SAMPLES "fit_rbc_1_kalman.jl" "${RESULTS_PATH}/rbc_1_kalman_200" "${DATA_PATH}/rbc_1_200.csv" "${INIT_PARAMS_PATH}/rbc_1_kalman_init_params_200.csv"
 run_sampler $BASELINE_SEED $RBC_1_JOINT_SAMPLES "fit_rbc_1_joint.jl" "${RESULTS_PATH}/rbc_1_joint_200" "${DATA_PATH}/rbc_1_200.csv" "${INIT_PARAMS_PATH}/rbc_1_joint_init_params_200.csv"
@@ -49,4 +51,7 @@ run_sampler $BASELINE_SEED $SGU_SAMPLES "fit_sgu_2_joint.jl" "${RESULTS_PATH}/sg
 # # RBC Stochastic Volatility examples
 run_sampler $BASELINE_SEED $RBC_SV_2_JOINT_SAMPLES "fit_rbc_sv_2_joint.jl" "${RESULTS_PATH}/rbc_sv_2_joint_200" "${DATA_PATH}/rbc_sv_2_200.csv" "${INIT_PARAMS_PATH}/rbc_sv_2_joint_init_params_200.csv" $RBC_SV_2_JOINT_CHAINS
 
-print_header "Baseline experiments complete"
+# display elapsed time
+end_time=$(date +%s)
+elapsed=$(( end_time - start_time ))
+eval "echo Elapsed time: $(date -ud "@$elapsed" +'$((%s/3600/24)) days %H hr %M min %S sec')"

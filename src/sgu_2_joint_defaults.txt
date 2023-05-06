@@ -32,4 +32,4 @@
 --init_params_file=
 --override_init_params=
 --discard_initial=-1
---sampling_heartbeat=1000
+--sampling_heartbeat=0
