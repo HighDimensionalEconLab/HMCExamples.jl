@@ -65,7 +65,7 @@ function estimate_FVGQ_1_kalman(d)
                                 init_params) :
                                 sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback,
                                 init_params = isnothing(init_params) ? nothing : [init_params for _ in 1:d.num_chains])
-    calculate_experiment_results(d, chain, logdir, callback, include_vars)
+    calculate_experiment_results(d, z, chain, logdir, callback, include_vars)
 end
 
 @model function FVGQ20_kalman(z, m, p_f, params, cache, settings)

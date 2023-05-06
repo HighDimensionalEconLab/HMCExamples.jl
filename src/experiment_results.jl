@@ -41,16 +41,9 @@ end
 maybe_save_metric(filename, mass::AbstractArray) = writedlm(filename, mass, ',')
 maybe_save_metric(filename, mass) = nothing # otherwise don't do anything
 
-function calculate_experiment_results(d, chain, logdir, callback, include_vars)
+function calculate_experiment_results(d, z, chain, logdir, callback, include_vars)
 
-    # Store parameters in log directory
-    parameter_save_path = joinpath(logdir, "parameters.json")
-
-    open(parameter_save_path, "w") do f
-        write(f, JSON.json(d))
-    end
-
-
+    # Add information to the `d` from the data
     has_num_error = (:numerical_error in keys(chain))
 
     # Store the chain
@@ -105,25 +98,26 @@ function calculate_experiment_results(d, chain, logdir, callback, include_vars)
     end
 
 
-    # Make a succinct results JSON
-    parameters = JSON.parsefile(joinpath(logdir, "parameters.json"))
+    # Make a succinct results JSON including all parameters
+    results = JSON.json(d)
+    results["T"] = size(z, 2) - 1 # store size of observables - 1
 
     for (i, pname) in enumerate(param_names)
-        parameters["$(pname)_mean"] = param_mean[i]
-        parameters["$(pname)_std"] = param_sd[i]
-        parameters["$(pname)_ess"] = param_ess[i]
-        parameters["$(pname)_rhat"] = param_rhat[i]
-        parameters["$(pname)_esspersec"] = param_esspersec[i]
+        results["$(pname)_mean"] = param_mean[i]
+        results["$(pname)_std"] = param_sd[i]
+        results["$(pname)_ess"] = param_ess[i]
+        results["$(pname)_rhat"] = param_rhat[i]
+        results["$(pname)_esspersec"] = param_esspersec[i]
     end
 
     # Add time difference if there is such information
     if :start_time in keys(chain.info)
-        parameters["time_elapsed"] = chain.info.stop_time - chain.info.start_time
+        results["time_elapsed"] = chain.info.stop_time - chain.info.start_time
     end
 
     result_path = joinpath(logdir, "result.json")
     @info "Storing results at $result_path"
     open(result_path, "w") do io
-        JSON.print(io, parameters)
+        JSON.print(io, results)
     end
 end

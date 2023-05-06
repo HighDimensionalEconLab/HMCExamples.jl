@@ -39,7 +39,7 @@ function estimate_sgu_2_joint(d)
                                 init_params) :
                                 sample(turing_model, sampler, MCMCThreads(), d.num_samples, d.num_chains; d.progress, save_state=true, d.discard_initial, callback,
                                 init_params = isnothing(init_params) ? nothing : [init_params for _ in 1:d.num_chains])
-    calculate_experiment_results(d, chain, logdir, callback, include_vars)
+    calculate_experiment_results(d, z, chain, logdir, callback, include_vars)
 end
 
 @model function sgu_joint_2(z, m, p_f, α_prior, γ_prior, ψ_prior, β_prior, ρ_prior, ρ_u_prior, ρ_v_prior, cache, settings)
