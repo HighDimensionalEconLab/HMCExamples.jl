@@ -99,7 +99,7 @@ function calculate_experiment_results(d, z, chain, logdir, callback, include_var
 
 
     # Make a succinct results JSON including all parameters
-    results = JSON.json(d)
+    results = Dict("$a" => b for (a,b) in pairs(d))
     results["T"] = size(z, 2) - 1 # store size of observables - 1
 
     for (i, pname) in enumerate(param_names)
