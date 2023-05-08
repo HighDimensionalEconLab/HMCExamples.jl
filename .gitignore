@@ -37,3 +37,7 @@ robust/
 JuliaSysimage.so
 
 .replication_results
+
+scripts/run_dynare_samplers/rbc_1/*
+scripts/run_dynare_samplers/+rbc_1/*
+scripts/run_dynare_samplers/*.log

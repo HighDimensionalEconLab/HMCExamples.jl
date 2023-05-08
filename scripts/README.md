@@ -43,7 +43,7 @@ If you change the pseudo-true values in that file, you can also change the initi
 
 ## Run Samplers
 
-**WARNING**: This will do some very long runs and likely take hours or days to complete if you run these serially.
+**WARNING**: This will take up to a day to run.
 
 To run the primary experiments, execute:
 
@@ -51,7 +51,7 @@ To run the primary experiments, execute:
 bash scripts/run_samplers/baseline_experiments.sh
 ```
 
-The other scripts are left separate to make running them in parallel easier.  These run hundreds of examples and may take **days to run**
+The other scripts are left separate to make running them in parallel easier.  These run thousands of examples and may take **3-4 days to run** in parallel, depending on your computer.  However, you can edit the shell scripts to run these in parallel with little effort.
 
 ```bash
 bash scripts/run_samplers/rbc_1_joint_frequentist.sh
@@ -69,8 +69,21 @@ A few notes:
 
 ## Dynare 
 
-1. `bash HMCExamples.jl/scripts/dynare_replication/dynare_bootup.sh`
-2. `sudo docker run -it --rm --shm-size=512M mathworks/matlab:r2022a -shell`
+To setup:
+1. Install a recent version of Matlab (these were tested on Matlab 2021a)
+2. Install dynare from https://www.dynare.org/download/.  These were tested with dynare 5.4
+3. Configure dynare in your matlab path (e.g., https://www.dynare.org/resources/quick_start/#configuring-matlab-for-dynare-on-windows on Windows)
+
+Then, do a `cd scripts/run_dynare_samplers` in a terminal to ensure you are running within them and then execute.
+ 
+```bash
+ matlab -nosplash -nodesktop -r "run('rbc_1.m');exit;"
+ ```
+
+
+
+
+
 
 From inside the Docker instance:
 1. `sudo apt update`
