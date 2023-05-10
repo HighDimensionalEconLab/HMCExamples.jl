@@ -74,103 +74,15 @@ To setup:
 2. Install dynare from https://www.dynare.org/download/.  These were tested with dynare 5.4
 3. Configure dynare in your matlab path (e.g., https://www.dynare.org/resources/quick_start/#configuring-matlab-for-dynare-on-windows on Windows)
 
-Then, do a `cd scripts/run_dynare_samplers` in a terminal to ensure you are running within them and then execute.
- 
+Then, from the main folder do
 ```bash
- matlab -nosplash -nodesktop -r "run('rbc_1.m');exit;"
- matlab -nosplash -nodesktop -r "run('rbc_2.m');exit;"
- ```
+bash scripts/run_dynare_samplers/baseline_experiments.sh
+```
 
 
 
 
-
-
-From inside the Docker instance:
-1. `sudo apt update`
-2. `sudo apt install -y git nano`
-3. `git clone https://github.com/HighDimensionalEconLab/HMCExamples.jl`
-4. `cd HMCExamples.jl/scripts/dynare_replication`
-5. `bash install_dynare.sh`
-6. `matlab` and then type in your license credentials.
-7. Run whichever `.m` file from inside the `dynare_replication` folder you wish to run:
-  - `robustness_rbc_1.m`
-  - `robustness_rbc_2.m`
-  - `table_rbc_1.m`
-  - `table_rbc_2.m` 
-  - `table_sgu.m` (you will need to edit this and the `SU03ext.mod` file while inside the container to select an order level; you can use e.g. `nano SU03ext.mod` to edit files, then `ctrl+x` followed by `y` followed by `enter` to save and close them)
-  
-You may wish to log the Dynare output to inspect the acceptance rates over the course of a run. To do this, type `script` before starting Matlab, which will log all outputs to a file. This file can be parsed using a script in the `figplots` folder; see the summary tables section below.
-
-For convenience, you may wish to push/pull folders in/out of the docker container. An example:
-`sudo docker cp 63d13510863a:/home/matlab/Documents/MATLAB/HMCExamples.jl/scripts/dynare_replication/dynare_chains_timed dynare_chains_timed`\
-where `63d13510863a` comes from `sudo docker ps`. You will likely want to do this to save the Dynare results folders at the end.
-
-If you need to shut the machine down, run `sudo docker commit <ID> dynaredocker` where `<ID>` is replaced with the ID from `sudo docker ps`. You can then re-activate the docker container using `sudo docker run -it --rm --shm-size=512M dynaredocker -shell` later on. This is more efficient than restarting and moving the dynare-5.1 folder in/out.
-
-To move the image to another machine, run `sudo docker save <ID> > <ID>.tar` where again the `<ID>` comes from `sudo docker ps.`. The image can then be loaded elsewhere by copying the `.tar` file and opening it with `sudo docker load < <ID>.tar`.
-
-## Julia
-
-Note that if installing Julia on the command line, you will need to call it as `~/julia-1.7.1/bin/julia --project <scriptname>` i.e. specifying the full path of the Julia executable.
-
-1. `tmux new-session -s ubuntu` (do `tmux attach-session -t ubuntu` if it responds with session already exists)
-2. `bash HMCExamples.jl/scripts/julia_replication/install_julia.sh`
-3. `exit`
-4. `tmux new-session -s ubuntu`
-5. `cd HMCExamples.jl`
-6. `script`
-7. Run whichever shellscript from inside the `julia_replication` folder you wish to run:
-  - `scripts/julia_replication/f124_plots.sh`
-  - `scripts/julia_replication/frequentist_kalman.sh`
-  - `scripts/julia_replication/frequentist_joint_1.sh`
-  - `scripts/julia_replication/frequentist_joint_2.sh`
-  - `scripts/julia_replication/tables.sh`
-  - `scripts/julia_replication/robustness.sh`
-
-Note that the call to `script` generates a logfile called `typescript` in the `HMCExamples.jl` folder which you can use to query script errors in the event of an unexpected shutdown, or if the terminal overflows.
-
-## FVGQ Julia
-
-1. `tmux new-session -s ubuntu` (do `tmux attach-session -t ubuntu` if it responds with session already exists)
-2. `bash HMCExamples.jl/scripts/fvgq_replication/install_julia.sh`
-3. `exit`
-4. `tmux new-session -s ubuntu`
-5. `cd HMCExamples.jl`
-6. `script`
-7. Run whichever shellscript from inside the `fvgq_replication` folder you wish to run:
-  - `scripts/fvgq_replication/kalman.sh`
-  - `scripts/fvgq_replication/1_joint.sh`
-  - `scripts/fvgq_replication/2_joint.sh`
-  
-## SGU Julia
-
-1. `tmux new-session -s ubuntu` (do `tmux attach-session -t ubuntu` if it responds with session already exists)
-2. `bash HMCExamples.jl/scripts/sgu_replication/install_julia.sh`
-3. `exit`
-4. `tmux new-session -s ubuntu`
-5. `cd HMCExamples.jl`
-6. `script`
-7. `bash scripts/sgu_replication/run.sh`
-
-## RBC SV Julia
-
-1. `tmux new-session -s ubuntu` (do `tmux attach-session -t ubuntu` if it responds with session already exists)
-2. `bash HMCExamples.jl/scripts/rbc_sv_replication/install_julia.sh`
-3. `exit`
-4. `tmux new-session -s ubuntu`
-5. `cd HMCExamples.jl`
-6. `script`
-7. `bash scripts/rbc_sv_replication/run.sh`
-
-## Uploading results to an AWS S3 bucket
-
-1. `sudo apt install unzip`
-2. Follow the [install instructions](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) for AWS CLI.
-3. `aws configure`
-4. Access the `~/.aws/credentials` file and ensure the profile (the `[name]` at the top), key ID, key and region are correct.
-5. Upload folders through e.g. `aws s3 cp s3://the_store_path_name/experiments ./experiments --recursive --profile the_profile_name`.
-
+## TODO BELOW
 ## Producing summary tables and plots
 
 On Ubuntu, Python or Python3 should be installed by default. If not, do `sudo apt update` followed by `sudo apt install python3` and `sudo apt install python3-pip`. If the command is present as `python3`, replace all instances of `python` in the text below with `python3`.\
