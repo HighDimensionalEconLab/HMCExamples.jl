@@ -78,6 +78,7 @@ Then, do a `cd scripts/run_dynare_samplers` in a terminal to ensure you are runn
  
 ```bash
  matlab -nosplash -nodesktop -r "run('rbc_1.m');exit;"
+ matlab -nosplash -nodesktop -r "run('rbc_2.m');exit;"
  ```
 
 

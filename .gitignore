@@ -41,3 +41,6 @@ JuliaSysimage.so
 scripts/run_dynare_samplers/rbc_1/*
 scripts/run_dynare_samplers/+rbc_1/*
 scripts/run_dynare_samplers/*.log
+scripts/run_dynare_samplers/rbc_2/*
+scripts/run_dynare_samplers/+rbc_2/*
+
