@@ -79,6 +79,12 @@ Then, from the main folder do
 bash scripts/run_dynare_samplers/baseline_experiments.sh
 ```
 
+Then, you can run the following (in separate terminals if you wish, as the results aren't timed like the previous example)
+```bash
+cd scripts/run_dynare_samplers
+matlab -nosplash -nodesktop -r "run('rbc_1_robustness.m');exit;"
+matlab -nosplash -nodesktop -r "run('rbc_2_robustness.m');exit;"
+```
 
 
 

@@ -72,5 +72,5 @@ end;
 varobs c_obs i_obs;
 
 options_.cova_compute = 0;
-estimation(datafile = '../../data/rbc_2.csv', mode_file = 'rbc_mode.mat', order = 2, mh_nblocks = 1, mh_replic = 1250, mh_drop = 0.1, mode_compute = 0, mcmc_jumping_covariance = identity_matrix, number_of_particles = 20000, mh_jscale = 0.01);
+estimation(datafile = '../../data/rbc_2_200.csv', mode_file = 'rbc_2_robustness_init_params.mat', order = 2, mh_nblocks = 1, mh_replic = 1250, mh_drop = 0.1, mode_compute = 0, mcmc_jumping_covariance = identity_matrix, number_of_particles = 20000, mh_jscale = 0.01);
 

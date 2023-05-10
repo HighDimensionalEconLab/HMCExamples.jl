@@ -47,5 +47,9 @@ scripts/run_dynare_samplers/sgu_1/*
 scripts/run_dynare_samplers/+sgu_1/*
 scripts/run_dynare_samplers/sgu_2/*
 scripts/run_dynare_samplers/+sgu_2/*
-
-
+scripts/run_dynare_samplers/rbc_1_robustness/*
+scripts/run_dynare_samplers/+rbc_1_robustness/*
+scripts/run_dynare_samplers/rbc_2_robustness/*
+scripts/run_dynare_samplers/+rbc_2_robustness/*
+scripts/run_dynare_samplers/rbc_1_robustness_init_params.mat
+scripts/run_dynare_samplers/rbc_2_robustness_init_params.mat
