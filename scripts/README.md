@@ -79,14 +79,18 @@ Then, from the main folder do
 bash scripts/run_dynare_samplers/baseline_experiments.sh
 ```
 
-Then, you can run the following (in separate terminals if you wish, as the results aren't timed like the previous example)
+Then, you can run the following (in separate terminals if you wish, as the results aren't timed like the previous example).  This may take 1-2 days
 ```bash
 cd scripts/run_dynare_samplers
 matlab -nosplash -nodesktop -r "run('rbc_1_robustness.m');exit;"
 matlab -nosplash -nodesktop -r "run('rbc_2_robustness.m');exit;"
 ```
 
+Finally, with all of the dynare results complete you can run
 
+```bash
+julia --project scripts/run_dynare_samplers/convert_dynare_output.jl
+```
 
 ## TODO BELOW
 ## Producing summary tables and plots
