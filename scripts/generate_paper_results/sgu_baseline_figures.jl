@@ -1,4 +1,23 @@
-using HDF5, MCMCChains, MCMCChainsStorage, CSV, DataFrames, StatsPlots, Measures, Dates, MAT
+using MCMCChains, MCMCChainsStorage, CSV, DataFrames, StatsPlots, Serialization, Measures
+using HMCExamples, DynamicPPL
+
+function generate_stats_plots(run, include_vars, pseudotrues)
+    println("generating stats plots for ", run)
+    chain = deserialize(".replication_results/$(run)/chain.jls")
+    println("  deserialization complete")
+
+    # trace plots
+    trace_plot = traceplot(chain[include_vars], left_margin = 15mm, bottom_margin = 10mm, top_margin = 5mm)
+    hline!(trace_plot, pseudotrues, linestyle = :dash, color = :black, label = "", size = (600, 1000))
+    savefig(trace_plot, ".paper_results/traceplots_$(run).png")
+
+    # density
+    density_plot = density(chain[include_vars], left_margin = 15mm, bottom_margin = 10mm, top_margin = 5mm)
+    vline!(density_plot, pseudotrues, linestyle = :dash, color = :black, label = "", legend = :outertopright, size = (600, 1000))
+    savefig(density_plot, ".paper_results/densityplots_$(run).png")
+end
+
+
 
 function generate_plots()
     println("generating plots")
