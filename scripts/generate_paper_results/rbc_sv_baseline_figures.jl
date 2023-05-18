@@ -1,10 +1,8 @@
-using MCMCChains, MCMCChainsStorage, CSV, DataFrames, StatsPlots, Serialization, Measures
+using MCMCChains, CSV, DataFrames, StatsPlots, Serialization, Measures
 using HMCExamples, DynamicPPL
 
-function generate_stats_plots(run, include_vars, pseudotrues)
+function generate_stats_plots(run, chain, include_vars, pseudotrues)
     println("generating stats plots for ", run)
-    chain = deserialize(".replication_results/$(run)/chain.jls")
-    println("  deserialization complete")
 
     # trace plots
     trace_plot = traceplot(chain[include_vars], left_margin = 15mm, bottom_margin = 10mm, top_margin = 5mm)
@@ -17,40 +15,40 @@ function generate_stats_plots(run, include_vars, pseudotrues)
     savefig(density_plot, ".paper_results/densityplots_$(run).png")
 end
 
-function generate_epsilon_plots(run)
+function generate_epsilon_plots(run, chain, shocks)
     println("generating epsilon plots for ", run)
-    chain = deserialize(".replication_results/$(run)/chain.jls")
-    println("  deserialization complete")
+    params = JSON.parsefile(".replication_results/$(run)/result.json")
+    T = params["T"]
     
     # epsilons
     symbol_to_int(s) = parse(Int, replace(string(s), "ϵ_draw["=>"", "]"=>""))
+    symbollist = reshape([Symbol("ϵ_draw[$a]") for a in 1:T*2], 2, T)
 
-    # WARNING: T is hardcoded
+    # Import the true shock values
+    ϵ_true = Matrix(DataFrame(CSV.File("data/$(shocks).csv")))
 
-    ϵ_chain = sort(chain[:, [Symbol("ϵ_draw[$a]") for a in 1:201], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
+    # Plot and save
+    ϵ_chain = sort(chain[:, symbollist[1, :], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
     tmp = describe(ϵ_chain)
     ϵ_mean = tmp[1][:, 2]
     ϵ_std = tmp[1][:, 3]
-
-    # Import the true shock values
-    ϵ_true = Matrix(DataFrame(CSV.File("data/$(run)_shocks.csv")))'
-
-    # Plot and save
     ϵ_plot = plot(ϵ_mean[2:end], ribbon=2 * ϵ_std[2:end], label="Posterior mean")
-    ϵ_plot = plot!(ϵ_true[1, :], label="True values")
-    savefig(ϵ_plot, ".figures/epsilons_$(run).png")
+    ϵ_plot = plot!(ϵ_true[:, 1], label="True values")
+    savefig(ϵ_plot, ".paper_results/epsilons_$(run).png")
 
-    vol_chain = sort(chain[:, [Symbol("ϵ_draw[$a]") for a in 202:402], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
+    vol_chain = sort(chain[:, symbollist[2, :], 1], lt = (x,y) -> symbol_to_int(x) < symbol_to_int(y))
     tmp = describe(vol_chain)
     vol_mean = tmp[1][:, 2]
     vol_std = tmp[1][:, 3]
 
     # Plot and save
     vol_plot = plot(vol_mean[2:end], ribbon=2 * vol_std[2:end], label="Posterior mean")
-    vol_plot = plot!(ϵ_true[2, :], label="True values")
-    savefig(vol_plot, ".figures/volshocks_rbc_sv_$(batch).png")
+    vol_plot = plot!(ϵ_true[:, 2], label="True values")
+    savefig(vol_plot, ".paper_results/volshocks_rbc_sv_$(run).png")
 end
 
-generate_stats_plots("rbc_sv_2_joint_200", ["α", "β_draw", "ρ"], [0.3 0.2 0.9])
+chain = deserialize(".replication_results/rbc_sv_2_joint_200/chain.jls")
 
-generate_epsilon_plots("rbc_sv_2_joint_200")
+generate_stats_plots("rbc_sv_2_joint_200", chain, ["α", "β_draw", "ρ"], [0.3 0.2 0.9])
+
+generate_epsilon_plots("rbc_sv_2_joint_200", chain, "rbc_sv_2_joint_shocks_200")

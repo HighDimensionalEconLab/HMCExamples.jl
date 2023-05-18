@@ -1,5 +1,5 @@
 using StatsPlots
-using HDF5, MCMCChains, MCMCChainsStorage
+using MCMCChains, Serialization
 using Dates
 using JSON
 using Statistics
@@ -31,31 +31,23 @@ var_ylim = Dict(
 mapping = Dict("α"=>"alpha", "β_draw"=>"beta_draw", "ρ"=>"rho")
 pseudotrues = Dict("α"=>0.3, "β_draw"=>0.2, "ρ"=>0.9)
 
-for (oldfoldername, batch) in [("kalman", "1_kalman"), ("1st-joint", "1_joint"), ("2nd-joint", "2_joint")]
-    println("generating plots")
+for (oldfoldername, run) in [("dynare_chains_1", "rbc_1"), ("dynare_chains_2", "rbc_2")]
     chains_arr = []
     chains_arr_durations = []
-    for (package, alpha) in [("first", "0_25"), ("second", "0_3"), ("third", "0_35"), ("fourth", "0_4")]
-        for beta_draw in ["0_1", "0_175", "0_25", "0_325"]
-            for rho in ["0_4625", "0_625", "0_7875", "0_95"]
-                chain = h5open(".experiments/robustness_julia/$(package)/robustness_rbc_$(batch)_$(alpha)$(beta_draw)$(rho)/chain.h5", "r") do f
-                    read(f, Chains)
-                end
+    for alpha in ["1", "2", "3", "4"]
+        for beta_draw in ["1", "2", "3", "4"]
+            for rho in ["2", "3", "4", "5"]
+                chain = deserialize(".replication_results/dynare_robustness/$(run)_robustness_$(alpha)$(beta_draw)$(rho)/chain.jls")
                 push!(chains_arr, chain)
-                results = JSON.parsefile(".experiments/robustness_julia/$(package)/robustness_rbc_$(batch)_$(alpha)$(beta_draw)$(rho)/result.json")
+                # TODO: load runtimes properly
+                results = JSON.parsefile(".replication_results/dynare_robustness/$(run)_robustness_$(alpha)$(beta_draw)$(rho)/result.json")
                 push!(chains_arr_durations, results["time_elapsed"])
             end
         end
     end
     println("  deserialization complete")
-
-    durations = chains_arr_durations #./ 4
-
-    # inds = durations .<= pct90
-    # chains_arr = chains_arr[inds]
-    # durations = durations[inds]
-
-    # max_time = maximum(durations)
+    
+    durations = chains_arr_durations
     max_time = quantile(durations, [0.75])[1]
     adj_durations = durations ./ max_time
 
@@ -66,10 +58,11 @@ for (oldfoldername, batch) in [("kalman", "1_kalman"), ("1st-joint", "1_joint"),
         push!(p, plot())
         push!(p1, plot())
     end
+
+    # may want to use Threads.@threads in front of the for expression if multithreaded machine available
     for ((i, c), (j, variable)) in collect(product(collect(enumerate(chains_arr)), collect(enumerate(include_vars))))
         println(i, " ", variable)
         d = range(0, adj_durations[i], length=size(c, 1))
-        # plot!(p, d, c.value.data[:,1,1], alpha=0.15, legend=false, title=folder)
         cummean!(p[j], d, c[:,variable,1].data; fancy_time=fancy_time)
         plot!(p1[j], d, c[:,variable,1].data, 
             alpha=0.3, legend=false, xlim=(0,1.1),
@@ -81,9 +74,7 @@ for (oldfoldername, batch) in [("kalman", "1_kalman"), ("1st-joint", "1_joint"),
     end
 
     for (k, var) in collect(enumerate(include_vars))
-        savefig(p[k], ".figures/cummean_$(mapping[var])_$(oldfoldername).png")
-        savefig(p1[k], ".figures/trace_$(mapping[var])_$(oldfoldername).png")
+        savefig(p[k], ".paper_results/cummean_$(mapping[var])_$(oldfoldername).png")
+        savefig(p1[k], ".paper_results/trace_$(mapping[var])_$(oldfoldername).png")
     end
-
-    # display(durations ./ max_time)
 end

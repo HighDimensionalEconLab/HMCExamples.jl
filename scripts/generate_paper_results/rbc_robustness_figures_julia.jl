@@ -1,9 +1,9 @@
 using StatsPlots
-using MCMCChains
+using MCMCChains, Serialization
 using Dates
+using JSON
 using Statistics
-using MAT
-using Base.Threads, Base.Iterators
+using Base.Iterators
 using Measures
 
 function cummean!(p, xs, array::Vector; title = "", fancy_time = -1)
@@ -31,20 +31,27 @@ var_ylim = Dict(
 mapping = Dict("α"=>"alpha", "β_draw"=>"beta_draw", "ρ"=>"rho")
 pseudotrues = Dict("α"=>0.3, "β_draw"=>0.2, "ρ"=>0.9)
 
-for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1", "dynare_chains_1"), (".experiments/benchmarks_dynare/dynare_chains_2", "dynare_chains_2")]
-    files = readdir(folder)
-    durations = []
-    results = []
-    for file in files
-        mat = matread(joinpath(folder, file))
-        push!(durations, mat["rt"]) # / 4
-        push!(results, [mat["x2"] mat["logpo2"]])
+for (oldfoldername, run) in [("kalman", "rbc_1_kalman"), ("1st-joint", "rbc_1_joint"), ("2nd-joint", "rbc_2_joint")]
+    println("generating plots")
+    chains_arr = []
+    chains_arr_durations = []
+    for alpha in ["0_25", "0_3", "0_35", "0_4"]
+        for beta_draw in ["0_1", "0_175", "0_25", "0_325"]
+            for rho in ["0_4625", "0_625", "0_7875", "0_95"]
+                chain = deserialize(".replication_results/robustness/rbc_$(run)_robustness_$(alpha)$(beta_draw)$(rho)/chain.jls")
+                push!(chains_arr, chain)
+                results = JSON.parsefile(".replication_results/robustness/rbc_$(run)_robustness_$(alpha)$(beta_draw)$(rho)/result.json")
+                push!(chains_arr_durations, results["time_elapsed"])
+            end
+        end
     end
+    println("  deserialization complete")
+
+    durations = chains_arr_durations
     max_time = quantile(durations, [0.75])[1]
     adj_durations = durations ./ max_time
 
     fancy_time = round(Second(floor(max_time)), Minute)
-
     p = []
     p1 = []
     for _ in include_vars
@@ -53,12 +60,11 @@ for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1
     end
 
     # may want to use Threads.@threads in front of the for expression if multithreaded machine available
-    for ((i, data), (j, variable)) in collect(product(collect(enumerate(results)), collect(enumerate(include_vars))))
-        println(files[i], "  ", variable, " ", j)
-        c = Chains(data, ["α", "β_draw", "ρ", "lp"])
+    for ((i, c), (j, variable)) in collect(product(collect(enumerate(chains_arr)), collect(enumerate(include_vars))))
+        println(i, " ", variable)
         d = range(0, adj_durations[i], length=size(c, 1))
         cummean!(p[j], d, c[:,variable,1].data; fancy_time=fancy_time)
-        plot!(p1[j], d, c[:,variable,1].data,
+        plot!(p1[j], d, c[:,variable,1].data, 
             alpha=0.3, legend=false, xlim=(0,1.1),
             ylim = var_ylim[variable],
             xticks = (range(0, 1, length=4), ["0 minutes", "", "", "$fancy_time"]),
@@ -67,18 +73,8 @@ for (folder, oldfoldername) in [(".experiments/benchmarks_dynare/dynare_chains_1
         hline!(p1[j], [pseudotrues[variable]], linestyle = :dash, color = :black)
     end
 
-    k = 0
-    for var in include_vars 
-        k += 1
-        xlabel!(p[k], "Compute time")
-
-        savefig(
-            p[k],
-            ".figures/cummean_$(mapping[var])_$(oldfoldername).png"
-        )
-        savefig(
-            p1[k],
-            ".figures/trace_$(mapping[var])_$(oldfoldername).png"
-        )
+    for (k, var) in collect(enumerate(include_vars))
+        savefig(p[k], ".paper_results/cummean_$(mapping[var])_$(oldfoldername).png")
+        savefig(p1[k], ".paper_results/trace_$(mapping[var])_$(oldfoldername).png")
     end
 end
