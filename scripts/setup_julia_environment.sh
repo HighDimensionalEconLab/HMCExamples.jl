@@ -30,11 +30,11 @@ julia --project --threads auto ./deps/create_sysimage.jl
 
 
 print_header "Instantiating packages for the table/figure generation"
-julia --threads auto -e 'using Pkg; Pkg.activate("scripts/generate_figures"); Pkg.instantiate()'
+julia --threads auto -e 'using Pkg; Pkg.activate("scripts/generate_paper_results"); Pkg.instantiate()'
 
 # installing the pip python files for plotting,
 # optional: create and activate a new conda environment
 # conda create -n HMCExamples python
 # conda activate HMCExamples
 
-pip install -r scripts/generate_figures/requirements.txt
+pip install -r scripts/generate_paper_results/requirements.txt
