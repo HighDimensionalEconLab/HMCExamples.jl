@@ -86,17 +86,17 @@ function dynare_comparison(julia_small_run, julia_big_run, dynare_run)
     density_plot = density(chain_julia_small[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true)
     density_plot = density!(chain_dynare[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
     density_plot = density!(chain_julia_big[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_big["num_samples"])", linestyle = :dash, color = :black, legend=true)
-    savefig(density_plot, ".paper_results/beta_density.png")
+    savefig(density_plot, ".paper_results/rbc_comparison_beta_density.png")
 
     density_plot = density(chain_julia_small[["α",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true)
     density_plot = density!(chain_dynare[["α",]], left_margin = 15mm, top_margin = 5mm, label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
     density_plot = density!(chain_julia_big[["α",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_big["num_samples"])", linestyle = :dash, color = :black, legend=true)
-    savefig(density_plot, ".paper_results/alpha_density.png")    
+    savefig(density_plot, ".paper_results/rbc_comparison_alpha_density.png")    
 
     density_plot = density(chain_julia_small[["ρ",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true)
     density_plot = density!(chain_dynare[["ρ",]], left_margin = 15mm, top_margin = 5mm, label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
     density_plot = density!(chain_julia_big[["ρ",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_big["num_samples"])", linestyle = :dash, color = :black, legend=true)
-    savefig(density_plot, ".paper_results/rho_density.png")        
+    savefig(density_plot, ".paper_results/rbc_comparison_rho_density.png")        
 end
 
 # density and trace plots
