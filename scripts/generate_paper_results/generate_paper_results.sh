@@ -12,6 +12,5 @@ python scripts/generate_paper_results/rbc_frequentist_tables.py
 julia --project=scripts scripts/generate_paper_results/rbc_baseline_figures.jl
 julia --project=scripts scripts/generate_paper_results/rbc_robustness_figures_dynare.jl
 julia --project=scripts scripts/generate_paper_results/rbc_robustness_figures_julia.jl
-julia --project=scripts scripts/generate_paper_results/rbc_sv_baseline_figures.jl
 
 julia --project=scripts scripts/generate_paper_results/sgu_baseline_figures.jl

@@ -1,15 +1,21 @@
 using MCMCChains, CSV, DataFrames, StatsPlots, Serialization, Measures, JSON
 using HMCExamples, DynamicPPL
 
-function generate_stats_plots(run, include_vars)
+function generate_stats_plots(run, include_vars, pseudotrues; show_pseudo_true = true)
     chain = deserialize(".replication_results/$(run)/chain.jls")
 
     # trace plots
-    trace_plot = traceplot(chain[include_vars], left_margin = 15mm, bottom_margin = 10mm, top_margin = 5mm)
+    trace_plot = traceplot(chain[include_vars], left_margin = 15mm, bottom_margin = 10mm, top_margin = 5mm, label=false)
+    if show_pseudo_true
+        hline!(trace_plot, pseudotrues, linestyle = :dash, color = :black, label = "", size = (600, 1000))
+    end
     savefig(trace_plot, ".paper_results/$(run)_traceplots.png")
 
     # density
     density_plot = density(chain[include_vars], left_margin = 15mm, bottom_margin = 10mm, top_margin = 5mm)
+    if show_pseudo_true
+        vline!(density_plot, pseudotrues, linestyle = :dash, color = :black, label = "", legend = false, size = (600, 1000))
+    end    
     savefig(density_plot, ".paper_results/$(run)_densityplots.png")
 end
 
@@ -75,7 +81,7 @@ function generate_sv_epsilon_plots(run, shocks_path)
 end
 
 
-function dynare_comparison(julia_small_run, julia_big_run, dynare_run)
+function dynare_comparison(julia_small_run, julia_big_run, dynare_run, pseudotrues;show_pseudo_true)
     chain_julia_small = deserialize(".replication_results/$(julia_small_run)/chain.jls")    
     params_julia_small = JSON.parsefile(".replication_results/$(julia_small_run)/result.json")
     chain_julia_big = deserialize(".replication_results/$(julia_big_run)/chain.jls")    
@@ -83,29 +89,43 @@ function dynare_comparison(julia_small_run, julia_big_run, dynare_run)
     chain_dynare = deserialize(".replication_results/$(dynare_run)/chain.jls")    
     params_dynare = JSON.parsefile(".replication_results/$(dynare_run)/result.json")    
 
-    density_plot = density(chain_julia_small[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true)
-    density_plot = density!(chain_dynare[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
-    density_plot = density!(chain_julia_big[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_big["num_samples"])", linestyle = :dash, color = :black, legend=true)
-    savefig(density_plot, ".paper_results/rbc_comparison_beta_density.png")
 
     density_plot = density(chain_julia_small[["α",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true)
     density_plot = density!(chain_dynare[["α",]], left_margin = 15mm, top_margin = 5mm, label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
     density_plot = density!(chain_julia_big[["α",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_big["num_samples"])", linestyle = :dash, color = :black, legend=true)
+    if show_pseudo_true
+        vline!(density_plot, [pseudotrues[1]], linestyle = :dash, color = :black, label = "Pseudotrue")
+    end
     savefig(density_plot, ".paper_results/rbc_comparison_alpha_density.png")    
+
+
+    density_plot = density(chain_julia_small[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true)
+    density_plot = density!(chain_dynare[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
+    density_plot = density!(chain_julia_big[["β_draw",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_big["num_samples"])", linestyle = :dash, color = :black, legend=true)
+    if show_pseudo_true
+        vline!(density_plot, [pseudotrues[2]], linestyle = :dash, color = :black, label = "Pseudotrue")
+    end
+    savefig(density_plot, ".paper_results/rbc_comparison_beta_density.png")
+
 
     density_plot = density(chain_julia_small[["ρ",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true)
     density_plot = density!(chain_dynare[["ρ",]], left_margin = 15mm, top_margin = 5mm, label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
     density_plot = density!(chain_julia_big[["ρ",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_big["num_samples"])", linestyle = :dash, color = :black, legend=true)
+    if show_pseudo_true
+        vline!(density_plot, [pseudotrues[3]], linestyle = :dash, color = :black, label = "Pseudotrue")
+    end
     savefig(density_plot, ".paper_results/rbc_comparison_rho_density.png")        
 end
 
 # density and trace plots
 rbc_params =  ["α", "β_draw", "ρ"]
-generate_stats_plots("rbc_1_kalman_200_chains",rbc_params)
-generate_stats_plots("rbc_1_joint_200_chains", rbc_params)
-generate_stats_plots("rbc_2_joint_200_chains", rbc_params)
-generate_stats_plots("rbc_1_200_dynare",rbc_params) # Not included in the main paper, but can't generating anyways for comparison
-generate_stats_plots("rbc_2_200_dynare",rbc_params) # Not included in the main paper, but can't generating anyways for comparison
+rbc_pseudotrue = [0.3 0.2 0.9]
+show_pseudo_true = false
+generate_stats_plots("rbc_1_kalman_200_chains",rbc_params, rbc_pseudotrue;show_pseudo_true)
+generate_stats_plots("rbc_1_joint_200_chains", rbc_params, rbc_pseudotrue;show_pseudo_true)
+generate_stats_plots("rbc_2_joint_200_chains", rbc_params, rbc_pseudotrue;show_pseudo_true)
+generate_stats_plots("rbc_1_200_dynare",rbc_params, rbc_pseudotrue;show_pseudo_true) # Not included in the main paper, but can't generating anyways for comparison
+generate_stats_plots("rbc_2_200_dynare",rbc_params, rbc_pseudotrue;show_pseudo_true) # Not included in the main paper, but can't generating anyways for comparison
 
 # scatter plots
 generate_scatter_plots("rbc_1_kalman_200")
@@ -116,7 +136,10 @@ generate_scatter_plots("rbc_2_joint_200_long")
 generate_rbc_epsilon_plots("rbc_1_joint_200", "data/rbc_1_joint_shocks_200.csv")
 generate_rbc_epsilon_plots("rbc_2_joint_200_long", "data/rbc_2_joint_shocks_200.csv")
 generate_rbc_epsilon_plots("rbc_2_joint_200_long", "data/rbc_2_joint_shocks_200.csv")
-generate_sv_epsilon_plots("rbc_sv_2_joint_200", "data/rbc_sv_2_joint_shocks_200.csv")
 
 # dynare comparison for beta
-dynare_comparison("rbc_2_joint_200", "rbc_2_joint_200_long", "rbc_2_200_dynare")
+dynare_comparison("rbc_2_joint_200", "rbc_2_joint_200_long", "rbc_2_200_dynare", rbc_pseudotrue;show_pseudo_true)
+
+# Stochastic volatility
+generate_stats_plots("rbc_sv_2_joint_200",rbc_params, rbc_pseudotrue;show_pseudo_true)
+generate_sv_epsilon_plots("rbc_sv_2_joint_200", "data/rbc_sv_2_joint_shocks_200.csv")
