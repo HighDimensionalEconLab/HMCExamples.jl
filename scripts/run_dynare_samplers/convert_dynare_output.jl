@@ -1,14 +1,26 @@
 using CSV, DataFrames, DelimitedFiles, JSON, MCMCChains, Serialization
 
-function convert_dynare_output(logdir, vars; save_jls = false, save_last_draw = false)
+function convert_dynare_output(logdir, vars; mh_drop, save_jls=false, save_last_draw=false, T)
     @info "Converting $logdir to julia output"
     x2 = readdlm(joinpath(logdir, "x2.csv"), ',')
     logpo2 = readdlm(joinpath(logdir, "logpo2.csv"), ',')
     runtime = readdlm(joinpath(logdir, "rt.csv"), ',')[1]
-    chain = Chains(x2, vars; evidence = logpo2)
+
+    # calculate burnings/etc.
+    mh_replic = size(x2, 1)[1]
+    num_drop = convert(Int64, floor(mh_replic * mh_drop))
+    adapts_burnin_prop = mh_drop / (1-mh_drop)  # maps over given different denominators
+    num_samples = mh_replic - num_drop # maps to the julia version
+
+
+    x2_dropped = x2[(num_drop+1):end, :]
+    logpo2_dropped = logpo2[(num_drop+1):end, :]
+
+    chain = Chains(x2_dropped, vars; evidence=logpo2_dropped)
     if save_jls
         serialize(joinpath(logdir, "chain.jls"), chain) # Basic Julia serialization.  Not portable beetween versions/machines
     end
+
 
     if save_last_draw
         last_draw = chain.value[end, :, 1][chain.name_map.parameters] |> Array
@@ -37,7 +49,18 @@ function convert_dynare_output(logdir, vars; save_jls = false, save_last_draw = 
             ESSpersec=param_esspersec,
             Num_error=Num_error
         )
-    )    
+    )
+    # Write the dictionary to a JSON file with anything useful
+    results = Dict(
+        "time_elapsed" => runtime,
+        "adapts_burnin_prop" => adapts_burnin_prop,
+        "num_samples" => num_samples,
+        "T" => T,
+        )
+    open(joinpath(logdir, "result.json"), "w") do f
+        JSON.print(f,results)
+    end
+
     return nothing
 end
 
@@ -49,14 +72,17 @@ sgu_vars = ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v"]
 # Convert over the main ones
 save_jls = true
 save_last_draw = false
-convert_dynare_output(joinpath(results_path, "rbc_1_200_dynare"), rbc_vars; save_jls, save_last_draw)
-convert_dynare_output(joinpath(results_path, "rbc_2_200_dynare"), rbc_vars; save_jls, save_last_draw)
-convert_dynare_output(joinpath(results_path, "sgu_1_200_dynare"), sgu_vars; save_jls, save_last_draw)
-convert_dynare_output(joinpath(results_path, "sgu_2_200_dynare"), sgu_vars; save_jls, save_last_draw)
+mh_drop = 0.1 # seems consistent for all of these
+T = 200
+convert_dynare_output(joinpath(results_path, "rbc_1_200_dynare"), rbc_vars; mh_drop, save_jls, save_last_draw, T)
+convert_dynare_output(joinpath(results_path, "rbc_2_200_dynare"), rbc_vars; mh_drop, save_jls, save_last_draw, T)
+convert_dynare_output(joinpath(results_path, "sgu_1_200_dynare"), sgu_vars; mh_drop, save_jls, save_last_draw, T)
+convert_dynare_output(joinpath(results_path, "sgu_2_200_dynare"), sgu_vars; mh_drop, save_jls, save_last_draw, T)
 
 # Loop over all of the dynare robustness results
 subdirectories = filter(isdir, readdir(joinpath(results_path, "dynare_robustness"), join=true))
 save_jls = true # do we need this for robustness plots?
+mh_drop = 0.1 # should we still use burnin?  Leaving positive to be consistent with julia.
 for subdir in subdirectories
-    convert_dynare_output(subdir, rbc_vars; save_jls)
+    convert_dynare_output(subdir, rbc_vars; mh_drop, save_jls, T)
 end

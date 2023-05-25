@@ -23,7 +23,7 @@ for i = 1:4
             load("rbc_2_robustness/metropolis/rbc_2_robustness_mh1_blck1.mat");
 
             % Save the results
-            results_path ="../../.replication_results/dynare_robustness/rbc_2_robusteness_"+string(i) + "_" + string(j) + "_" + string(k) + "/";
+            results_path ="../../.replication_results/dynare_robustness/rbc_2_robustness_"+string(i) + "_" + string(j) + "_" + string(k) + "/";
             mkdir(results_path);
 
             writematrix(xparam1, results_path + "xparam1.csv")
