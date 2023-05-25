@@ -1,6 +1,5 @@
 import json
 import pandas as pd
-
 def process_data(n):
     if "." in str(n):
         number = str(n)[:6]
@@ -47,12 +46,21 @@ def generate_sumstats_table(run, caption, label, parameters, pseudotrue, footnot
             r"\scriptsize",
             ""
         ]))
-        table_base.to_latex(buf = f, index = False, escape = False, column_format = "c" * num_columns, header = ["Parameters", "Pseudotrue", "Post. Mean", "Post. Std.", "ESS", "R-hat", "ESS\%", "ESS/second", "Time (seconds)"], formatters = [lambda s: f"${s}$"]*2 + [process_data for _ in range(num_columns - 3)] + [lambda s: f"${int(round(s))}$"])
+        
+        latex_string = (
+            table_base.style.format({col: (lambda s: f"${s}$") if col in ["Parameters", "Pseudotrue"] else (lambda s: f"${int(round(s))}$") if col == "Time" else process_data for col in table_base.columns})
+            .hide_index()  # hide index before writing to latex
+            .to_latex()
+        )
+        
+        f.write(latex_string)
+        
         f.write("\n".join([
             footnote.format(time_elapsed=time_elapsed, target_acceptance_percent=target_acceptance_percent, total_samples=total_samples, discarded_samples=discarded_samples, num_chains = num_chains), # uses values loaded from the json and calculated above
             r"\normalsize",
             r"\end{table}"
         ]))
+
 
 # Parameters and pseudotrue values
 rbc_parameters = [r"\alpha", r"\beta_{draw}", r"\rho"]
@@ -72,11 +80,11 @@ sgu_particle_dynare_footnote = r"{{\raggedright Notes: We draw {total_samples:,}
 
 # Generate all tables 
 generate_sumstats_table("rbc_1_kalman_200", "NUTS with Marginal Likelihood, RBC Model, First-order", "rbc_NUTS_kalman", rbc_parameters, rbc_pseudotrue, footnote = julia_footnote)
-# generate_sumstats_table("rbc_1_joint_200", "NUTS with Joint Likelihood, RBC Model, First-order", "rbc_NUTS_joint_1", rbc_parameters, rbc_pseudotrue, footnote = julia_footnote)
-# generate_sumstats_table("rbc_2_joint_200_long", "NUTS with Joint Likelihood, RBC Model, Second-order", "rbc_NUTS_joint_2", rbc_parameters, rbc_pseudotrue, footnote = julia_footnote)
-# generate_sumstats_table("rbc_1_200_dynare", "RWMH with Marginal Likelihood, RBC Model, First-order", "rbc_RWMH_kalman", rbc_parameters, rbc_pseudotrue, footnote = kalman_dynare_footnote)
-# generate_sumstats_table("rbc_2_200_dynare", "RWMH with Marginal Likelihood on Particle Filter, RBC Model, Second-order", "rbc_RWMH_particle", rbc_parameters, rbc_pseudotrue, footnote = rbc_particle_dynare_footnote)
-# generate_sumstats_table("rbc_sv_2_joint_200", "NUTS with Joint Likelihood, RBC Model with Stochastic Volatility, Second-order", "rbc_sv_NUTS_joint_2", rbc_parameters, rbc_pseudotrue, footnote = julia_multichain_footnote)
+generate_sumstats_table("rbc_1_joint_200", "NUTS with Joint Likelihood, RBC Model, First-order", "rbc_NUTS_joint_1", rbc_parameters, rbc_pseudotrue, footnote = julia_footnote)
+generate_sumstats_table("rbc_2_joint_200_long", "NUTS with Joint Likelihood, RBC Model, Second-order", "rbc_NUTS_joint_2", rbc_parameters, rbc_pseudotrue, footnote = julia_footnote)
+generate_sumstats_table("rbc_1_200_dynare", "RWMH with Marginal Likelihood, RBC Model, First-order", "rbc_RWMH_kalman", rbc_parameters, rbc_pseudotrue, footnote = kalman_dynare_footnote)
+generate_sumstats_table("rbc_2_200_dynare", "RWMH with Marginal Likelihood on Particle Filter, RBC Model, Second-order", "rbc_RWMH_particle", rbc_parameters, rbc_pseudotrue, footnote = rbc_particle_dynare_footnote)
+generate_sumstats_table("rbc_sv_2_joint_200", "NUTS with Joint Likelihood, RBC Model with Stochastic Volatility, Second-order", "rbc_sv_NUTS_joint_2", rbc_parameters, rbc_pseudotrue, footnote = julia_multichain_footnote)
 
 
 # generate_sumstats_table("sgu_1_kalman_200", "NUTS with Marginal Likelihood, SGU Model, First-order", "sgu_NUTS_kalman", sgu_parameters, sgu_pseudotrue, footnote = julia_footnote)
