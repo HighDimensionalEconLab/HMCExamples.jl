@@ -23,7 +23,7 @@ def generate_table(run, caption, label, parameters, pseudotrue, estimation_type 
         runtime = 0
         special_footnote_entry = r"We use 60,000 particles. The sampling time is measured in seconds and excludes model file generation and compilation. \par}"
     else:
-        with open(f".replication_results/{run}/result.json") as f:
+        with open(f".replication_results/{run}/result.json", encoding="utf8") as f:
             params = json.load(f)
         num_samples = params["num_samples"]
         adapts = params["adapts_burnin_prop"]
@@ -43,7 +43,7 @@ def generate_table(run, caption, label, parameters, pseudotrue, estimation_type 
     table_base.insert(6, "ESS\%", 100 * table_base.loc[:, "ESS"] / num_samples)
     table_base.insert(8, "Time", [runtime] * len(parameters))
 
-    with open(f".paper_results/sumstats_{run}.tex", "w") as f:
+    with open(f".paper_results/sumstats_{run}.tex", "w", encoding="utf8") as f:
         f.write("\n".join([
             r"\begin{table}[h]",
             rf"\caption{caption}",
