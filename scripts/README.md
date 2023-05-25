@@ -86,11 +86,18 @@ matlab -nosplash -nodesktop -r "run('rbc_1_robustness.m');exit;"
 matlab -nosplash -nodesktop -r "run('rbc_2_robustness.m');exit;"
 ```
 
-Finally, with all of the dynare results complete you can run
+Finally, with all of the dynare results complete run
 
 ```bash
 julia --project scripts/run_dynare_samplers/convert_dynare_output.jl
 ```
+
+## Generating figures and tables
+Assuming that you have either executed the above steps, or downloaded a `.replication_results` and put it local to your computer you can generate all of the figures and tables to `.paper_results` by runing `bash scripts/generate_paper_results.sh`.  This will take a few hours to run.  The individual scripts are:
+
+1. `/generate_paper_results/baseline_tables.py`  creates the primary tables for all of the experiments.  Note that the `convert_dynare_output.jl` is necessary to execute beforehand.
+2. 
+
 
 ## TODO BELOW
 ## Producing summary tables and plots
