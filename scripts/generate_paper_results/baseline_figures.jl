@@ -101,6 +101,22 @@ function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseud
     savefig(density_plot, ".paper_results/rbc_comparison_rho_density.png")        
 end
 
+function dynare_sgu_comparison_1(kalman_run, joint_1_run, dynare_run, include_vars, pseudotrues;show_pseudo_true, suffix="", plotargs...)
+    kalman_run = deserialize(".replication_results/$(kalman_run)/chain.jls")    
+    joint_1_run = deserialize(".replication_results/$(joint_1_run)/chain.jls")    
+    dynare_run = deserialize(".replication_results/$(dynare_run)/chain.jls")    
+
+    density_plot = density(kalman_run[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, kalman")
+    density!(density_plot, joint_1_run[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, joint")
+    density!(density_plot, dynare_run[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "RWMH, kalman")
+    if show_pseudo_true    
+        vline!(density_plot, pseudotrues, linestyle = :dash, color = :black, label = "", legend = :outertopright, size = (600, 1000))
+    end
+    savefig(density_plot, ".paper_results/sgu_1_comparison$(suffix).png")
+end
+
+
+
 # RBC experiments
 rbc_params =  ["α", "β_draw", "ρ"]
 rbc_pseudotrue = [0.3 0.2 0.9]
@@ -158,3 +174,6 @@ generate_traceplots("sgu_2_200_dynare", sgu_include_vars_2, sgu_pseudotrues_2;sh
 sgu_shock_names = ["epsilon_e", "epsilon_u", "epsilon_v"]
 generate_epsilon_plots("sgu_1_joint_200", sgu_shock_names, "data/sgu_1_joint_shocks_200.csv"; layout=(3, 1))
 generate_epsilon_plots("sgu_2_joint_200", sgu_shock_names, "data/sgu_2_joint_shocks_200.csv"; layout=(3, 1))
+
+dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars_1, sgu_pseudotrues_1;show_pseudo_true, suffix = suffix_1)
+dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars_2, sgu_pseudotrues_2;show_pseudo_true, suffix = suffix_2)
