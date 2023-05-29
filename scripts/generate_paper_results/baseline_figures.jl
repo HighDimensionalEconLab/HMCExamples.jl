@@ -1,3 +1,4 @@
+# To execute this in VSCode/etc. ensure you do `] activate scripts` to use the appropriate manifest
 using MCMCChains, CSV, DataFrames, StatsPlots, Serialization, Measures, JSON
 using HMCExamples, DynamicPPL
 
@@ -65,7 +66,7 @@ function generate_epsilon_plots(run, labels, shocks_path; plot_args...)
 end
 
 
-function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseudotrues;show_pseudo_true, plotargs...)
+function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseudotrues;show_pseudo_true, order=2, plotargs...) # order only used for filenames, doesn't check runs
     chain_julia_small = deserialize(".replication_results/$(julia_small_run)/chain.jls")    
     params_julia_small = JSON.parsefile(".replication_results/$(julia_small_run)/result.json")
     chain_julia_big = deserialize(".replication_results/$(julia_big_run)/chain.jls")    
@@ -80,7 +81,7 @@ function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseud
     if show_pseudo_true
         vline!(density_plot, [pseudotrues[1]], linestyle = :dash, color = :black, label = "Pseudotrue")
     end
-    savefig(density_plot, ".paper_results/rbc_comparison_alpha_density.png")    
+    savefig(density_plot, ".paper_results/rbc_$(order)_comparison_alpha_density.png")    
 
 
     density_plot = density(chain_julia_small[["β_draw",]]; left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true, plotargs...)
@@ -89,7 +90,7 @@ function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseud
     if show_pseudo_true
         vline!(density_plot, [pseudotrues[2]], linestyle = :dash, color = :black, label = "Pseudotrue")
     end
-    savefig(density_plot, ".paper_results/rbc_comparison_beta_density.png")
+    savefig(density_plot, ".paper_results/rbc_$(order)_comparison_beta_density.png")
 
 
     density_plot = density(chain_julia_small[["ρ",]], left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true)
@@ -98,24 +99,34 @@ function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseud
     if show_pseudo_true
         vline!(density_plot, [pseudotrues[3]], linestyle = :dash, color = :black, label = "Pseudotrue")
     end
-    savefig(density_plot, ".paper_results/rbc_comparison_rho_density.png")        
+    savefig(density_plot, ".paper_results/rbc_$(order)_comparison_rho_density.png")        
 end
+function dynare_sgu_comparison_1(kalman_run, joint_run, dynare_run, include_vars, pseudotrues;show_pseudo_true, suffix="", plotargs...)
+    chain_kalman = deserialize(".replication_results/$(kalman_run)/chain.jls")    
+    params_kalman = JSON.parsefile(".replication_results/$(kalman_run)/result.json")    
+    chain_joint = deserialize(".replication_results/$(joint_run)/chain.jls")    
+    params_joint = JSON.parsefile(".replication_results/$(joint_run)/result.json")        
+    chain_dynare = deserialize(".replication_results/$(dynare_run)/chain.jls")    
+    params_dynare = JSON.parsefile(".replication_results/$(dynare_run)/result.json")  
 
-function dynare_sgu_comparison_1(kalman_run, joint_1_run, dynare_run, include_vars, pseudotrues;show_pseudo_true, suffix="", plotargs...)
-    kalman_run = deserialize(".replication_results/$(kalman_run)/chain.jls")    
-    joint_1_run = deserialize(".replication_results/$(joint_1_run)/chain.jls")    
-    dynare_run = deserialize(".replication_results/$(dynare_run)/chain.jls")    
 
-    density_plot = density(kalman_run[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, kalman")
-    density!(density_plot, joint_1_run[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "NUTS, joint")
-    density!(density_plot, dynare_run[include_vars], left_margin = 20mm, top_margin = 5mm, bottom_margin = 10mm, label = "RWMH, kalman")
-    if show_pseudo_true    
-        vline!(density_plot, pseudotrues, linestyle = :dash, color = :black, label = "", legend = :outertopright, size = (600, 1000))
-    end
-    savefig(density_plot, ".paper_results/sgu_1_comparison$(suffix).png")
+    density_plots = []
+    for i in eachindex(include_vars)
+        var = include_vars[i]
+        density_plot = density(chain_kalman[[var,]]; left_margin = 15mm, top_margin = 5mm, label="NUTS, kalman, $(params_kalman["num_samples"])", legend=true)
+
+        density_plot = density!(chain_joint[[var,]]; left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_joint["num_samples"])", legend=true)
+        
+        density_plot = density!(chain_dynare[[var,]]; left_margin = 15mm, top_margin = 5mm, label="RWMH, Kalman, $(params_dynare["num_samples"])", linestyle = :dash, color = :black, legend=true)
+        if show_pseudo_true
+            vline!(density_plot, [pseudotrues[i]], linestyle = :dash, color = :black, label = "Pseudotrue")
+        end
+        push!(density_plots, density_plot)
+    end        
+    plt =  plot(density_plots...;plotargs...)
+    savefig(plt, ".paper_results/sgu_1_comparison$(suffix).png")
+    return plt
 end
-
-
 
 # RBC experiments
 rbc_params =  ["α", "β_draw", "ρ"]
@@ -147,7 +158,8 @@ generate_epsilon_plots("rbc_2_joint_200_long", rbc_shock_names, "data/rbc_2_join
 dynare_rbc_comparison("rbc_2_joint_200", "rbc_2_joint_200_long", "rbc_2_200_dynare", rbc_pseudotrue;show_pseudo_true)
 
 # RBC Stochastic volatility
-generate_stats_plots("rbc_sv_2_joint_200",rbc_params, rbc_pseudotrue;show_pseudo_true)
+generate_density_plots("rbc_sv_2_joint_200",rbc_params, rbc_pseudotrue;show_pseudo_true)
+generate_traceplots("rbc_sv_2_joint_200",rbc_params, rbc_pseudotrue;show_pseudo_true)
 generate_epsilon_plots("rbc_sv_2_joint_200", ["TFP Shock", "Volatility Shock"], "data/rbc_sv_2_joint_shocks_200.csv"; layout=(2, 1))
 
 # SGU traceplots in two sets
@@ -175,5 +187,7 @@ sgu_shock_names = ["epsilon_e", "epsilon_u", "epsilon_v"]
 generate_epsilon_plots("sgu_1_joint_200", sgu_shock_names, "data/sgu_1_joint_shocks_200.csv"; layout=(3, 1))
 generate_epsilon_plots("sgu_2_joint_200", sgu_shock_names, "data/sgu_2_joint_shocks_200.csv"; layout=(3, 1))
 
-dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars_1, sgu_pseudotrues_1;show_pseudo_true, suffix = suffix_1)
-dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars_2, sgu_pseudotrues_2;show_pseudo_true, suffix = suffix_2)
+
+show_pseudo_true = true # useful to see who is right?
+out = dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars_1, sgu_pseudotrues_1;show_pseudo_true, suffix = suffix_1, layout=(3,1), size = (600, 1000))
+dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars_2, sgu_pseudotrues_2;show_pseudo_true, suffix = suffix_2, layout=(2,2), size = (1000,600))
