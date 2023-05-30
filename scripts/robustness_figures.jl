@@ -3,7 +3,7 @@ using MCMCChains, Serialization
 using Dates
 using JSON
 using Statistics
-using Base.Iterators
+using DataFrames
 using Measures
 
 function add_trajectories(base_path, dir_prefix, cumaverage_index; pseudotrue, show_pseudotrue, t_range, plot_args...)
@@ -53,44 +53,79 @@ rbc_pseudotrue = Dict("α" => 0.3, "β_draw"=> 0.2, "ρ"=> 0.9)
 main_path = ".replication_results/robustness"
 dynare_main_path = ".replication_results/dynare_robustness"
 show_pseudotrue = true
+xrange_1 = (0, 3)
+xrange_2 = (0, 8) # second order should be longer
 
 # Load up the alpha plots
-xrange = (0, 3)
 yrange=(0.28, 0.32)
 var = "α"
 file_index = rbc_file_indices[var]
 pseudotrue = rbc_pseudotrue[var]
+xlabel = "" # "Compute time (min)" # add to have on every graph
 
-rbc_1_kalman_plot_α = add_trajectories(path, "rbc_1_kalman_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_1_joint_plot_α = add_trajectories(path, "rbc_1_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_2_joint_plot_α = add_trajectories(path, "rbc_2_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_1_dynare_plot_α = add_trajectories(dynare_main_path, "rbc_1_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_2_dynare_plot_α = add_trajectories(dynare_main_path, "rbc_2_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
+rbc_1_kalman_plot_α = add_trajectories(main_path, "rbc_1_kalman_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange = xrange_1, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_1, left_margin = 15mm, yrange)
+rbc_1_joint_plot_α = add_trajectories(main_path, "rbc_1_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange = xrange_1, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_1, left_margin = 15mm, yrange)
+rbc_2_joint_plot_α = add_trajectories(main_path, "rbc_2_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange = xrange_2, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_2, left_margin = 15mm, yrange)
+rbc_1_dynare_plot_α = add_trajectories(dynare_main_path, "rbc_1_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange = xrange_1, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_1, left_margin = 15mm, yrange)
+rbc_2_dynare_plot_α = add_trajectories(dynare_main_path, "rbc_2_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange = xrange_2, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_2, left_margin = 15mm, yrange)
 
 
 # Load up the beta plots
-xrange = (0, 3)
 yrange=(0.1, 0.4)
 var = "β_draw"
 file_index = rbc_file_indices[var]
 pseudotrue = rbc_pseudotrue[var]
-rbc_1_joint_plot_β = add_trajectories(path, "rbc_1_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_1_kalman_plot_β = add_trajectories(path, "rbc_1_kalman_robustness_", file_index; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_2_joint_plot_β = add_trajectories(path, "rbc_2_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_1_dynare_plot_β  = add_trajectories(dynare_main_path, "rbc_1_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_2_dynare_plot_β  = add_trajectories(dynare_main_path, "rbc_2_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
+rbc_1_kalman_plot_β = add_trajectories(main_path, "rbc_1_kalman_robustness_", file_index; pseudotrue, show_pseudotrue, xrange = xrange_1, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_1, left_margin = 15mm, yrange)
+rbc_1_joint_plot_β = add_trajectories(main_path, "rbc_1_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange = xrange_1, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_1, left_margin = 15mm, yrange)
+rbc_2_joint_plot_β = add_trajectories(main_path, "rbc_2_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange = xrange_2, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_2, left_margin = 15mm, yrange)
+rbc_1_dynare_plot_β  = add_trajectories(dynare_main_path, "rbc_1_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange = xrange_1, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_1, left_margin = 15mm, yrange)
+rbc_2_dynare_plot_β  = add_trajectories(dynare_main_path, "rbc_2_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange = xrange_2, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_2, left_margin = 15mm, yrange)
 
 # Load up the rho plots
-xrange = (0, 3)
 yrange=(0.8, 1.0)
 var = "ρ"
 file_index = rbc_file_indices[var]
 pseudotrue = rbc_pseudotrue[var]
-rbc_1_kalman_plot_ρ = add_trajectories(path, "rbc_1_kalman_robustness_", file_index; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_1_joint_plot_ρ = add_trajectories(path, "rbc_1_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_2_joint_plot_ρ = add_trajectories(path, "rbc_2_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_1_dynare_plot_ρ  = add_trajectories(dynare_main_path, "rbc_1_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
-rbc_2_dynare_plot_ρ  = add_trajectories(dynare_main_path, "rbc_2_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange, label=false, legend=false, alpha=0.5, xlabel="Compute time (min)", ylabel=var, t_range = xrange, left_margin = 15mm, yrange)
+rbc_1_kalman_plot_ρ = add_trajectories(main_path, "rbc_1_kalman_robustness_", file_index; pseudotrue, show_pseudotrue, xrange = xrange_1, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_1, left_margin = 15mm, yrange)
+rbc_1_joint_plot_ρ = add_trajectories(main_path, "rbc_1_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange = xrange_1, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_1, left_margin = 15mm, yrange)
+rbc_2_joint_plot_ρ = add_trajectories(main_path, "rbc_2_joint_robustness_", file_index; pseudotrue, show_pseudotrue, xrange = xrange_2, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_2, left_margin = 15mm, yrange)
+rbc_1_dynare_plot_ρ  = add_trajectories(dynare_main_path, "rbc_1_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange = xrange_1, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_1, left_margin = 15mm, yrange)
+rbc_2_dynare_plot_ρ  = add_trajectories(dynare_main_path, "rbc_2_robustness_", rbc_file_indices[var]; pseudotrue, show_pseudotrue, xrange = xrange_2, label=false, legend=false, alpha=0.5, xlabel, ylabel="", t_range = xrange_2, left_margin = 15mm, yrange)
 
 
+# Combine into plots and save
+# Add labels/titles before combining into figures
+kalman_1_title = "NUTS with Kalman Filter"
+joint_1_title = "NUTS with Joint Likelihood"
+joint_2_title = "NUTS with Joint Likelihood"
+dynare_1_title = "RWMH with Kalman Filter"
+dynare_2_title = "RWMH with Particle Filter"
+xlabel_time = "Compute time (min)"
 
+ylabel!(rbc_1_kalman_plot_α, "α")
+ylabel!(rbc_1_kalman_plot_β, "β_draw")
+ylabel!(rbc_1_kalman_plot_ρ, "ρ")
+title!(rbc_1_kalman_plot_α, kalman_1_title)
+title!(rbc_1_joint_plot_α, joint_1_title)
+title!(rbc_1_dynare_plot_α, dynare_1_title)
+xlabel!(rbc_1_kalman_plot_ρ, xlabel_time)
+xlabel!(rbc_1_joint_plot_ρ, xlabel_time)
+xlabel!(rbc_1_dynare_plot_ρ, xlabel_time)
+plt = plot(rbc_1_kalman_plot_α, rbc_1_joint_plot_α, rbc_1_dynare_plot_α,
+            rbc_1_kalman_plot_β, rbc_1_joint_plot_β, rbc_1_dynare_plot_β,
+            rbc_1_kalman_plot_ρ, rbc_1_joint_plot_ρ, rbc_1_dynare_plot_ρ; layout=(3,3), size=(900, 900))
+savefig(plt, ".paper_results/rbc_1_robustness_cumaverage.png")
+
+
+# Second order
+ylabel!(rbc_2_joint_plot_α, "α")
+ylabel!(rbc_2_joint_plot_β, "β_draw")
+ylabel!(rbc_2_joint_plot_ρ, "ρ")
+title!(rbc_2_joint_plot_α, joint_2_title)
+title!(rbc_2_dynare_plot_α, dynare_2_title)
+xlabel!(rbc_2_joint_plot_ρ, xlabel_time)
+xlabel!(rbc_2_dynare_plot_ρ, xlabel_time)
+plt = plot(rbc_2_joint_plot_α, rbc_2_dynare_plot_α,
+            rbc_2_joint_plot_β, rbc_2_dynare_plot_β,
+            rbc_2_joint_plot_ρ, rbc_2_dynare_plot_ρ; layout=(3,2), size=(750, 900))
+savefig(plt, ".paper_results/rbc_2_robustness_cumaverage.png")
