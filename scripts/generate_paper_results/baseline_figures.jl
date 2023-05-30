@@ -11,6 +11,7 @@ function generate_density_plots(run, include_vars, pseudotrues; show_pseudo_true
         vline!(density_plot, pseudotrues; linestyle = :dash, color = :black, label = "", legend = false, size = (600, 1000))
     end    
     savefig(density_plot, ".paper_results/$(run)$(suffix)_densityplots.png")
+    return density_plot
 end
 
 function generate_traceplots(run, include_vars, pseudotrues; show_pseudo_true = true, suffix="", plotargs...)
@@ -22,6 +23,7 @@ function generate_traceplots(run, include_vars, pseudotrues; show_pseudo_true = 
         hline!(trace_plot, pseudotrues; linestyle = :dash, color = :black, label = "", size = (600, 1000))
     end
     savefig(trace_plot, ".paper_results/$(run)$(suffix)_traceplots.png")
+    return trace_plot
 end
 
 
@@ -36,6 +38,7 @@ function generate_scatter_plots(run, plotargs...)
     p3 = scatter(s1, s3, xlabel = "α", ylabel = "ρ", legend=false, left_margin = 15mm, bottom_margin = 10mm)
     s_plot = plot(p1, p2, p3; layout=(1, 3), size=(1500, 500), left_margin = 15mm, bottom_margin = 10mm, plotargs...)
     savefig(s_plot, ".paper_results/$(run)_scatter.png")
+    return p1, p2, p3
 end
 
 function generate_epsilon_plots(run, labels, shocks_path; plot_args...)
@@ -63,6 +66,7 @@ function generate_epsilon_plots(run, labels, shocks_path; plot_args...)
     end
     ϵ_plot = plot(ϵ_plots...; plot_args...)
     savefig(ϵ_plot, ".paper_results/$(run)_epsilons.png")
+    return ϵ_plots
 end
 
 
@@ -191,3 +195,67 @@ generate_epsilon_plots("sgu_2_joint_200", sgu_shock_names, "data/sgu_2_joint_sho
 show_pseudo_true = true # useful to see who is right?
 out = dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars_1, sgu_pseudotrues_1;show_pseudo_true, suffix = suffix_1, layout=(3,1), size = (600, 1000))
 dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars_2, sgu_pseudotrues_2;show_pseudo_true, suffix = suffix_2, layout=(2,2), size = (1000,600))
+
+
+# Traceplots combined
+rbc_1_trace_kalman  = generate_traceplots("rbc_1_kalman_200",rbc_params, rbc_pseudotrue;show_pseudo_true)
+rbc_1_trace_joint = generate_traceplots("rbc_1_joint_200",rbc_params, rbc_pseudotrue;show_pseudo_true)
+rbc_1_trace_dynare = generate_traceplots("rbc_1_200_dynare",rbc_params, rbc_pseudotrue;show_pseudo_true)
+rbc_2_trace_joint = generate_traceplots("rbc_2_joint_200",rbc_params, rbc_pseudotrue;show_pseudo_true)
+rbc_2_trace_dynare = generate_traceplots("rbc_2_200_dynare",rbc_params, rbc_pseudotrue;show_pseudo_true)
+
+function get_subplots(plt) # hardcoded to 3, removes lables before combining
+    p_1 = plot(plt[1])
+    title!(p_1, "")
+    ylabel!(p_1, "")
+    xlabel!(p_1, "")
+    p_2 = plot(plt[2])
+    title!(p_2, "")
+    ylabel!(p_2, "")
+    xlabel!(p_2, "")
+    p_3 = plot(plt[3])
+    title!(p_3, "")
+    ylabel!(p_3, "")
+    xlabel!(p_3, "")
+    p_1, p_2, p_3
+end
+
+rbc_1_trace_kalman_α, rbc_1_trace_kalman_β, rbc_1_trace_kalman_ρ = get_subplots(rbc_1_trace_kalman)
+rbc_1_trace_joint_α, rbc_1_trace_joint_β, rbc_1_trace_joint_ρ = get_subplots(rbc_1_trace_joint)
+rbc_1_trace_dynare_α, rbc_1_trace_dynare_β, rbc_1_trace_dynare_ρ = get_subplots(rbc_1_trace_dynare)
+rbc_2_trace_joint_α, rbc_2_trace_joint_β, rbc_2_trace_joint_ρ = get_subplots(rbc_2_trace_joint)
+rbc_2_trace_dynare_α, rbc_2_trace_dynare_β, rbc_2_trace_dynare_ρ = get_subplots(rbc_2_trace_dynare)
+
+#1st order one
+kalman_1_title = "NUTS with Kalman Filter"
+joint_1_title = "NUTS with Joint Likelihood"
+joint_2_title = "NUTS with Joint Likelihood"
+dynare_1_title = "RWMH with Kalman Filter"
+dynare_2_title = "RWMH with Particle Filter"
+xlabel_time = "Step"
+ylabel!(rbc_1_trace_kalman_α, "α")
+ylabel!(rbc_1_trace_kalman_β, "β_draw")
+ylabel!(rbc_1_trace_kalman_ρ, "ρ")
+title!(rbc_1_trace_kalman_α, kalman_1_title)
+title!(rbc_1_trace_joint_α, joint_1_title)
+title!(rbc_1_trace_dynare_α, dynare_1_title)
+xlabel!(rbc_1_trace_kalman_ρ, xlabel_time)
+xlabel!(rbc_1_trace_joint_ρ, xlabel_time)
+xlabel!(rbc_1_trace_dynare_ρ, xlabel_time)
+plt = plot(rbc_1_trace_kalman_α, rbc_1_trace_joint_α, rbc_1_trace_dynare_α,
+rbc_1_trace_kalman_β, rbc_1_trace_joint_β, rbc_2_trace_joint_β,
+rbc_1_trace_kalman_ρ, rbc_1_trace_joint_ρ, rbc_1_trace_dynare_ρ; layout=(3,3), size=(1200, 900))
+savefig(plt, ".paper_results/rbc_1_traceplots.png")
+
+ylabel!(rbc_2_trace_joint_α, "α")
+ylabel!(rbc_2_trace_joint_β, "β_draw")
+ylabel!(rbc_2_trace_joint_ρ, "ρ")
+title!(rbc_2_trace_joint_α, joint_2_title)
+title!(rbc_2_trace_dynare_α, dynare_2_title)
+xlabel!(rbc_2_trace_joint_ρ, xlabel_time)
+xlabel!(rbc_2_trace_dynare_ρ, xlabel_time)
+plt = plot(rbc_2_trace_joint_α, rbc_2_trace_dynare_α,
+            rbc_2_trace_joint_β, rbc_2_trace_dynare_β,
+            rbc_2_trace_joint_ρ, rbc_2_trace_dynare_ρ; layout=(3,2), size=(750, 900))
+savefig(plt, ".paper_results/rbc_2_traceplots.png")
+
