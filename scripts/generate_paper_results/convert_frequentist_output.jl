@@ -1,4 +1,5 @@
-using MCMCChains, Serialization, CSV, DataFrames, Statistics
+# This file calculates the frequentist diagnostics for the RBC model from a number of seeds
+using MCMCChains, Serialization, CSV, DataFrames, Statistics, HMCExamples
 
 function calculate_num_error_prop(chain)
     num_error = get(chain, :numerical_error)
@@ -6,18 +7,13 @@ function calculate_num_error_prop(chain)
 end
 
 function generate_frequentist_diagnostics(batch, param_sim, include_vars, num_simulations, data_length)
-    drop_errors = true
-
     num_skipped = 0
     num_vars = length(include_vars) #Number of variables included
     param_names=Array{Symbol,1}(undef,num_vars)
     valid_chains = []
     for i in 1:num_simulations
-        println("simulation ", i, " of batch ", batch, " length ", data_length)
         chain = deserialize(".replication_results/frequentist/$(batch)_frequentist_seed_$(i)_$(data_length)/chain.jls")
-        println(calculate_num_error_prop(chain))
-        if calculate_num_error_prop(chain) > 0.0 && drop_errors == true
-            println("SKIPPING, errored")
+        if calculate_num_error_prop(chain) > 0.0
             num_skipped += 1
         else
             push!(valid_chains, chain)
@@ -45,26 +41,22 @@ function generate_frequentist_diagnostics(batch, param_sim, include_vars, num_si
         cov80_param[j] = mean((post_stats[:, 4, j] .<= param_sim[param_names[j]]).*(post_stats[:, 6, j] .>= param_sim[param_names[j]]))
         cov90_param[j] = mean((post_stats[:, 3, j] .<= param_sim[param_names[j]]).*(post_stats[:, 7, j] .>= param_sim[param_names[j]]))
     end
-    if drop_errors
-        pathname = ".paper_results/freqstats_$(batch)_$(data_length)_drop57.csv"
-    else
-        pathname = ".paper_results/freqstats_$(batch)_$(data_length).csv"
-    end
-    CSV.write(pathname, DataFrame(Parameter=param_names, Bias = bias_param, MSE = mse_param, Interval_80 = cov80_param, Interval_90 = cov90_param))
-    return num_skipped
+    pathname = ".paper_results/freqstats_$(batch)_$(data_length).csv"
+    CSV.write(pathname, DataFrame(Parameter=param_names, Bias = bias_param, MSE = mse_param, Interval_80 = cov80_param, Interval_90 = cov90_param, runs_dropped = num_skipped))
 end 
 
-function runall()
-    mapping = Dict(:α => 0.3, :β_draw => 0.2, :ρ => 0.9)
-    total_skipped = 0
-    for T in ["50", "100", "200"]
-        s1 = generate_frequentist_diagnostics("rbc_1_kalman", mapping, ["α", "β_draw", "ρ"], 100, T)
-        s2 = generate_frequentist_diagnostics("rbc_1_joint", mapping, ["α", "β_draw", "ρ"], 100, T)
-        s3 = generate_frequentist_diagnostics("rbc_2_joint", mapping, ["α", "β_draw", "ρ"], 100, T)
-        println(s1, " ", s2, " ", s3, " T = ", T)
-        total_skipped += s1 + s2 + s3
-    end
-    println("total ", total_skipped, " dropped entries")
-end
+# Calculate for every T and experiment type
+pseudotrues = Dict(:α => 0.3, :β_draw => 0.2, :ρ => 0.9)
+num_seeds = 100
+include_vars = ["α", "β_draw", "ρ"]
+generate_frequentist_diagnostics("rbc_1_kalman", pseudotrues, include_vars, num_seeds, "50")
+generate_frequentist_diagnostics("rbc_1_joint", pseudotrues, include_vars, num_seeds, "50")
+generate_frequentist_diagnostics("rbc_2_joint", pseudotrues, include_vars, num_seeds, "50")
 
-runall()
+generate_frequentist_diagnostics("rbc_1_kalman", pseudotrues, include_vars, num_seeds, "100")
+generate_frequentist_diagnostics("rbc_1_joint", pseudotrues, include_vars, num_seeds, "100")
+generate_frequentist_diagnostics("rbc_2_joint", pseudotrues, include_vars, num_seeds, "100")
+
+generate_frequentist_diagnostics("rbc_1_kalman", pseudotrues, include_vars, num_seeds, "200")
+generate_frequentist_diagnostics("rbc_1_joint", pseudotrues, include_vars, num_seeds, "200")
+generate_frequentist_diagnostics("rbc_2_joint", pseudotrues, include_vars, num_seeds, "200")
