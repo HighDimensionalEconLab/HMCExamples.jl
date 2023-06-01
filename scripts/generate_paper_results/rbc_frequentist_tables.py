@@ -40,7 +40,7 @@ kalman = "\n".join(kalman_list)
 with open(".paper_results/freqstats_rbc_1_kalman.tex", "w") as f:
     f.write(r"""\begin{table}[h]
 \caption{Frequentist Statistics -- Kalman}
-\label{tab:freqstats_kalman}
+\label{tab:freqstats_rbc_1_kalman}
 \centering
 """)
     f.write(kalman)
@@ -75,7 +75,7 @@ joint_1 = "\n".join(joint_1_list)
 with open(".paper_results/freqstats_rbc_1_joint.tex", "w") as f:
     f.write(r"""\begin{table}[h]
 \caption{Frequentist Statistics -- First-order Joint}
-\label{tab:freqstats_joint_1}
+\label{tab:freqstats_rbc_1_joint}
 \centering
 """)
     f.write(joint_1)
@@ -110,7 +110,7 @@ joint_2 = "\n".join(joint_2_list)
 with open(".paper_results/freqstats_rbc_2_joint.tex", "w") as f:
     f.write(r"""\begin{table}
 \caption{Frequentist Statistics -- Second-order Joint}
-\label{tab:freqstats_joint_2}
+\label{tab:freqstats_rbc_2_joint}
 \centering
 """)
     f.write(joint_2)
