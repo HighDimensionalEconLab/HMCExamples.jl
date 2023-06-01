@@ -3,7 +3,7 @@
 
 % Utility to save a mode file
 parameter_names = [{'alpha'};{'gamma'};{'psi'};{'beta_draw'};{'rho'};{'rho_u'};{'rho_v'}];
-xparam1 = [0.4;1.0;0.000742;4.0;0.4;0.4;0.4];
+xparam1 = [0.328877958223689;2.3399861113683453;0.0005602652317476214;4.094970724844387;0.3877637128809934;0.2240415428766295;0.5348464581738216];
 
 save('sgu_init_params.mat','parameter_names','xparam1')
 
