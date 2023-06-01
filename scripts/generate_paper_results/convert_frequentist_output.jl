@@ -1,5 +1,5 @@
 # This file calculates the frequentist diagnostics for the RBC model from a number of seeds
-using MCMCChains, Serialization, CSV, DataFrames, Statistics, HMCExamples
+using MCMCChains, Serialization, CSV, DataFrames, Statistics, HMCExamples, JSON
 
 function calculate_num_error_prop(chain)
     num_error = get(chain, :numerical_error)
@@ -41,8 +41,17 @@ function generate_frequentist_diagnostics(batch, param_sim, include_vars, num_si
         cov80_param[j] = mean((post_stats[:, 4, j] .<= param_sim[param_names[j]]).*(post_stats[:, 6, j] .>= param_sim[param_names[j]]))
         cov90_param[j] = mean((post_stats[:, 3, j] .<= param_sim[param_names[j]]).*(post_stats[:, 7, j] .>= param_sim[param_names[j]]))
     end
+
+
+    #Load the results file to see the number of samples, etc.
+    result_file = JSON.parsefile(".replication_results/frequentist/$(batch)_frequentist_seed_1_$(data_length)/result.json")
+
     pathname = ".paper_results/freqstats_$(batch)_$(data_length).csv"
-    CSV.write(pathname, DataFrame(Parameter=param_names, Bias = bias_param, MSE = mse_param, Interval_80 = cov80_param, Interval_90 = cov90_param, runs_dropped = num_skipped))
+    CSV.write(pathname, DataFrame(Parameter=param_names, Bias = bias_param, MSE = mse_param, Interval_80 = cov80_param, Interval_90 = cov90_param,
+    runs_dropped = num_skipped,
+    num_seeds = num_simulations,
+    num_samples = result_file["num_samples"],
+    adapts_burnin_prop = result_file["adapts_burnin_prop"],))
 end 
 
 # Calculate for every T and experiment type
