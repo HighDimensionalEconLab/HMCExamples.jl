@@ -46,7 +46,7 @@ function generate_frequentist_diagnostics(batch, param_sim, include_vars, num_si
     #Load the results file to see the number of samples, etc.
     result_file = JSON.parsefile(".replication_results/frequentist/$(batch)_frequentist_seed_1_$(data_length)/result.json")
 
-    pathname = ".paper_results/freqstats_$(batch)_$(data_length).csv"
+    pathname = ".replication_results/frequentist/freqstats_$(batch)_$(data_length).csv"
     CSV.write(pathname, DataFrame(Parameter=param_names, Bias = bias_param, MSE = mse_param, Interval_80 = cov80_param, Interval_90 = cov90_param,
     runs_dropped = num_skipped,
     num_seeds = num_simulations,

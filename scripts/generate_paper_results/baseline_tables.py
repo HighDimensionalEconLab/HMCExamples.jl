@@ -46,7 +46,7 @@ def generate_sumstats_table(run, caption, parameters, pseudotrue, footnote, labe
         f.write("\n".join([
             r"\begin{table}[h]",
             rf"\caption{{{formatted_caption}}}",
-            rf"\label{{tab:{label}}}",
+            rf"\label{{tab:sumstats_{label}}}",
             r"\centering",
             r"\scriptsize",
             ""
@@ -55,12 +55,12 @@ def generate_sumstats_table(run, caption, parameters, pseudotrue, footnote, labe
         latex_string = (
             table_base.style.format({col: (lambda s: f"${s}$") if col in ["Parameters", "Pseudotrue"] else (lambda s: f"${int(round(s))}$") if col == "Time" else process_data for col in table_base.columns})
             .hide(axis='index')  # hide index before writing to latex
-            .to_latex()
+            .to_latex(hrules=True)
         )
         
         f.write(latex_string)
         
-        f.write("\n".join([
+        f.write("\n".join(["\n",
             footnote.format(time_elapsed=time_elapsed, target_acceptance_percent=target_acceptance_percent, total_samples=total_samples, discarded_samples=discarded_samples, num_chains = num_chains, T=T), # uses values loaded from the json and calculated above
             r"\normalsize",
             r"\end{table}"
