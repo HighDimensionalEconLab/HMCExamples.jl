@@ -102,16 +102,16 @@ rbc_2_dynare_plot_ρ  = add_trajectories(dynare_main_path, "rbc_2_robustness_", 
 
 # Combine into plots and save
 # Add labels/titles before combining into figures
-kalman_1_title = "NUTS with Kalman Filter"
-joint_1_title = "NUTS with Joint Likelihood"
-joint_2_title = "NUTS with Joint Likelihood"
-dynare_1_title = "RWMH with Kalman Filter"
-dynare_2_title = "RWMH with Particle Filter"
+kalman_1_title = "NUTS, Marginal"
+joint_1_title = "NUTS, Joint"
+joint_2_title = "NUTS, Joint"
+dynare_1_title = "RWMH, Marginal"
+dynare_2_title = "RWMH, Particle Filter"
 xlabel_time = "Compute time (min)"
 
-ylabel!(rbc_1_kalman_plot_α, "α")
-ylabel!(rbc_1_kalman_plot_β, "β_draw")
-ylabel!(rbc_1_kalman_plot_ρ, "ρ")
+ylabel!(rbc_1_kalman_plot_α, L"\alpha")
+ylabel!(rbc_1_kalman_plot_β, L"\beta_{draw}")
+ylabel!(rbc_1_kalman_plot_ρ, L"\rho")
 title!(rbc_1_kalman_plot_α, kalman_1_title)
 title!(rbc_1_joint_plot_α, joint_1_title)
 title!(rbc_1_dynare_plot_α, dynare_1_title)
@@ -126,9 +126,9 @@ savefig(plt, ".paper_results/rbc_1_robustness_cumaverage.png")
 
 
 # Second order
-ylabel!(rbc_2_joint_plot_α, "α")
-ylabel!(rbc_2_joint_plot_β, "β_draw")
-ylabel!(rbc_2_joint_plot_ρ, "ρ")
+ylabel!(rbc_2_joint_plot_α,  L"\alpha")
+ylabel!(rbc_2_joint_plot_β, L"\beta_{draw}")
+ylabel!(rbc_2_joint_plot_ρ, L"\rho")
 title!(rbc_2_joint_plot_α, joint_2_title)
 title!(rbc_2_dynare_plot_α, dynare_2_title)
 xlabel!(rbc_2_joint_plot_ρ, xlabel_time)
