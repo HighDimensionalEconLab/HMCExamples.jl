@@ -113,7 +113,7 @@ function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseud
     return density_plot_alpha, density_plot_beta, density_plot_rho
 end
 
-function dynare_sgu_comparison_1(kalman_run, joint_run, dynare_run, include_vars, pseudotrues;show_pseudo_true, suffix="", plotargs...)
+function dynare_sgu_comparison_1(kalman_run, joint_run, dynare_run, include_vars, pseudotrues, titles;show_pseudo_true, lw=2, plotargs...)
     chain_kalman = deserialize(".replication_results/$(kalman_run)/chain.jls")    
     params_kalman = JSON.parsefile(".replication_results/$(kalman_run)/result.json")    
     chain_joint = deserialize(".replication_results/$(joint_run)/chain.jls")    
@@ -125,18 +125,56 @@ function dynare_sgu_comparison_1(kalman_run, joint_run, dynare_run, include_vars
     density_plots = []
     for i in eachindex(include_vars)
         var = include_vars[i]
-        density_plot = density(chain_kalman[[var,]]; left_margin = 15mm, top_margin = 5mm, label="NUTS, kalman, $(params_kalman["num_samples"])", legend=true)
+        density_plot = density(chain_kalman[[var,]]; left_margin = 15mm, top_margin = 5mm, label="",  legend=false,lw)
 
-        density_plot = density!(chain_joint[[var,]]; left_margin = 15mm, top_margin = 5mm, label="NUTS, joint, $(params_joint["num_samples"])", legend=true)
+        density_plot = density!(chain_joint[[var,]]; left_margin = 15mm, top_margin = 5mm, label="", legend=false,lw)
         
-        density_plot = density!(chain_dynare[[var,]]; left_margin = 15mm, top_margin = 5mm, label="RWMH, Kalman, $(params_dynare["num_samples"])", linestyle = :dash, color = :black, legend=true)
+        density_plot = density!(chain_dynare[[var,]]; left_margin = 15mm, top_margin = 5mm, label="", linestyle = :dash, legend=false,lw)
         if show_pseudo_true
-            vline!(density_plot, [pseudotrues[i]], linestyle = :dash, color = :black, label = "Pseudotrue")
+            vline!(density_plot, [pseudotrues[i]], linestyle = :dash, color = :black, label = "")
         end
         push!(density_plots, density_plot)
-    end        
+    end
+    for i in eachindex(density_plots)
+        title!(density_plots[i], titles[i])
+        ylabel!(density_plots[i], "")
+        xlabel!(density_plots[i], "")
+    end
+    push!(density_plots, plot((1:3)', framestyle = :none, legend=true, linestyle = [:solid :solid :dash],  label=["NUTS, Kalman," "NUTS, joint" "RWMH, Kalman"]))
+
     plt =  plot(density_plots...;plotargs...)
-    savefig(plt, ".paper_results/sgu_1_comparison$(suffix).png")
+    savefig(plt, ".paper_results/sgu_1_comparison.png")
+    return plt
+end
+
+
+function dynare_sgu_comparison_2(joint_run, dynare_run, include_vars, pseudotrues, titles;show_pseudo_true, lw=2, plotargs...)
+    chain_joint = deserialize(".replication_results/$(joint_run)/chain.jls")    
+    params_joint = JSON.parsefile(".replication_results/$(joint_run)/result.json")        
+    chain_dynare = deserialize(".replication_results/$(dynare_run)/chain.jls")    
+    params_dynare = JSON.parsefile(".replication_results/$(dynare_run)/result.json")  
+
+
+    density_plots = []
+    for i in eachindex(include_vars)
+        var = include_vars[i]
+        density_plot = density(chain_joint[[var,]]; left_margin = 15mm, top_margin = 5mm, label="", legend=false,lw)
+        
+        density_plot = density!(chain_dynare[[var,]]; left_margin = 15mm, top_margin = 5mm, label="", legend=false,lw, linestyle=:dash)
+        if show_pseudo_true
+            vline!(density_plot, [pseudotrues[i]], linestyle = :dash, label = "")
+        end
+        push!(density_plots, density_plot)
+    end
+    for i in eachindex(density_plots)
+        title!(density_plots[i], titles[i])
+        ylabel!(density_plots[i], "")
+        xlabel!(density_plots[i], "")
+    end
+    push!(density_plots, plot((1:2)', framestyle = :none, legend=true, label=["NUTS, Joint" "RWMH, Particle Filter"], linestyle=[:solid :dash]))
+
+    plt =  plot(density_plots...;plotargs...)
+    savefig(plt, ".paper_results/sgu_2_comparison.png")
     return plt
 end
 
@@ -192,9 +230,11 @@ generate_epsilon_plots("rbc_sv_2_joint_200", ["TFP Shock", "Volatility Shock"], 
 # SGU traceplots in two sets
 suffix_1 = "_set_1"
 sgu_include_vars_1 = ["α", "β_draw", "γ"]
+sgu_vars_1_titles = [L"\alpha", L"\beta_{draw}", L"\gamma"]
 sgu_pseudotrues_1 = [0.32 4 2.0]
 suffix_2 = "_set_2"
 sgu_include_vars_2 = ["ρ", "ρ_u", "ρ_v", "ψ"]
+sgu_vars_2_titles = [L"\rho", L"\rho_u", L"\rho_v", L"\psi"]
 sgu_pseudotrues_2 = [0.42 0.2 0.4 0.000742]
 
 generate_traceplots("sgu_1_kalman_200", sgu_include_vars_1, sgu_pseudotrues_1;show_pseudo_true, suffix = suffix_1)
@@ -210,14 +250,20 @@ generate_traceplots("sgu_1_200_dynare", sgu_include_vars_2, sgu_pseudotrues_2;sh
 generate_traceplots("sgu_2_200_dynare", sgu_include_vars_2, sgu_pseudotrues_2;show_pseudo_true, suffix = suffix_2)
 
 
-sgu_shock_names = ["epsilon_e", "epsilon_u", "epsilon_v"]
+sgu_shock_names = [L"\epsilon_e", L"\epsilon_u", L"\epsilon_v"]
 generate_epsilon_plots("sgu_1_joint_200", sgu_shock_names, "data/sgu_1_joint_shocks_200.csv"; layout=(3, 1))
 generate_epsilon_plots("sgu_2_joint_200", sgu_shock_names, "data/sgu_2_joint_shocks_200.csv"; layout=(3, 1))
 
 
 show_pseudo_true = true
-out = dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars_1, sgu_pseudotrues_1;show_pseudo_true, suffix = suffix_1, layout=(3,1), size = (600, 1000))
-dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars_2, sgu_pseudotrues_2;show_pseudo_true, suffix = suffix_2, layout=(2,2), size = (1000,600))
+sgu_include_vars = ["α", "β_draw", "γ","ρ", "ρ_u", "ρ_v", "ψ"]
+sgu_vars_titles = [L"\alpha", L"\beta_{draw}", L"\gamma", L"\rho", L"\rho_u", L"\rho_v", L"\psi"]
+sgu_pseudotrues = [0.32 4 2.0 0.42 0.2 0.4 0.000742]
+
+dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars, sgu_pseudotrues, sgu_vars_titles;show_pseudo_true, layout=(4,2), size = (750, 800), legend=:topleft)
+
+dynare_sgu_comparison_2("sgu_2_joint_200", "sgu_2_200_dynare", sgu_include_vars, sgu_pseudotrues, sgu_vars_titles;show_pseudo_true, layout=(4,2), size = (750, 800), legend=:topleft)
+
 
 
 # # Traceplots combined.  Left out of paper for now
