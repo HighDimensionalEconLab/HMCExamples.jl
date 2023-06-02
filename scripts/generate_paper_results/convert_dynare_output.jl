@@ -62,7 +62,7 @@ function convert_dynare_output(logdir, vars; mh_drop, save_jls=false, save_last_
     end
 
     # cumulative averages
-    for (i, var) in enumerate(include_vars)
+    for (i, var) in enumerate(vars)
         values = chain[var]
         cum_average = MCMCChains.cummean(values)
         writedlm(
