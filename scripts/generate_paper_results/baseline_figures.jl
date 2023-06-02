@@ -103,7 +103,7 @@ function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseud
     title!(density_plot_alpha, title[1])
     title!(density_plot_beta, title[2])
     title!(density_plot_rho, title[3])
-    # ylabel!(density_plot_alpha, "Sample Value")
+    # ylabel!(density_plot_alpha, "Density")
     ylabel!(density_plot_beta, "")
     ylabel!(density_plot_rho, "")
      
@@ -203,7 +203,7 @@ savefig(plt, ".paper_results/rbc_2_joint_200_density_traceplots.png")
 # 2nd RBC dynare comparison
 show_pseudo_true = false
 density_plot_alpha, density_plot_beta, density_plot_rho = dynare_rbc_comparison("rbc_2_joint_200", "rbc_2_joint_200_long", "rbc_2_200_dynare", rbc_pseudotrue, title;show_pseudo_true, left_margin = 7mm, top_margin = 5mm)
-plt = plot(density_plot_alpha, density_plot_beta, density_plot_rho; layout=(1,3), size = (1200, 300), legend=:bottomright, lw=2, ylabel=["Sample Value" "" ""])
+plt = plot(density_plot_alpha, density_plot_beta, density_plot_rho; layout=(1,3), size = (1200, 300), legend=:bottomright, lw=2, ylabel=["Density" "" ""])
 savefig(plt, ".paper_results/rbc_2_dynare_comparison.png")
 
 # Scatterplots
@@ -255,17 +255,17 @@ sgu_vars_titles = [L"\alpha", L"\beta_{draw}", L"\gamma", L"\rho", L"\rho_u", L"
 sgu_pseudotrues = [0.32 4 2.0 0.42 0.2 0.4 0.000742]
 
 plt = dynare_sgu_comparison_1("sgu_1_kalman_200", "sgu_1_joint_200", "sgu_1_200_dynare", sgu_include_vars, sgu_pseudotrues, sgu_vars_titles;show_pseudo_true, layout=(4,2), size = (750, 800), legend=:topleft, left_margin = 1mm, rightmargin=3mm)
-ylabel!(plt[1], "Sample Value")
-ylabel!(plt[3], "Sample Value")
-ylabel!(plt[5], "Sample Value")
-ylabel!(plt[7], "Sample Value")
+ylabel!(plt[1], "Density")
+ylabel!(plt[3], "Density")
+ylabel!(plt[5], "Density")
+ylabel!(plt[7], "Density")
 savefig(plt, ".paper_results/sgu_1_comparison.png")
 
 plt = dynare_sgu_comparison_2("sgu_2_joint_200", "sgu_2_200_dynare", sgu_include_vars, sgu_pseudotrues, sgu_vars_titles;show_pseudo_true, layout=(4,2), size = (750, 800), legend=:topleft, left_margin = 1mm, rightmargin=3mm)
-ylabel!(plt[1], "Sample Value")
-ylabel!(plt[3], "Sample Value")
-ylabel!(plt[5], "Sample Value")
-ylabel!(plt[7], "Sample Value")
+ylabel!(plt[1], "Density")
+ylabel!(plt[3], "Density")
+ylabel!(plt[5], "Density")
+ylabel!(plt[7], "Density")
 savefig(plt, ".paper_results/sgu_2_comparison.png")
 
 # # Traceplots combined.  Left out of paper for now

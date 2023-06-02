@@ -51,7 +51,7 @@ To run the primary experiments, execute:
 bash scripts/run_samplers/baseline_experiments.sh
 ```
 
-The other scripts are left separate to make running them in parallel easier.  These run thousands of examples and may take **3-4 days to run** in parallel, depending on your computer.  However, you can edit the shell scripts to run these in parallel with little effort.
+The other scripts are left separate to make running them in parallel easier.  These run thousands of examples and may take **3-4 days to run** in parallel, depending on your computer.  However, you can execute in parallel on a multi-core machine to speed up the process.
 
 ```bash
 bash scripts/run_samplers/rbc_1_joint_frequentist.sh
@@ -84,108 +84,19 @@ Then, you can run the following (in separate terminals if you wish, as the resul
 cd scripts/run_dynare_samplers
 matlab -nosplash -nodesktop -r "run('rbc_1_robustness.m');exit;"
 matlab -nosplash -nodesktop -r "run('rbc_2_robustness.m');exit;"
-```
-
-Finally, with all of the dynare results complete run
-
-```bash
-julia --project scripts/run_dynare_samplers/convert_dynare_output.jl
+cd ../.. # go back to the main directory
 ```
 
 ## Generating figures and tables
-Assuming that you have either executed the above steps, or downloaded a `.replication_results` and put it local to your computer you can generate all of the figures and tables to `.paper_results` by runing `bash scripts/generate_paper_results.sh`.  This will take a few hours to run.  The individual scripts are:
-
-1. `/generate_paper_results/baseline_tables.py`  creates the primary tables for all of the experiments.  Note that the `convert_dynare_output.jl` is necessary to execute beforehand.
-2. 
+Assuming that you have either executed the above steps, or downloaded a preexisting `.replication_results` and put it local to your computer,  you can generate all of the figures and tables to `.paper_results` by running `bash scripts/generate_paper_results.sh`.  These will be placed in the `.paper_results` directory.
 
 
-## TODO BELOW
-## Producing summary tables and plots
+The individual scripts this calls are:
+1. `convert_frequentist_output.jl`: Converts the output from the frequentist experiments into a format that can be used by the plotting scripts.
+2. `convert_dynare_output.jl`: Converts the output from the dynare experiments into a format that can be used by the plotting scripts consistent with the Julia chains.
+3. `baseline_figures.jl`: Generates all figures except for the RBC robustness examples
+4. `rbc_robustness_figures.jl`: Generates the RBC robustness figures
+5. `baseline_tables.py`: Generates all tables except for the RBC frequentist tables
+6. `rbc_frequentist_tables.py`: Generates the RBC frequentist tables
 
-On Ubuntu, Python or Python3 should be installed by default. If not, do `sudo apt update` followed by `sudo apt install python3` and `sudo apt install python3-pip`. If the command is present as `python3`, replace all instances of `python` in the text below with `python3`.\
-Following this, run `cd HMCExamples.jl` followed by `pip install -r scripts/figplots/requirements.txt`.
-
-Next, you will need to instantiate the Julia project associated with the scripts, which is separate from the main project file. Run `julia --project=scripts -e "using Pkg; Pkg.instantiate()"`.
-
-In addition, you will need to have all experiments copied with the proper filepaths into a folder called `.experiments` in the `HMCExamples.jl` directory. If adding experiments manually, check the corresponding plot/table script for the filepaths being used.
-
-Run `mkdir .tables .results .figures` to prevent filepath errors when running the scripts.
-
-The following options are available:
-
-### Dynare RBC
-- Dynare Log Parser
-  - Use this to read the Dynare logs if you saved it to a file earlier.
-  - `python scripts/figplots/parse_dynare_log.py`
-
-- Summary Statistics
-  - First, pull the Matlab chain files into Julia by running `julia --project=scripts scripts/figplots/dynare_to_julia.jl`.
-  - Next, parse the results into tables using `python scripts/figplots/sumstats_dynare.py`.
-
-- Robustness Plots
-  - `julia --project=scripts --threads auto scripts/figplots/robustness_dynare.jl`
-  - Ideally, this command should be run on a machine with as many threads as possible due to the slow execution time of StatsPlots.
-  
-### Dynare SGU
-- Summary Statistics
-  - First, pull the Matlab chain files into Julia by running `julia --project=scripts scripts/sgu_replication/dynare_to_julia.jl`.
-  - Next, parse the results into tables using `python scripts/sgu_replication/sumstats_dynare.py`.
-- Plots are available under the Julia SGU section.
-
-### Julia RBC
-- Numerical Error Presence Validation
-  - `python scripts/figplots/scan_for_errors.py`
-  
-- Robustness Rhat Analysis/Validation
-  - `python scripts/figplots/scan_rhat.py`
-
-- Summary Statistics
-  - `python scripts/figplots/sumstats_julia.py`
-
-- Summary Plots
-  - `julia --project=scripts scripts/figplots/statplots_julia.jl`
-
-- Platform Cross-Comparison, Scatterplot, Inferred Shocks
-  - `julia --project=scripts scripts/figplots/otherplots.jl`
-
-- Robustness Plots
-  - `julia --project=scripts scripts/figplots/robustness_julia.jl`
-
-- Frequentist Statistics
-  - First, run `julia --project=scripts scripts/figplots/frequentist_julia.jl`.
-  - After, run `python scripts/figplots/frequentist_julia.py`.
-
-### Julia FVGQ
-- Summary Statistics
-  - `python scripts/fvgq_replication/sumstats.py`
-  
-- Summary Plots
-  - `julia --project=scripts scripts/fvgq_replication/statplots.jl`
-
-### Julia SGU
-- Summary Statistics
-  - `python scripts/sgu_replication/sumstats_julia.py`
-  
-- Summary Plots
-  - `julia --project=scripts scripts/sgu_replication/statplots.jl`
-
-### Julia RBC with Student's T Shocks
-- Summary Statistics
-  - `python scripts/rbc_student_t_replication/sumstats_julia.py`
-  
-- Summary Plots
-  - `julia --project=scripts scripts/rbc_student_t_replication/statplots.jl`
-
-### Julia RBC with Stochastic Volatility, 1st Order
-- Summary Statistics
-  - `python scripts/rbc_volatility_replication/sumstats_julia.py`
-  
-- Summary Plots
-  - `julia --project=scripts scripts/rbc_volatility_replication/statplots.jl`
-
-### Julia RBC with Stochastic Volatility, 2nd Order, SGU Form
-- Summary Statistics
-  - `python scripts/rbc_sv_replication/sumstats_julia.py`
-  
-- Summary Plots
-  - `julia --project=scripts scripts/rbc_sv_replication/statplots.jl`
+Constants such as the number of samples are extracted from metadata in the `.replication_results` directory. 
