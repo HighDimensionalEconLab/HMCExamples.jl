@@ -30,12 +30,12 @@ end
 function generate_scatter_plots(run, plotargs...)
     chain = deserialize(".replication_results/$(run)/chain.jls")
 
-    s1 = chain[:, :α, 1]
-    s2 = chain[:, :β_draw, 1]
-    s3 = chain[:, :ρ, 1]
-    p1 = scatter(s1, s2, xlabel = L"\alpha", ylabel = L"\beta_{draw}", legend=false, left_margin = 15mm, bottom_margin = 10mm)
-    p2 = scatter(s2, s3, xlabel = L"\beta_{draw}", ylabel = L"\rho", legend=false, left_margin = 15mm, bottom_margin = 10mm)
-    p3 = scatter(s1, s3, xlabel = L"\alpha", ylabel = L"\rho", legend=false, left_margin = 15mm, bottom_margin = 10mm)
+    α_data = chain[:, :α, 1]
+    β_draw_data = chain[:, :β_draw, 1]
+    ρ_data = chain[:, :ρ, 1]
+    p1 = scatter(α_data, β_draw_data, xlabel = L"\alpha", ylabel = L"\beta_{draw}", legend=false, left_margin = 15mm, bottom_margin = 10mm)
+    p2 = scatter(β_draw_data, ρ_data, xlabel = L"\beta_{draw}", ylabel = L"\rho", legend=false, left_margin = 15mm, bottom_margin = 10mm)
+    p3 = scatter(ρ_data, α_data, xlabel = L"\rho",ylabel = L"\alpha", legend=false, left_margin = 15mm, bottom_margin = 10mm)
     s_plot = plot(p1, p2, p3; layout=(1, 3), size=(1500, 500), left_margin = 15mm, bottom_margin = 10mm, plotargs...)
     savefig(s_plot, ".paper_results/$(run)_scatter.png")
     return p1, p2, p3
@@ -80,25 +80,22 @@ function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseud
 
 
     density_plot_alpha = density(chain_julia_small[["α",]]; label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true, title = titles[1], plotargs...)
+    density_plot_alpha = density!(chain_julia_big[["α",]]; label="NUTS, joint, $(params_julia_big["num_samples"])", legend=true)
     density_plot = density!(chain_dynare[["α",]]; label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
-    density_plot_alpha = density!(chain_julia_big[["α",]]; label="NUTS, joint, $(params_julia_big["num_samples"])", linestyle = :dash, color = :black, legend=true)
     if show_pseudo_true
         vline!(density_plot_alpha, [pseudotrues[1]], linestyle = :dash, color = :black, label = "Pseudotrue")
     end
-    # savefig(density_plot, ".paper_results/rbc_$(order)_comparison_alpha_density.png")    
-
 
     density_plot_beta = density(chain_julia_small[["β_draw",]]; label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true, title = titles[2], plotargs...)
+    density_plot_beta = density!(chain_julia_big[["β_draw",]]; label="NUTS, joint, $(params_julia_big["num_samples"])",  legend=true)
     density_plot_beta = density!(chain_dynare[["β_draw",]]; label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
-    density_plot_beta = density!(chain_julia_big[["β_draw",]]; label="NUTS, joint, $(params_julia_big["num_samples"])", linestyle = :dash, color = :black, legend=true)
     if show_pseudo_true
         vline!(density_plot_beta, [pseudotrues[2]], linestyle = :dash, color = :black, label = "Pseudotrue")
     end
-    # savefig(density_plot, ".paper_results/rbc_$(order)_comparison_beta_density.png")
 
     density_plot_rho = density(chain_julia_small[["ρ",]], label="NUTS, joint, $(params_julia_small["num_samples"])", title = titles[3], legend=true)
+    density_plot_rho = density!(chain_julia_big[["ρ",]], label="NUTS, joint, $(params_julia_big["num_samples"])", legend=true)
     density_plot_rho = density!(chain_dynare[["ρ",]], label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
-    density_plot_rho = density!(chain_julia_big[["ρ",]], label="NUTS, joint, $(params_julia_big["num_samples"])", linestyle = :dash, color = :black, legend=true)
     if show_pseudo_true
         vline!(density_plot_rho, [pseudotrues[3]], linestyle = :dash, color = :black, label = "Pseudotrue")
     end
@@ -106,47 +103,46 @@ function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseud
     title!(density_plot_alpha, title[1])
     title!(density_plot_beta, title[2])
     title!(density_plot_rho, title[3])
-    ylabel!(density_plot_alpha, "")
+    # ylabel!(density_plot_alpha, "Sample Value")
     ylabel!(density_plot_beta, "")
     ylabel!(density_plot_rho, "")
      
     return density_plot_alpha, density_plot_beta, density_plot_rho
 end
 
-function dynare_sgu_comparison_1(kalman_run, joint_run, dynare_run, include_vars, pseudotrues, titles;show_pseudo_true, lw=2, plotargs...)
-    chain_kalman = deserialize(".replication_results/$(kalman_run)/chain.jls")    
-    params_kalman = JSON.parsefile(".replication_results/$(kalman_run)/result.json")    
-    chain_joint = deserialize(".replication_results/$(joint_run)/chain.jls")    
-    params_joint = JSON.parsefile(".replication_results/$(joint_run)/result.json")        
-    chain_dynare = deserialize(".replication_results/$(dynare_run)/chain.jls")    
-    params_dynare = JSON.parsefile(".replication_results/$(dynare_run)/result.json")  
+# function dynare_sgu_comparison_1(kalman_run, joint_run, dynare_run, include_vars, pseudotrues, titles;show_pseudo_true, lw=2, plotargs...)
+#     chain_kalman = deserialize(".replication_results/$(kalman_run)/chain.jls")    
+#     params_kalman = JSON.parsefile(".replication_results/$(kalman_run)/result.json")    
+#     chain_joint = deserialize(".replication_results/$(joint_run)/chain.jls")    
+#     params_joint = JSON.parsefile(".replication_results/$(joint_run)/result.json")        
+#     chain_dynare = deserialize(".replication_results/$(dynare_run)/chain.jls")    
+#     params_dynare = JSON.parsefile(".replication_results/$(dynare_run)/result.json")  
 
 
-    density_plots = []
-    for i in eachindex(include_vars)
-        var = include_vars[i]
-        density_plot = density(chain_kalman[[var,]]; left_margin = 15mm, top_margin = 5mm, label="",  legend=false,lw)
+#     density_plots = []
+#     for i in eachindex(include_vars)
+#         var = include_vars[i]
+#         density_plot = density(chain_kalman[[var,]]; left_margin = 15mm, top_margin = 5mm, label="",  legend=false,lw)
 
-        density_plot = density!(chain_joint[[var,]]; left_margin = 15mm, top_margin = 5mm, label="", legend=false,lw)
+#         density_plot = density!(chain_joint[[var,]]; left_margin = 15mm, top_margin = 5mm, label="", legend=false,lw)
         
-        density_plot = density!(chain_dynare[[var,]]; left_margin = 15mm, top_margin = 5mm, label="", linestyle = :dash, legend=false,lw)
-        if show_pseudo_true
-            vline!(density_plot, [pseudotrues[i]], linestyle = :dash, color = :black, label = "")
-        end
-        push!(density_plots, density_plot)
-    end
-    for i in eachindex(density_plots)
-        title!(density_plots[i], titles[i])
-        ylabel!(density_plots[i], "")
-        xlabel!(density_plots[i], "")
-    end
-    push!(density_plots, plot((1:3)', framestyle = :none, legend=true, linestyle = [:solid :solid :dash],  label=["NUTS, Kalman," "NUTS, joint" "RWMH, Kalman"]))
+#         density_plot = density!(chain_dynare[[var,]]; left_margin = 15mm, top_margin = 5mm, label="", linestyle = :dash, legend=false,lw)
+#         if show_pseudo_true
+#             vline!(density_plot, [pseudotrues[i]], linestyle = :dash, color = :black, label = "")
+#         end
+#         push!(density_plots, density_plot)
+#     end
+#     for i in eachindex(density_plots)
+#         title!(density_plots[i], titles[i])
+#         ylabel!(density_plots[i], "")
+#         xlabel!(density_plots[i], "")
+#     end    
+#     push!(density_plots, plot((1:3)', framestyle = :none, legend=true, linestyle = [:solid :solid :dash],  label=["NUTS, Kalman," "NUTS, joint" "RWMH, Kalman"]))
 
-    plt =  plot(density_plots...;plotargs...)
-    savefig(plt, ".paper_results/sgu_1_comparison.png")
-    return plt
-end
-
+#     plt =  plot(density_plots...;plotargs...)
+#     savefig(plt, ".paper_results/sgu_1_comparison.png")
+#     return plt
+# end
 
 function dynare_sgu_comparison_2(joint_run, dynare_run, include_vars, pseudotrues, titles;show_pseudo_true, lw=2, plotargs...)
     chain_joint = deserialize(".replication_results/$(joint_run)/chain.jls")    
@@ -206,10 +202,10 @@ plt = plot(rbc_2_joint_200_chains_traceplots, rbc_2_joint_200_chains_density; la
 savefig(plt, ".paper_results/rbc_2_joint_200_density_traceplots.png")
 
 
-# RBC dynare comparison
+# 2nd RBC dynare comparison
 show_pseudo_true = false
-density_plot_alpha, density_plot_beta, density_plot_rho = dynare_rbc_comparison("rbc_2_joint_200", "rbc_2_joint_200_long", "rbc_2_200_dynare", rbc_pseudotrue, title;show_pseudo_true, left_margin = 0mm, top_margin = 5mm)
-plt = plot(density_plot_alpha, density_plot_beta, density_plot_rho; layout=(1,3), size = (1200, 300), legend=:bottomright, lw=2)
+density_plot_alpha, density_plot_beta, density_plot_rho = dynare_rbc_comparison("rbc_2_joint_200", "rbc_2_joint_200_long", "rbc_2_200_dynare", rbc_pseudotrue, title;show_pseudo_true, left_margin = 7mm, top_margin = 5mm)
+plt = plot(density_plot_alpha, density_plot_beta, density_plot_rho; layout=(1,3), size = (1200, 300), legend=:bottomright, lw=2, ylabel=["Sample Value" "" ""])
 savefig(plt, ".paper_results/rbc_2_dynare_comparison.png")
 
 # Scatterplots
