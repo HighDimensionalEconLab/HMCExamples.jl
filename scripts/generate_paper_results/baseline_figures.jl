@@ -77,25 +77,25 @@ function dynare_rbc_comparison(julia_small_run, julia_big_run, dynare_run, pseud
     params_julia_big = JSON.parsefile(".replication_results/$(julia_big_run)/result.json")
     chain_dynare = deserialize(".replication_results/$(dynare_run)/chain.jls")    
     params_dynare = JSON.parsefile(".replication_results/$(dynare_run)/result.json")    
+    xlabel = "Sample Value"
 
-
-    density_plot_alpha = density(chain_julia_small[["α",]]; label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true, title = titles[1], plotargs...)
+    density_plot_alpha = density(chain_julia_small[["α",]]; label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true, title = titles[1], xlabel, plotargs...)
     density_plot_alpha = density!(chain_julia_big[["α",]]; label="NUTS, joint, $(params_julia_big["num_samples"])", legend=true)
     density_plot = density!(chain_dynare[["α",]]; label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
     if show_pseudo_true
         vline!(density_plot_alpha, [pseudotrues[1]], linestyle = :dash, color = :black, label = "Pseudotrue")
     end
 
-    density_plot_beta = density(chain_julia_small[["β_draw",]]; label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true, title = titles[2], plotargs...)
-    density_plot_beta = density!(chain_julia_big[["β_draw",]]; label="NUTS, joint, $(params_julia_big["num_samples"])",  legend=true)
-    density_plot_beta = density!(chain_dynare[["β_draw",]]; label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
+    density_plot_beta = density(chain_julia_small[["β_draw",]]; label="NUTS, joint, $(params_julia_small["num_samples"])", legend=true, xlabel, title = titles[2], plotargs...)
+    density_plot_beta = density!(chain_julia_big[["β_draw",]]; label="NUTS, joint, $(params_julia_big["num_samples"])",  legend=false)
+    density_plot_beta = density!(chain_dynare[["β_draw",]]; label="RWMH, particle, $(params_dynare["num_samples"])", legend=false)
     if show_pseudo_true
         vline!(density_plot_beta, [pseudotrues[2]], linestyle = :dash, color = :black, label = "Pseudotrue")
     end
 
-    density_plot_rho = density(chain_julia_small[["ρ",]], label="NUTS, joint, $(params_julia_small["num_samples"])", title = titles[3], legend=true)
-    density_plot_rho = density!(chain_julia_big[["ρ",]], label="NUTS, joint, $(params_julia_big["num_samples"])", legend=true)
-    density_plot_rho = density!(chain_dynare[["ρ",]], label="RWMH, particle, $(params_dynare["num_samples"])", legend=true)
+    density_plot_rho = density(chain_julia_small[["ρ",]]; label="NUTS, joint, $(params_julia_small["num_samples"])", xlabel, title = titles[3], legend=true)
+    density_plot_rho = density!(chain_julia_big[["ρ",]], label="NUTS, joint, $(params_julia_big["num_samples"])", legend=false)
+    density_plot_rho = density!(chain_dynare[["ρ",]], label="RWMH, particle, $(params_dynare["num_samples"])", legend=false)
     if show_pseudo_true
         vline!(density_plot_rho, [pseudotrues[3]], linestyle = :dash, color = :black, label = "Pseudotrue")
     end
@@ -135,9 +135,13 @@ function dynare_sgu_comparison_1(kalman_run, joint_run, dynare_run, include_vars
     for i in eachindex(density_plots)
         title!(density_plots[i], titles[i])
         ylabel!(density_plots[i], "")
-        xlabel!(density_plots[i], "")
+        xlabel!(density_plots[i], "Sample Value")
     end    
-    push!(density_plots, plot((1:3)', framestyle = :none, legend=true,  label=["NUTS, kalman," "NUTS, joint" "RWMH, kalman"]))
+    legend_plot = plot((1:3)', framestyle = :none, legend=true,  label=["NUTS, kalman," "NUTS, joint" "RWMH, kalman"])
+    if show_pseudo_true
+        plot!(legend_plot, [0], framestyle = :none, label = "Psuedotrue", linestyle = :dash, color = :black)
+    end
+    push!(density_plots, legend_plot)
 
     plt =  plot(density_plots...;plotargs...)
     return plt
@@ -164,9 +168,13 @@ function dynare_sgu_comparison_2(joint_run, dynare_run, include_vars, pseudotrue
     for i in eachindex(density_plots)
         title!(density_plots[i], titles[i])
         ylabel!(density_plots[i], "")
-        xlabel!(density_plots[i], "")
+        xlabel!(density_plots[i], "Sample Value")
     end
-    push!(density_plots, plot((1:2)', framestyle = :none, legend=true, label=["NUTS, joint" "RWMH, particle filter"]))
+    legend_plot = plot((1:2)', framestyle = :none, legend=true, label=["NUTS, joint" "RWMH, particle filter"])
+    if show_pseudo_true
+        plot!(legend_plot, [0], framestyle = :none, label = "Psuedotrue", linestyle = :dash, color = :black)
+    end
+    push!(density_plots, legend_plot)
 
     plt =  plot(density_plots...;plotargs...)
     return plt
@@ -202,8 +210,8 @@ savefig(plt, ".paper_results/rbc_2_joint_200_density_traceplots.png")
 
 # 2nd RBC dynare comparison
 show_pseudo_true = false
-density_plot_alpha, density_plot_beta, density_plot_rho = dynare_rbc_comparison("rbc_2_joint_200", "rbc_2_joint_200_long", "rbc_2_200_dynare", rbc_pseudotrue, title;show_pseudo_true, left_margin = 7mm, top_margin = 5mm)
-plt = plot(density_plot_alpha, density_plot_beta, density_plot_rho; layout=(1,3), size = (1200, 300), legend=:bottomright, lw=2, ylabel=["Density" "" ""])
+density_plot_alpha, density_plot_beta, density_plot_rho = dynare_rbc_comparison("rbc_2_joint_200", "rbc_2_joint_200_long", "rbc_2_200_dynare", rbc_pseudotrue, title;show_pseudo_true, left_margin = 7mm, top_margin = 5mm, bottom_margin = 7mm)
+plt = plot(density_plot_alpha, density_plot_beta, density_plot_rho; layout=(1,3), size = (1200, 300), legend=[:right false false], lw=2, ylabel=["Density" "" ""])
 savefig(plt, ".paper_results/rbc_2_dynare_comparison.png")
 
 # Scatterplots
@@ -249,7 +257,7 @@ generate_epsilon_plots("sgu_1_joint_200", sgu_shock_names, "data/sgu_1_joint_sho
 generate_epsilon_plots("sgu_2_joint_200", sgu_shock_names, "data/sgu_2_joint_shocks_200.csv"; layout=(3, 1), size=(350,500))
 
 
-show_pseudo_true = false
+show_pseudo_true = true
 sgu_include_vars = ["α", "β_draw", "γ","ρ", "ρ_u", "ρ_v", "ψ"]
 sgu_vars_titles = [L"\alpha", L"\beta_{draw}", L"\gamma", L"\rho", L"\rho_u", L"\rho_v", L"\psi"]
 sgu_pseudotrues = [0.32 4 2.0 0.42 0.2 0.4 0.000742]
