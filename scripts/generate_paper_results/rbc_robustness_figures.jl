@@ -50,7 +50,7 @@ function add_trajectories(base_path, dir_prefix, cumaverage_index; pseudotrue, s
 end
 
 rbc_file_indices = Dict("α" => 1, "β_draw"=> 2, "ρ"=> 3 )
-rbc_pseudotrue = Dict("α" => 0.3, "β_draw"=> 0.2, "ρ"=> 0.9)
+rbc_pseudotrue = Dict("α" => 0.3, "β_draw"=> 0.2004008, "ρ"=> 0.9)
 main_path = ".replication_results/robustness"
 dynare_main_path = ".replication_results/dynare_robustness"
 show_pseudotrue = true

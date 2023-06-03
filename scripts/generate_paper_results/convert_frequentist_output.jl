@@ -55,7 +55,7 @@ function generate_frequentist_diagnostics(batch, param_sim, include_vars, num_si
 end 
 
 # Calculate for every T and experiment type
-pseudotrues = Dict(:α => 0.3, :β_draw => 0.2, :ρ => 0.9)
+pseudotrues = Dict(:α => 0.3, :β_draw => 0.2004008, :ρ => 0.9)
 num_seeds = 100
 include_vars = ["α", "β_draw", "ρ"]
 generate_frequentist_diagnostics("rbc_1_kalman", pseudotrues, include_vars, num_seeds, "50")
