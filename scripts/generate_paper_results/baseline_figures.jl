@@ -227,7 +227,7 @@ generate_epsilon_plots("rbc_2_joint_200_long", rbc_shock_names, "data/rbc_2_join
 # RBC Stochastic volatility
 #generate_density_plots("rbc_sv_2_joint_200",rbc_params, rbc_pseudotrue;show_pseudo_true, title)
 #generate_traceplots("rbc_sv_2_joint_200",rbc_params, rbc_pseudotrue;show_pseudo_true, title)
-generate_epsilon_plots("rbc_sv_2_joint_200", ["TFP Shock", "Volatility Shock"], "data/rbc_sv_2_joint_shocks_200.csv"; layout=(1, 2), size=(800,300))
+generate_epsilon_plots("rbc_sv_2_joint_200", ["TFP Shock", "Volatility Shock"], "data/rbc_sv_2_joint_shocks_200.csv"; layout=(1, 2), legend=[:bottomleft false], size=(800,300))
 
 # SGU traceplots are being skipped for now
 # suffix_1 = "_set_1"
@@ -253,8 +253,8 @@ generate_epsilon_plots("rbc_sv_2_joint_200", ["TFP Shock", "Volatility Shock"], 
 
 
 sgu_shock_names = [L"\epsilon_e", L"\epsilon_u", L"\epsilon_v"]
-generate_epsilon_plots("sgu_1_joint_200", sgu_shock_names, "data/sgu_1_joint_shocks_200.csv"; layout=(3, 1), size=(350,500))
-generate_epsilon_plots("sgu_2_joint_200", sgu_shock_names, "data/sgu_2_joint_shocks_200.csv"; layout=(3, 1), size=(350,500))
+generate_epsilon_plots("sgu_1_joint_200", sgu_shock_names, "data/sgu_1_joint_shocks_200.csv"; layout=(3, 1), legend=[:topleft false false], size=(350,500))
+generate_epsilon_plots("sgu_2_joint_200", sgu_shock_names, "data/sgu_2_joint_shocks_200.csv"; layout=(3, 1), legend=[:topleft false false], size=(350,500))
 
 
 show_pseudo_true = true
