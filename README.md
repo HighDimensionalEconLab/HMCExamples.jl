@@ -30,6 +30,8 @@ A few features for sampling and output:
 
 In all cases, for long-burnins you can find the final draw of the chain as the `last_draw.csv` file, which can be used with the `init_params_file` argument after moving/renaming
 ## Package Compilation
+**Warning** PackageCompiler.jl can be finicky and may not be always functional.  If the process below stalls and doesn't complete after 30ish minutes, you might be between working versions.
+
 Given the slow startup speed, it can be helpful to compile a custom sysimage.  This would be used by both vscode and the commandline.  To do this, execute the following in a commandline
 ```bash
 julia --threads auto -e 'using Pkg; Pkg.add(\"PackageCompiler\")'
