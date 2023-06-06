@@ -7,7 +7,7 @@ Install conda and if using linux then install the Linux packages yourself direct
 bash scripts/setup_linux_environment.sh
 ```
 
-You will need to setup Julia and compile required packages.  On all platofrms, you should be able to do this by running the following script (staying at the top level of the repo):
+You will need to setup Julia and compile required packages.  On all platforms, you should be able to do this by running the following script (staying at the top level of the repo):
 
 ```bash
 bash scripts/setup_julia_environment.sh
@@ -15,16 +15,22 @@ bash scripts/setup_julia_environment.sh
 
 That process will do a package compilation and take 10-20 minutes depending on your operating system.
 
+If you are not running those files then you will probably want to install the python and julia scripts with 
+```bash
+pip install -r scripts/generate_paper_results/requirements.txt
+julia --threads auto -e 'using Pkg; Pkg.activate("scripts"); Pkg.instantiate()'
+```
+
 ## Create a Sysimage
 
-While not strictly required, it is highly recommended to create a sysimage to speed up the sampling process. Execute the following in a commandline within the main directory
+While not strictly required, you may create a sysimage to speed up the sampling process. Execute the following in a commandline within the main directory
 
 ```bash
 julia --threads auto -e 'using Pkg; Pkg.add(\"PackageCompiler\")'
 julia --project --threads auto ./deps/create_sysimage.jl
 ```
 
-That process will take at least 20 minutes to fully compile.
+That process will take at least 30 minutes to fully compile.  Note that the `PackageCompiler.jl` process is often broken, so this may not work with arbitrary Julia versions and package versions.
 
 ## Simulate data (Optional)
 
@@ -88,7 +94,13 @@ cd ../.. # go back to the main directory
 ```
 
 ## Generating figures and tables
-Assuming that you have either executed the above steps, or downloaded a preexisting `.replication_results` and put it local to your computer,  you can generate all of the figures and tables to `.paper_results` by running `bash scripts/generate_paper_results.sh`.  These will be placed in the `.paper_results` directory.
+Assuming that you have either executed the above steps, or downloaded a preexisting `.replication_results` and put it local to your computer,  you can generate all of the figures and tables to `.paper_results` by running the following in Git Bash or bash on Linux:
+
+```bash
+bash scripts/generate_paper_results.sh
+```
+
+These will be placed in the `.paper_results` directory.
 
 
 The individual scripts this calls are:

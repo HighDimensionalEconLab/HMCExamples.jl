@@ -17,8 +17,8 @@ fi
 
 
 # Optionally: to make this maximally replicable you can set the julia version here:
-juliaup add 1.8.5
-juliaup default 1.8.5
+juliaup add 1.9
+juliaup default 1.9
 
 # Instantiate the packages for the main run project/manifest
 print_header "Instantiating Packages in the global and project specfic environments"
@@ -30,7 +30,7 @@ julia --project --threads auto ./deps/create_sysimage.jl
 
 
 print_header "Instantiating packages for the table/figure generation"
-julia --threads auto -e 'using Pkg; Pkg.activate("scripts/generate_paper_results"); Pkg.instantiate()'
+julia --threads auto -e 'using Pkg; Pkg.activate("scripts"); Pkg.instantiate()'
 
 # installing the pip python files for plotting,
 # optional: create and activate a new conda environment
