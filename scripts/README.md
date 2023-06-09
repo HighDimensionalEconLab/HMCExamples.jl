@@ -97,7 +97,7 @@ cd ../.. # go back to the main directory
 Assuming that you have either executed the above steps, or downloaded a preexisting `.replication_results` and put it local to your computer,  you can generate all of the figures and tables to `.paper_results` by running the following in Git Bash or bash on Linux:
 
 ```bash
-bash scripts/generate_paper_results.sh
+bash scripts/generate_paper_results/generate_paper_results.sh
 ```
 
 These will be placed in the `.paper_results` directory.

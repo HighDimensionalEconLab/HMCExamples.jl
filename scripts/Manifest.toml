@@ -805,7 +805,7 @@ uuid = "0234f1f7-429e-5d53-9886-15a909be8d59"
 version = "1.12.2+2"
 
 [[deps.HMCExamples]]
-deps = ["AdvancedHMC", "ArgParse", "CSV", "DataFrames", "DelimitedFiles", "DifferenceEquations", "DifferentiableStateSpaceModels", "Distributions", "DynamicPPL", "JSON", "LaTeXStrings", "LinearAlgebra", "Logging", "MCMCChains", "Plots", "Random", "RecursiveArrayTools", "Serialization", "SymbolicUtils", "Symbolics", "Turing", "Zygote"]
+deps = ["AdvancedHMC", "ArgParse", "CSV", "DataFrames", "DelimitedFiles", "DifferenceEquations", "DifferentiableStateSpaceModels", "Distributions", "DynamicPPL", "JSON", "LaTeXStrings", "LinearAlgebra", "Logging", "MCMCChains", "Plots", "PrecompileTools", "Random", "RecursiveArrayTools", "Serialization", "SymbolicUtils", "Symbolics", "Turing", "Zygote"]
 path = ".."
 uuid = "04c4e5f0-d543-11eb-2b99-3f716ccaf3f5"
 version = "0.1.0"
