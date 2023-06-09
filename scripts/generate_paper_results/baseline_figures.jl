@@ -180,6 +180,7 @@ function dynare_sgu_comparison_2(joint_run, dynare_run, include_vars, pseudotrue
     return plt
 end
 
+print("Executing baseline figures\n")
 # RBC experiments
 rbc_params =  ["α", "β_draw", "ρ"]
 title = [L"\alpha" L"\beta_{draw}" L"\rho"]

@@ -74,7 +74,7 @@ function convert_dynare_output(logdir, vars; mh_drop, save_jls=false, save_last_
 
     return nothing
 end
-
+print("Converting the dynare output to Julia chains\n")
 results_path = ".replication_results"
 rbc_vars = ["α", "β_draw", "ρ"]
 sgu_vars = ["α", "γ", "ψ", "β_draw", "ρ", "ρ_u", "ρ_v"]

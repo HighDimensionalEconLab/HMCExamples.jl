@@ -85,6 +85,8 @@ Then, from the main folder do
 bash scripts/run_dynare_samplers/baseline_experiments.sh
 ```
 
+This may take some time
+
 Then, you can run the following (in separate terminals if you wish, as the results aren't timed like the previous example).  This may take 1-2 days
 ```bash
 cd scripts/run_dynare_samplers
@@ -94,13 +96,13 @@ cd ../.. # go back to the main directory
 ```
 
 ## Generating figures and tables
-Assuming that you have either executed the above steps, or downloaded a preexisting `.replication_results` and put it local to your computer,  you can generate all of the figures and tables to `.paper_results` by running the following in Git Bash or bash on Linux:
+Assuming that you have the packages installed (i.e. `julia --threads auto -e 'using Pkg; Pkg.activate("scripts"); Pkg.instantiate()'` or equivalent) and either executed the above steps or downloaded a preexisting `.replication_results` and put it local to your computer,  you can generate all of the figures and tables to `.paper_results` by running the following in Git Bash or bash on Linux:
 
 ```bash
 bash scripts/generate_paper_results/generate_paper_results.sh
 ```
 
-These will be placed in the `.paper_results` directory.
+The script may take 10+ minutes if you include the `convert_` lines.  All final results are placed in the `.paper_results` directory.
 
 
 The individual scripts this calls are:

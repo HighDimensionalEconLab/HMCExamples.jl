@@ -6,6 +6,7 @@ using Statistics
 using DataFrames
 using Measures
 using CSV
+using LaTeXStrings
 
 function add_trajectories(base_path, dir_prefix, cumaverage_index; pseudotrue, show_pseudotrue, t_range, plot_args...)
     plt = plot()
@@ -48,7 +49,7 @@ function add_trajectories(base_path, dir_prefix, cumaverage_index; pseudotrue, s
 
     return plt
 end
-
+print("Executing RBC robustness figures\n")
 rbc_file_indices = Dict("α" => 1, "β_draw"=> 2, "ρ"=> 3 )
 rbc_pseudotrue = Dict("α" => 0.3, "β_draw"=> 0.2004008, "ρ"=> 0.9)
 main_path = ".replication_results/robustness"
