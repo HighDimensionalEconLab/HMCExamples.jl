@@ -1,6 +1,6 @@
 # DSSM HMC Examples
 
-This package provides the compete replication for [__"Differentiable State-Space Models and Hamiltonian Monte Carlo Estimation"__](https://www.jesseperla.com/publication/diff-state-space/diff-state-space.pdf) by David Childers, Jesus Fernandez-Villaverde, Jesse Perla, Christopher Rackauckas, and Peifan Wu.
+This package provides the compete replication for [__"Differentiable State-Space Models and Hamiltonian Monte Carlo Estimation"__](https://www.jesseperla.com/publication/diff-state-space/diff-state-space.pdf) by Rachel Childers, Jesus Fernandez-Villaverde, Jesse Perla, Christopher Rackauckas, and Peifan Wu.
 
 The algorithms are mostly implemented in:
 1. [DifferentiableStateSpaceModels.jl](https://github.com/HighDimensionalEconLab/DifferentiableStateSpaceModels.jl) for the differentiable perturbation method solver
